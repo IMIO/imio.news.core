@@ -18,7 +18,6 @@ local/
 node_modules/
 parts/
 share/
-src/
 dist/*
 test.plone_addon/
 var/
