@@ -41,10 +41,14 @@ class INewsItem(model.Schema):
         required=False,
     )
 
+    model.fieldset("categorization", fields=["category"])
     category = schema.Choice(
         title=_(u"Category"),
+        description=_(
+            u"Important! These categories are used to supplement the information provided by the topics"
+        ),
         source="imio.news.vocabulary.NewsCategories",
-        required=True,
+        required=False,
     )
 
 
