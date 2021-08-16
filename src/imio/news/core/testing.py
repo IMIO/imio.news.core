@@ -25,11 +25,11 @@ class ImioNewsCoreLayer(PloneSandboxLayer):
         import plone.restapi
 
         self.loadZCML(package=plone.restapi)
-        self.loadZCML(package=imio.events.core)
+        self.loadZCML(package=imio.news.core)
 
     def setUpPloneSite(self, portal):
         portal_api.get_current_language = mock.Mock(return_value="fr")
-        applyProfile(portal, 'imio.news.core:default')
+        applyProfile(portal, "imio.news.core:default")
 
 
 IMIO_NEWS_CORE_FIXTURE = ImioNewsCoreLayer()
@@ -37,13 +37,13 @@ IMIO_NEWS_CORE_FIXTURE = ImioNewsCoreLayer()
 
 IMIO_NEWS_CORE_INTEGRATION_TESTING = IntegrationTesting(
     bases=(IMIO_NEWS_CORE_FIXTURE,),
-    name='ImioNewsCoreLayer:IntegrationTesting',
+    name="ImioNewsCoreLayer:IntegrationTesting",
 )
 
 
 IMIO_NEWS_CORE_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(IMIO_NEWS_CORE_FIXTURE,),
-    name='ImioNewsCoreLayer:FunctionalTesting',
+    name="ImioNewsCoreLayer:FunctionalTesting",
 )
 
 
@@ -53,5 +53,5 @@ IMIO_NEWS_CORE_ACCEPTANCE_TESTING = FunctionalTesting(
         REMOTE_LIBRARY_BUNDLE_FIXTURE,
         z2.ZSERVER_FIXTURE,
     ),
-    name='ImioNewsCoreLayer:AcceptanceTesting',
+    name="ImioNewsCoreLayer:AcceptanceTesting",
 )
