@@ -53,6 +53,8 @@ setup(
         "plone.api>=1.8.4",
         "plone.restapi",
         "plone.app.dexterity",
+        "collective.taxonomy",
+        "eea.facetednavigation",
         "imio.smartweb.common",
         "imio.smartweb.locales",
     ],
@@ -64,6 +66,7 @@ setup(
             # plone_coredev tests as of 2016-04-01.
             "plone.testing>=5.0.0",
             "plone.app.robotframework[debug]",
+            "mock",
         ],
     },
     entry_points="""""",
