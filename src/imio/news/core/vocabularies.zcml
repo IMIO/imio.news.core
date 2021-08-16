@@ -1,0 +1,10 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope">
+
+  <utility
+    name="imio.news.vocabulary.NewsCategories"
+    component=".vocabularies.NewsCategoriesVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    />
+
+</configure>

@@ -5,7 +5,9 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="imio.smartweb">
 
-  <i18n:registerTranslations directory="locales" />
+  <include package="eea.facetednavigation" />
+  <include package="imio.smartweb.common" />
+  <include package="imio.smartweb.locales" />
 
   <!--
     Be careful if you use general includeDependencies, it can have side effects!
@@ -17,6 +19,7 @@
   <include package=".contents" />
 
   <include file="permissions.zcml" />
+  <include file="vocabularies.zcml" />
 
   <genericsetup:registerProfile
       name="default"
