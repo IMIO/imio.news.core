@@ -2,8 +2,6 @@
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from plone.dexterity.content import Container
 from plone.supermodel import model
-from plone.supermodel.interfaces import FIELDSETS_KEY
-from plone.supermodel.model import Fieldset
 from zope import schema
 from zope.interface import implementer
 
