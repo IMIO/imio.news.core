@@ -38,6 +38,8 @@
     <element value="plone.constraintypes" />
     <element value="plone.richtext"/>
     <element value="imio.smartweb.topics"/>
+    <element value="imio.smartweb.iam"/>
+    <element value="plone.categorization"/>
   </property>
 
 </object>
