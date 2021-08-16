@@ -2,6 +2,34 @@
 <rolemap>
   <permissions>
   <!-- -*- extra stuff goes here -*- -->
+    <permission name="imio.news.core: Add Entity" acquire="True">
+      <role name="Manager"/>
+    </permission>
+
+
+    <permission name="imio.news.core: Add Agenda" acquire="True">
+      <role name="Manager"/>
+      <role name="Site Administrator"/>
+      <role name="Owner"/>
+      <role name="Contributor"/>
+    </permission>
+
+
+    <permission name="imio.news.core: Add Folder" acquire="True">
+      <role name="Manager"/>
+      <role name="Site Administrator"/>
+      <role name="Owner"/>
+      <role name="Contributor"/>
+    </permission>
+
+
+    <permission name="imio.news.core: Add NewsItem" acquire="True">
+      <role name="Manager"/>
+      <role name="Site Administrator"/>
+      <role name="Owner"/>
+      <role name="Contributor"/>
+    </permission>
+
 
   </permissions>
 </rolemap>

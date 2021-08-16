@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="imio.smartweb">
+
+  <browser:page
+      name="view"
+      for="imio.news.core.contents.INewsItem"
+      template="view.pt"
+      class="imio.news.core.contents.newsitem.views.View"
+      permission="zope2.View"
+      layer="imio.news.core.interfaces.IImioNewsCoreLayer"
+      />
+
+</configure>

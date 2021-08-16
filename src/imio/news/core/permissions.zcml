@@ -1,12 +1,31 @@
 <configure
   xmlns="http://namespaces.zope.org/zope"
   xmlns:zcml="http://namespaces.zope.org/zcml"
-  i18n_domain="plone">
+  i18n_domain="imio.smartweb">
 
-  <configure zcml:condition="installed AccessControl.security">
-  <!-- -*- extra stuff goes here -*- -->
+  <permission
+      id="imio.news.core.AddAgenda"
+      title="imio.news.core: Add Agenda"
+  />
 
+  <permission
+    id="imio.news.core.AddEntity"
+    title="imio.news.core: Add Entity"
+  />
 
-  </configure>
+  <permission
+      id="imio.news.core.AddNewsItem"
+      title="imio.news.core: Add NewsItem"
+  />
+
+  <permission
+      id="imio.news.core.AddFolder"
+      title="imio.news.core: Add Folder"
+  />
+
+  <permission
+      id="imio.news.core.AddPage"
+      title="imio.news.core: Add Page"
+  />
 
 </configure>
