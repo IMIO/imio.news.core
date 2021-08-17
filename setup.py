@@ -49,6 +49,7 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "setuptools",
+        "embeddify",
         "z3c.jbot",
         "plone.api>=1.8.4",
         "plone.restapi",
