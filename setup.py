@@ -55,6 +55,7 @@ setup(
         "plone.app.dexterity",
         "collective.taxonomy",
         "eea.facetednavigation",
+        "embeddify",
         "imio.smartweb.common",
         "imio.smartweb.locales",
     ],
