@@ -6,7 +6,6 @@ from zope.interface import implementer
 import os
 
 
-
 @implementer(INonInstallable)
 class HiddenProfiles(object):
     def getNonInstallableProfiles(self):
