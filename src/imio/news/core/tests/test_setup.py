@@ -20,14 +20,14 @@ class TestSetup(unittest.TestCase):
 
     def test_product_installed(self):
         """Test if imio.news.core is installed."""
-        self.assertTrue(self.installer.isProductInstalled("imio.news.core"))
+        self.assertTrue(self.installer.is_product_installed("imio.news.core"))
 
     def test_browserlayer(self):
         """Test that IImioEventsCoreLayer is registered."""
-        from imio.news.core.interfaces import IImioEventsCoreLayer
+        from imio.news.core.interfaces import IImioNewsCoreLayer
         from plone.browserlayer import utils
 
-        self.assertIn(IImioEventsCoreLayer, utils.registered_layers())
+        self.assertIn(IImioNewsCoreLayer, utils.registered_layers())
 
 
 class TestUninstall(unittest.TestCase):
@@ -39,16 +39,16 @@ class TestUninstall(unittest.TestCase):
         self.installer = get_installer(self.portal, self.layer["request"])
         roles_before = api.user.get_roles(TEST_USER_ID)
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
-        self.installer.uninstall_product(["imio.news.core"])
+        self.installer.uninstall_product("imio.news.core")
         setRoles(self.portal, TEST_USER_ID, roles_before)
 
     def test_product_uninstalled(self):
         """Test if imio.news.core is cleanly uninstalled."""
-        self.assertFalse(self.installer.isProductInstalled("imio.news.core"))
+        self.assertFalse(self.installer.is_product_installed("imio.news.core"))
 
     def test_browserlayer_removed(self):
         """Test that IImioEventsCoreLayer is removed."""
-        from imio.news.core.interfaces import IImioEventsCoreLayer
+        from imio.news.core.interfaces import IImioNewsCoreLayer
         from plone.browserlayer import utils
 
-        self.assertNotIn(IImioEventsCoreLayer, utils.registered_layers())
+        self.assertNotIn(IImioNewsCoreLayer, utils.registered_layers())
