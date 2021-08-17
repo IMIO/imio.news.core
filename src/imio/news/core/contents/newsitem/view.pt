@@ -33,7 +33,7 @@
           <span itemprop="instagram" class="instagram"><a href="" tal:attributes="href context/instagram" tal:content="context/instagram">Instagram</a></span></li>
     </ul>
 
-    <div class="" tal:content="structure view/get_embed_video" />
+    <div class="" tal:condition="context/video_url" tal:content="structure view/get_embed_video" />
 
     <div tal:define="images view/images;
                      thumb_scale string:preview"
