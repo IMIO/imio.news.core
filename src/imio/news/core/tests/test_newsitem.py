@@ -84,7 +84,8 @@ class ContactFunctionalTest(unittest.TestCase):
         embedded_video = view.get_embed_video()
         self.assertIn("iframe", embedded_video)
         self.assertIn(
-            "https://www.youtube.com/embed/_dOAthafoGQ?feature=oembed", embedded_video)
+            "https://www.youtube.com/embed/_dOAthafoGQ?feature=oembed", embedded_video
+        )
 
     def test_has_leadimage(self):
         newsitem = api.content.create(
@@ -98,8 +99,3 @@ class ContactFunctionalTest(unittest.TestCase):
             "ploneLeadImage", filename=get_leadimage_filename()
         )
         self.assertEqual(view.has_leadimage(), True)
-
-
-
-
-

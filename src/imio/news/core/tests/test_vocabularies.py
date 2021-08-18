@@ -15,8 +15,6 @@ class TestVocabularies(unittest.TestCase):
         self.portal = self.layer["portal"]
 
     def test_news_categories(self):
-        factory = getUtility(
-            IVocabularyFactory, "imio.news.vocabulary.NewsCategories"
-        )
+        factory = getUtility(IVocabularyFactory, "imio.news.vocabulary.NewsCategories")
         vocabulary = factory()
         self.assertEqual(len(vocabulary), 4)
