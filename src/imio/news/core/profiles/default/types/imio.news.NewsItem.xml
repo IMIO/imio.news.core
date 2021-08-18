@@ -7,7 +7,7 @@
   <!-- Basic properties -->
   <property
       i18n:translate=""
-      name="title">News</property>
+      name="title">NewsItem</property>
   <property
       i18n:translate=""
       name="description">Folderish news content type</property>
