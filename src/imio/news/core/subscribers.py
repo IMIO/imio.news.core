@@ -9,3 +9,7 @@ def added_agenda(obj, event):
         os.path.dirname(__file__)
     )
     configure_faceted(obj, faceted_config_path)
+
+
+def added_entity(obj, event):
+    added_agenda(obj, event)

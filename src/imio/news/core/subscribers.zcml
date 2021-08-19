@@ -5,4 +5,8 @@
                    zope.lifecycleevent.interfaces.IObjectAddedEvent"
               handler=".subscribers.added_agenda" />
 
+  <subscriber for="imio.news.core.contents.IEntity
+                 zope.lifecycleevent.interfaces.IObjectAddedEvent"
+            handler=".subscribers.added_entity" />
+
 </configure>
