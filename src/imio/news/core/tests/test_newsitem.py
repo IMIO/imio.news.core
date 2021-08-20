@@ -8,7 +8,6 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.namedfile.file import NamedBlobFile
-from plone.uuid.interfaces import IUUID
 from zope.component import createObject
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility

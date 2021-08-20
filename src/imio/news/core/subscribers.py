@@ -5,9 +5,7 @@ import os
 
 
 def added_agenda(obj, event):
-    faceted_config_path = "{}/faceted/config/news.xml".format(
-        os.path.dirname(__file__)
-    )
+    faceted_config_path = "{}/faceted/config/news.xml".format(os.path.dirname(__file__))
     configure_faceted(obj, faceted_config_path)
 
 

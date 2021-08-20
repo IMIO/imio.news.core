@@ -1,31 +1,30 @@
 <configure
-  xmlns="http://namespaces.zope.org/zope"
-  xmlns:zcml="http://namespaces.zope.org/zcml"
-  i18n_domain="imio.smartweb">
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="imio.smartweb">
 
   <permission
       id="imio.news.core.AddAgenda"
       title="imio.news.core: Add Agenda"
-  />
+      />
 
   <permission
-    id="imio.news.core.AddEntity"
-    title="imio.news.core: Add Entity"
-  />
+      id="imio.news.core.AddEntity"
+      title="imio.news.core: Add Entity"
+      />
 
   <permission
       id="imio.news.core.AddNewsItem"
       title="imio.news.core: Add NewsItem"
-  />
+      />
 
   <permission
       id="imio.news.core.AddFolder"
       title="imio.news.core: Add Folder"
-  />
+      />
 
   <permission
       id="imio.news.core.AddPage"
       title="imio.news.core: Add Page"
-  />
+      />
 
 </configure>

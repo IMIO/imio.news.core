@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from plone.dexterity.content import Container
 from plone.supermodel import model

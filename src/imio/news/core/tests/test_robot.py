@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from imio.news.core.testing import IMIO_NEWS_CORE_ACCEPTANCE_TESTING  # noqa: E501
 from plone.app.testing import ROBOT_TEST_LEVEL
 from plone.testing import layered
