@@ -9,6 +9,7 @@ from plone.app.testing import (
 )
 from plone.api import portal as portal_api
 from plone.testing import z2
+from zope.globalrequest import setRequest
 
 import imio.news.core
 import mock
@@ -28,6 +29,9 @@ class ImioNewsCoreLayer(PloneSandboxLayer):
         self.loadZCML(package=imio.news.core)
 
     def setUpPloneSite(self, portal):
+        request = portal.REQUEST
+        # set basic request to be able to handle redirect in subscribers
+        setRequest(request)
         portal_api.get_current_language = mock.Mock(return_value="fr")
         applyProfile(portal, "imio.news.core:default")
 
