@@ -18,3 +18,11 @@ class TestVocabularies(unittest.TestCase):
         factory = getUtility(IVocabularyFactory, "imio.news.vocabulary.NewsCategories")
         vocabulary = factory()
         self.assertEqual(len(vocabulary), 4)
+
+    def test_news_categories_topics(self):
+        factory = getUtility(
+            IVocabularyFactory,
+            "imio.news.vocabulary.NewsCategoriesAndTopicsVocabulary",
+        )
+        vocabulary = factory()
+        self.assertEqual(len(vocabulary), 20)

@@ -6,7 +6,8 @@ from imio.news.core.contents import IEntity
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
-
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
 
 class NewsCategoriesVocabularyFactory:
     def __call__(self, context=None):
@@ -37,3 +38,38 @@ class NewsLocalCategoriesVocabularyFactory:
 
 
 NewsLocalCategoriesVocabulary = NewsLocalCategoriesVocabularyFactory()
+
+
+class NewsCategoriesAndTopicsVocabularyFactory:
+    def __call__(self, context=None):
+        events_categories_factory = getUtility(
+            IVocabularyFactory, "imio.news.vocabulary.NewsCategories"
+        )
+        topics_factory = getUtility(
+            IVocabularyFactory, "imio.smartweb.vocabulary.Topics"
+        )
+
+        terms = []
+
+        for term in events_categories_factory():
+            terms.append(
+                SimpleTerm(
+                    value=term.value,
+                    token=term.token,
+                    title=_("Category : ") + term.title,
+                )
+            )
+
+        for term in topics_factory():
+            terms.append(
+                SimpleTerm(
+                    value=term.value,
+                    token=term.token,
+                    title=_("Topics : ") + term.title,
+                )
+            )
+
+        return SimpleVocabulary(terms)
+
+
+NewsCategoriesAndTopicsVocabulary = NewsCategoriesAndTopicsVocabularyFactory()
