@@ -1,9 +1,9 @@
 <configure
     xmlns="http://namespaces.zope.org/zope">
 
-  <subscriber for="imio.news.core.contents.IAgenda
+  <subscriber for="imio.news.core.contents.INewsFolder
                    zope.lifecycleevent.interfaces.IObjectAddedEvent"
-              handler=".subscribers.added_agenda" />
+              handler=".subscribers.added_newsfolder" />
 
   <subscriber for="imio.news.core.contents.IEntity
                  zope.lifecycleevent.interfaces.IObjectAddedEvent"

@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <object xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    name="imio.news.Agenda"
+    name="imio.news.NewsFolder"
     meta_type="Dexterity FTI"
     i18n:domain="imio.smartweb">
 
   <!-- Basic properties -->
   <property
       i18n:translate=""
-      name="title">Agenda</property>
+      name="title">News folder</property>
   <property
       i18n:translate=""
-      name="description">Entity agenda folderish content type</property>
+      name="description">Entity news folderish content type</property>
 
   <property name="icon_expr"></property>
 
@@ -23,9 +23,9 @@
   </property>
 
   <!-- Schema, class and security -->
-  <property name="add_permission">imio.news.core.AddAgenda</property>
-  <property name="klass">imio.news.core.contents.Agenda</property>
-  <property name="schema">imio.news.core.contents.IAgenda</property>
+  <property name="add_permission">imio.news.core.AddNewsFolder</property>
+  <property name="klass">imio.news.core.contents.NewsFolder</property>
+  <property name="schema">imio.news.core.contents.INewsFolder</property>
 
   <!-- Enabled behaviors -->
   <property name="behaviors" purge="false">

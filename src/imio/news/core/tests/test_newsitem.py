@@ -37,10 +37,10 @@ class ContactFunctionalTest(unittest.TestCase):
             type="imio.news.Entity",
             title="Entity",
         )
-        self.agenda = api.content.create(
+        self.newsfolder = api.content.create(
             container=self.entity,
-            type="imio.news.Agenda",
-            title="Agenda",
+            type="imio.news.NewsFolder",
+            title="News folder",
         )
 
     def test_ct_newsitem_schema(self):
@@ -64,8 +64,9 @@ class ContactFunctionalTest(unittest.TestCase):
             ),
         )
 
+    def test_view(self):
         newsitem = api.content.create(
-            container=self.agenda,
+            container=self.newsfolder,
             type="imio.news.NewsItem",
             title="My news item",
         )
@@ -74,7 +75,7 @@ class ContactFunctionalTest(unittest.TestCase):
 
     def test_embed_video(self):
         newsitem = api.content.create(
-            container=self.agenda,
+            container=self.newsfolder,
             type="imio.news.NewsItem",
             title="My news item",
         )
@@ -88,7 +89,7 @@ class ContactFunctionalTest(unittest.TestCase):
 
     def test_has_leadimage(self):
         newsitem = api.content.create(
-            container=self.agenda,
+            container=self.newsfolder,
             type="imio.news.NewsItem",
             title="My news item",
         )

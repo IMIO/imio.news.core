@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<object name="agenda_faceted" meta_type="Dexterity Container">
+<object name="newsfolder_faceted" meta_type="Dexterity Container">
  <criteria>
   <criterion name="c2">
    <property name="widget">select</property>

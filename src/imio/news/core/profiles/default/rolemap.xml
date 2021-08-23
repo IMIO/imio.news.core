@@ -6,7 +6,7 @@
       <role name="Manager"/>
     </permission>
 
-    <permission name="imio.news.core: Add Agenda" acquire="True">
+    <permission name="imio.news.core: Add NewsFolder" acquire="True">
       <role name="Manager"/>
       <role name="Site Administrator"/>
       <role name="Owner"/>

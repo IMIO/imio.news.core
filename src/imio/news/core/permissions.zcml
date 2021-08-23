@@ -3,9 +3,9 @@
     i18n_domain="imio.smartweb">
 
   <permission
-      id="imio.news.core.AddAgenda"
-      title="imio.news.core: Add Agenda"
-      />
+      id="imio.news.core.AddNewsFolder"
+      title="imio.news.core: Add NewsFolder"
+  />
 
   <permission
       id="imio.news.core.AddEntity"
