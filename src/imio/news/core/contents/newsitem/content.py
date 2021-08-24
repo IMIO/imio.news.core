@@ -40,13 +40,22 @@ class INewsItem(model.Schema):
         required=False,
     )
 
-    model.fieldset("categorization", fields=["category"])
+    model.fieldset("categorization", fields=["category", "local_category"])
     category = schema.Choice(
         title=_(u"Category"),
         description=_(
             u"Important! These categories are used to supplement the information provided by the topics"
         ),
         source="imio.news.vocabulary.NewsCategories",
+        required=False,
+    )
+
+    local_category = schema.Choice(
+        title=_(u"Specific category"),
+        description=_(
+            u"Important! These categories allow you to use criteria that are specific to your organization"
+        ),
+        source="imio.news.vocabulary.NewsLocalCategories",
         required=False,
     )
 

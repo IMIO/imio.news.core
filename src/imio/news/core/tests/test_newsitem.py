@@ -9,8 +9,10 @@ from plone.app.testing import TEST_USER_ID
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.namedfile.file import NamedBlobFile
 from zope.component import createObject
+from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
+from zope.schema.interfaces import IVocabularyFactory
 
 import unittest
 
@@ -63,6 +65,22 @@ class ContactFunctionalTest(unittest.TestCase):
                 obj,
             ),
         )
+
+    def test_news_local_category(self):
+        news = api.content.create(
+            container=self.newsfolder,
+            type="imio.news.NewsItem",
+            id="my-news",
+        )
+        factory = getUtility(
+            IVocabularyFactory, "imio.news.vocabulary.NewsLocalCategories"
+        )
+        vocabulary = factory(news)
+        self.assertEqual(len(vocabulary), 0)
+
+        self.entity.local_categories = "First\nSecond\nThird"
+        vocabulary = factory(news)
+        self.assertEqual(len(vocabulary), 3)
 
     def test_view(self):
         newsitem = api.content.create(
