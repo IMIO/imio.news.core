@@ -9,6 +9,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 from zope.component import getUtility
 from zope.schema.interfaces import IVocabularyFactory
 
+
 class NewsCategoriesVocabularyFactory:
     def __call__(self, context=None):
         values = [
