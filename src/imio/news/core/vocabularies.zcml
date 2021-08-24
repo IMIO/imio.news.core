@@ -15,7 +15,7 @@
 
   <utility
     name="imio.news.vocabulary.NewsCategoriesAndTopicsVocabulary"
-    component=".vocabularies.EventsCategoriesAndTopicsVocabulary"
+    component=".vocabularies.NewsCategoriesAndTopicsVocabulary"
     provides="zope.schema.interfaces.IVocabularyFactory"
     />
 
