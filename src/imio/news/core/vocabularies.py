@@ -14,7 +14,7 @@ class NewsCategoriesVocabularyFactory:
             (u"job_offer", _(u"Job offer")),
             (u"presse", _(u"Presse")),
             (u"city_project", _(u"City project")),
-            (u"works", _(u"Works")),                        
+            (u"works", _(u"Works")),
         ]
         terms = [SimpleTerm(value=t[0], token=t[0], title=t[1]) for t in values]
         return SimpleVocabulary(terms)
