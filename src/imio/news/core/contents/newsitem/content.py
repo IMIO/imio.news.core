@@ -17,8 +17,8 @@ class INewsItem(model.Schema):
     )
 
     site_url = schema.URI(
-        title=_(u"Site"),
-        description=_(u"NewsItem site url"),
+        title=_(u"Website"),
+        description=_(u"NewsItem website url"),
         required=False,
     )
 
@@ -36,7 +36,7 @@ class INewsItem(model.Schema):
 
     instagram = schema.URI(
         title=_(u"Instagram"),
-        description=_(u"Instgram url for this news"),
+        description=_(u"Instagram url for this news"),
         required=False,
     )
 
