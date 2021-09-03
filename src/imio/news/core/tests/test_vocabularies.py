@@ -28,7 +28,7 @@ class TestVocabularies(unittest.TestCase):
             container=self.portal,
             type="imio.news.Entity",
             title="Entity",
-            local_categories="Foo\r\nbaz\r\nbar"
+            local_categories="Foo\r\nbaz\r\nbar",
         )
         newsfolder = api.content.create(
             container=entity,
@@ -37,9 +37,7 @@ class TestVocabularies(unittest.TestCase):
         )
 
         news_item = api.content.create(
-            container=newsfolder,
-            type="imio.news.NewsItem",
-            title="title"
+            container=newsfolder, type="imio.news.NewsItem", title="title"
         )
         factory = getUtility(
             IVocabularyFactory,
@@ -54,7 +52,7 @@ class TestVocabularies(unittest.TestCase):
             container=self.portal,
             type="imio.news.Entity",
             title="Entity",
-            local_categories="Foo\r\nbaz\r\nbar"
+            local_categories="Foo\r\nbaz\r\nbar",
         )
         newsfolder = api.content.create(
             container=entity,
@@ -63,9 +61,7 @@ class TestVocabularies(unittest.TestCase):
         )
 
         news_item = api.content.create(
-            container=newsfolder,
-            type="imio.news.NewsItem",
-            title="title"
+            container=newsfolder, type="imio.news.NewsItem", title="title"
         )
 
         factory = getUtility(
