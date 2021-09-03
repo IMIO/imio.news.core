@@ -51,7 +51,7 @@ class TestIndexer(unittest.TestCase):
             id="imio.news.NewsItem",
         )
         search_result = self._search_all_from_vocabulary(
-            "imio.news.vocabulary.newsCategoriesAndTopicsVocabulary",
+            "imio.news.vocabulary.NewsCategoriesAndTopicsVocabulary",
             self.agenda,
             self.portal_catalog,
         )
@@ -78,7 +78,7 @@ class TestIndexer(unittest.TestCase):
         )
 
         search_result = self._search_all_from_vocabulary(
-            "imio.news.vocabulary.newsCategoriesAndTopicsVocabulary",
+            "imio.news.vocabulary.NewsCategoriesAndTopicsVocabulary",
             self.agenda,
             self.portal_catalog,
         )

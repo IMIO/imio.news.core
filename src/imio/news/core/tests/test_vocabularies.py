@@ -28,7 +28,7 @@ class TestVocabularies(unittest.TestCase):
             container=self.portal,
             type="imio.news.Entity",
             title="Entity",
-            local_categories="Foo\r\nbaz\r\nbar",
+            local_categories="",
         )
         newsfolder = api.content.create(
             container=entity,
