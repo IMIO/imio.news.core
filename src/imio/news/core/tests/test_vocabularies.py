@@ -44,7 +44,7 @@ class TestVocabularies(unittest.TestCase):
             "imio.news.vocabulary.NewsCategoriesAndTopicsVocabulary",
         )
         vocabulary = factory(news_item)
-        self.assertEqual(len(vocabulary), 21) #must be updated if add new vocabulary
+        self.assertEqual(len(vocabulary), 21)  # must be updated if add new vocabulary
 
     def test_news_categories_topics_local_cat(self):
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
@@ -69,4 +69,4 @@ class TestVocabularies(unittest.TestCase):
             "imio.news.vocabulary.NewsCategoriesAndTopicsVocabulary",
         )
         vocabulary = factory(news_item)
-        self.assertEqual(len(vocabulary), 24) #must be updated if add new vocabulary
+        self.assertEqual(len(vocabulary), 24)  # must be updated if add new vocabulary
