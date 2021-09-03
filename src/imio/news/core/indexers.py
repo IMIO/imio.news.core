@@ -8,6 +8,9 @@ def category_and_topics_indexer(obj):
     if obj.topics is not None:
         list = obj.topics
 
-    list.append(obj.category)
+    if obj.category is not None:
+        list.append(obj.category)
 
+    if obj.local_categories is not None:
+        list.append(obj.local_category)
     return list

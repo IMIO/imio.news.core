@@ -33,7 +33,7 @@ class NewsLocalCategoriesVocabularyFactory:
         if not obj.local_categories:
             return SimpleVocabulary([])
 
-        values = obj.local_categories.split("\n")
+        values = obj.local_categories.splitlines()
         terms = [SimpleTerm(value=t, token=t, title=t) for t in values]
         return SimpleVocabulary(terms)
 
@@ -43,16 +43,21 @@ NewsLocalCategoriesVocabulary = NewsLocalCategoriesVocabularyFactory()
 
 class NewsCategoriesAndTopicsVocabularyFactory:
     def __call__(self, context=None):
-        events_categories_factory = getUtility(
+        news_categories_factory = getUtility(
             IVocabularyFactory, "imio.news.vocabulary.NewsCategories"
         )
+
+        news_local_categories_factory = getUtility(
+            IVocabularyFactory, "imio.news.vocabulary.NewsLocalCategories"
+        )
+
         topics_factory = getUtility(
             IVocabularyFactory, "imio.smartweb.vocabulary.Topics"
         )
 
         terms = []
 
-        for term in events_categories_factory():
+        for term in news_categories_factory(context):
             terms.append(
                 SimpleTerm(
                     value=term.value,
@@ -61,7 +66,16 @@ class NewsCategoriesAndTopicsVocabularyFactory:
                 )
             )
 
-        for term in topics_factory():
+        for term in news_local_categories_factory(context):
+            terms.append(
+                SimpleTerm(
+                    value=term.value,
+                    token=term.token,
+                    title=_("Category : ") + term.title,
+                )
+            )
+
+        for term in topics_factory(context):
             terms.append(
                 SimpleTerm(
                     value=term.value,
@@ -69,7 +83,6 @@ class NewsCategoriesAndTopicsVocabularyFactory:
                     title=_("Topics : ") + term.title,
                 )
             )
-
         return SimpleVocabulary(terms)
 
 
