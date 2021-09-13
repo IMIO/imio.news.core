@@ -62,7 +62,7 @@ class NewsCategoriesAndTopicsVocabularyFactory:
                 SimpleTerm(
                     value=term.value,
                     token=term.token,
-                    title=_("Category : ") + term.title,
+                    title=term.title,
                 )
             )
 
@@ -71,7 +71,7 @@ class NewsCategoriesAndTopicsVocabularyFactory:
                 SimpleTerm(
                     value=term.value,
                     token=term.token,
-                    title=_("Category : ") + term.title,
+                    title=term.title,
                 )
             )
 
@@ -80,7 +80,7 @@ class NewsCategoriesAndTopicsVocabularyFactory:
                 SimpleTerm(
                     value=term.value,
                     token=term.token,
-                    title=_("Topics : ") + term.title,
+                    title=term.title,
                 )
             )
         return SimpleVocabulary(terms)
