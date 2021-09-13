@@ -6,6 +6,8 @@ from imio.news.core.contents import IEntity
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
 
 
 class NewsCategoriesVocabularyFactory:
@@ -31,9 +33,57 @@ class NewsLocalCategoriesVocabularyFactory:
         if not obj.local_categories:
             return SimpleVocabulary([])
 
-        values = obj.local_categories.split("\n")
+        values = obj.local_categories.splitlines()
         terms = [SimpleTerm(value=t, token=t, title=t) for t in values]
         return SimpleVocabulary(terms)
 
 
 NewsLocalCategoriesVocabulary = NewsLocalCategoriesVocabularyFactory()
+
+
+class NewsCategoriesAndTopicsVocabularyFactory:
+    def __call__(self, context=None):
+        news_categories_factory = getUtility(
+            IVocabularyFactory, "imio.news.vocabulary.NewsCategories"
+        )
+
+        news_local_categories_factory = getUtility(
+            IVocabularyFactory, "imio.news.vocabulary.NewsLocalCategories"
+        )
+
+        topics_factory = getUtility(
+            IVocabularyFactory, "imio.smartweb.vocabulary.Topics"
+        )
+
+        terms = []
+
+        for term in news_categories_factory(context):
+            terms.append(
+                SimpleTerm(
+                    value=term.value,
+                    token=term.token,
+                    title=term.title,
+                )
+            )
+
+        for term in news_local_categories_factory(context):
+            terms.append(
+                SimpleTerm(
+                    value=term.value,
+                    token=term.token,
+                    title=term.title,
+                )
+            )
+
+        for term in topics_factory(context):
+            terms.append(
+                SimpleTerm(
+                    value=term.value,
+                    token=term.token,
+                    title=term.title,
+                )
+            )
+        return SimpleVocabulary(terms)
+
+
+NewsCategoriesAndTopicsVocabulary = NewsCategoriesAndTopicsVocabularyFactory()

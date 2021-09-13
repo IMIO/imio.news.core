@@ -6,4 +6,9 @@
   </index>
   <column value="category"/>
 
+  <index name="category_and_topics" meta_type="KeywordIndex">
+    <indexed_attr value="category_and_topics"/>
+  </index>
+  <column value="category_and_topics"/>
+  
 </object>
