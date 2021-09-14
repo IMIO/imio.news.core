@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from imio.smartweb.locales import SmartwebMessageFactory as _
+from plone.app.z3cform.widget import SelectFieldWidget
+from plone.autoform import directives
+from plone.autoform.directives import read_permission
+from plone.autoform.directives import write_permission
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from zope import schema
@@ -40,7 +44,20 @@ class INewsItem(model.Schema):
         required=False,
     )
 
-    model.fieldset("categorization", fields=["category", "local_category"])
+    model.fieldset(
+        "categorization", fields=["selected_news_folders", "category", "local_category"]
+    )
+    directives.widget(selected_news_folders=SelectFieldWidget)
+    selected_news_folders = schema.List(
+        title=_(u"Selected news folders"),
+        description=_(
+            u"Select news folders where this news item will be displayed. Current news folder is always selected."
+        ),
+        value_type=schema.Choice(vocabulary="imio.news.vocabulary.NewsFoldersUIDs"),
+        default=[],
+        required=False,
+    )
+
     category = schema.Choice(
         title=_(u"Category"),
         description=_(
@@ -58,6 +75,9 @@ class INewsItem(model.Schema):
         source="imio.news.vocabulary.NewsLocalCategories",
         required=False,
     )
+
+    read_permission(selected_news_folders="imio.news.core.AddEntity")
+    write_permission(selected_news_folders="imio.news.core.AddEntity")
 
 
 @implementer(INewsItem)

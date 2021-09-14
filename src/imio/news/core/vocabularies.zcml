@@ -19,5 +19,11 @@
     provides="zope.schema.interfaces.IVocabularyFactory"
     />
 
+    <utility
+      name="imio.news.vocabulary.NewsFoldersUIDs"
+      component=".vocabularies.NewsFoldersUIDsVocabulary"
+      provides="zope.schema.interfaces.IVocabularyFactory"
+      />
+
 
 </configure>

@@ -1,12 +1,20 @@
 <configure
     xmlns="http://namespaces.zope.org/zope">
 
+  <subscriber for="imio.news.core.contents.IEntity
+                   zope.lifecycleevent.interfaces.IObjectAddedEvent"
+              handler=".subscribers.added_entity" />
+
   <subscriber for="imio.news.core.contents.INewsFolder
                    zope.lifecycleevent.interfaces.IObjectAddedEvent"
-              handler=".subscribers.added_newsfolder" />
+              handler=".subscribers.added_news_folder" />
 
-  <subscriber for="imio.news.core.contents.IEntity
-                 zope.lifecycleevent.interfaces.IObjectAddedEvent"
-            handler=".subscribers.added_entity" />
+  <subscriber for="imio.news.core.contents.INewsItem
+                   zope.lifecycleevent.interfaces.IObjectAddedEvent"
+              handler=".subscribers.added_news_item" />
+
+  <subscriber for="imio.news.core.contents.INewsItem
+                   zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+              handler=".subscribers.modified_news_item" />
 
 </configure>
