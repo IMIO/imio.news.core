@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from imio.news.core.testing import IMIO_NEWS_CORE_INTEGRATION_TESTING
-from zope.component import getUtility
-from zope.schema.interfaces import IVocabularyFactory
 from plone import api
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
 
 import unittest
 

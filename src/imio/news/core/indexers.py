@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from plone.indexer import indexer
 from imio.news.core.contents.newsitem.content import INewsItem
+from plone.indexer import indexer
 
 
 @indexer(INewsItem)

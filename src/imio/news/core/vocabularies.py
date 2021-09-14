@@ -4,9 +4,9 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from imio.news.core.contents import IEntity
 from imio.smartweb.locales import SmartwebMessageFactory as _
+from zope.component import getUtility
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
-from zope.component import getUtility
 from zope.schema.interfaces import IVocabularyFactory
 
 
