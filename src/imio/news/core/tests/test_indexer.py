@@ -25,7 +25,7 @@ class TestIndexer(unittest.TestCase):
             id="imio.news.Entity",
             local_categories="Foo\r\nbaz\r\nbar",
         )
-        self.agenda = api.content.create(
+        self.news_folder = api.content.create(
             container=self.entity,
             type="imio.news.NewsFolder",
             id="imio.news.NewsFolder",
@@ -48,13 +48,13 @@ class TestIndexer(unittest.TestCase):
 
     def test_news_with_nothing(self):
         api.content.create(
-            container=self.agenda,
+            container=self.news_folder,
             type="imio.news.NewsItem",
             id="imio.news.NewsItem",
         )
         search_result = self._search_all_from_vocabulary(
             "imio.news.vocabulary.NewsCategoriesAndTopicsVocabulary",
-            self.agenda,
+            self.news_folder,
             self.portal_catalog,
         )
 
@@ -62,7 +62,7 @@ class TestIndexer(unittest.TestCase):
 
     def test_news_with_one_of_each(self):
         api.content.create(
-            container=self.agenda,
+            container=self.news_folder,
             type="imio.news.NewsItem",
             id="id_news",
             category=u"works",
@@ -71,7 +71,7 @@ class TestIndexer(unittest.TestCase):
         )
 
         api.content.create(
-            container=self.agenda,
+            container=self.news_folder,
             type="imio.news.NewsItem",
             id="id_news2",
             category=u"presse",
@@ -81,7 +81,7 @@ class TestIndexer(unittest.TestCase):
 
         search_result = self._search_all_from_vocabulary(
             "imio.news.vocabulary.NewsCategoriesAndTopicsVocabulary",
-            self.agenda,
+            self.news_folder,
             self.portal_catalog,
         )
 

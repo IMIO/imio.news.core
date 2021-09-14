@@ -17,7 +17,7 @@ from zope.schema.interfaces import IVocabularyFactory
 import unittest
 
 
-class ContactFunctionalTest(unittest.TestCase):
+class TestNewsItem(unittest.TestCase):
 
     layer = IMIO_NEWS_CORE_FUNCTIONAL_TESTING
 
@@ -39,7 +39,7 @@ class ContactFunctionalTest(unittest.TestCase):
             type="imio.news.Entity",
             title="Entity",
         )
-        self.newsfolder = api.content.create(
+        self.news_folder = api.content.create(
             container=self.entity,
             type="imio.news.NewsFolder",
             title="News folder",
@@ -68,7 +68,7 @@ class ContactFunctionalTest(unittest.TestCase):
 
     def test_news_local_category(self):
         news = api.content.create(
-            container=self.newsfolder,
+            container=self.news_folder,
             type="imio.news.NewsItem",
             id="my-news",
         )
@@ -84,7 +84,7 @@ class ContactFunctionalTest(unittest.TestCase):
 
     def test_view(self):
         newsitem = api.content.create(
-            container=self.newsfolder,
+            container=self.news_folder,
             type="imio.news.NewsItem",
             title="My news item",
         )
@@ -93,7 +93,7 @@ class ContactFunctionalTest(unittest.TestCase):
 
     def test_embed_video(self):
         newsitem = api.content.create(
-            container=self.newsfolder,
+            container=self.news_folder,
             type="imio.news.NewsItem",
             title="My news item",
         )
@@ -107,7 +107,7 @@ class ContactFunctionalTest(unittest.TestCase):
 
     def test_has_leadimage(self):
         newsitem = api.content.create(
-            container=self.newsfolder,
+            container=self.news_folder,
             type="imio.news.NewsItem",
             title="My news item",
         )

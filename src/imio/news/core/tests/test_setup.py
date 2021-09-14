@@ -23,7 +23,7 @@ class TestSetup(unittest.TestCase):
         self.assertTrue(self.installer.is_product_installed("imio.news.core"))
 
     def test_browserlayer(self):
-        """Test that IImioEventsCoreLayer is registered."""
+        """Test that IImioNewsCoreLayer is registered."""
         from imio.news.core.interfaces import IImioNewsCoreLayer
         from plone.browserlayer import utils
 
@@ -47,7 +47,7 @@ class TestUninstall(unittest.TestCase):
         self.assertFalse(self.installer.is_product_installed("imio.news.core"))
 
     def test_browserlayer_removed(self):
-        """Test that IImioEventsCoreLayer is removed."""
+        """Test that IImioNewsCoreLayer is removed."""
         from imio.news.core.interfaces import IImioNewsCoreLayer
         from plone.browserlayer import utils
 

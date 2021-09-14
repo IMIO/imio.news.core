@@ -19,7 +19,7 @@
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
     <element value="imio.news.Folder" />
-    <element value="imio.news.Event" />
+    <element value="imio.news.NewsItem" />
   </property>
 
   <!-- Schema, class and security -->
