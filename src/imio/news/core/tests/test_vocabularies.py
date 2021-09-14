@@ -16,6 +16,7 @@ class TestVocabularies(unittest.TestCase):
 
     def setUp(self):
         self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
 
     def test_news_categories(self):
         factory = getUtility(IVocabularyFactory, "imio.news.vocabulary.NewsCategories")
@@ -23,7 +24,6 @@ class TestVocabularies(unittest.TestCase):
         self.assertEqual(len(vocabulary), 4)
 
     def test_news_categories_topics_basic(self):
-        setRoles(self.portal, TEST_USER_ID, ["Manager"])
         entity = api.content.create(
             container=self.portal,
             type="imio.news.Entity",
@@ -47,7 +47,6 @@ class TestVocabularies(unittest.TestCase):
         self.assertEqual(len(vocabulary), 21)  # must be updated if add new vocabulary
 
     def test_news_categories_topics_local_cat(self):
-        setRoles(self.portal, TEST_USER_ID, ["Manager"])
         entity = api.content.create(
             container=self.portal,
             type="imio.news.Entity",
