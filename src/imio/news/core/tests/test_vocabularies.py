@@ -111,7 +111,7 @@ class TestVocabularies(unittest.TestCase):
         self.assertEqual(len(vocabulary), 2)
 
         vocabulary = factory(news_item1)
-        self.assertEqual(len(vocabulary), 1)
+        self.assertEqual(len(vocabulary), 2)
 
         vocabulary = factory(news_item2)
         uid = news_folder2.UID()

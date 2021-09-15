@@ -5,7 +5,6 @@ from Acquisition import aq_parent
 from imio.news.core.contents import IEntity
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from plone import api
-from plone.app.layout.navigation.interfaces import INavigationRoot
 from zope.component import getUtility
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
@@ -93,16 +92,9 @@ NewsCategoriesAndTopicsVocabulary = NewsCategoriesAndTopicsVocabularyFactory()
 
 class NewsFoldersUIDsVocabularyFactory:
     def __call__(self, context=None):
-        search_context = api.portal.get()
-        obj = context
-        while not INavigationRoot.providedBy(obj):
-            if IEntity.providedBy(obj):
-                search_context = obj
-                break
-            parent = aq_parent(aq_inner(obj))
-            obj = parent
+        portal = api.portal.get()
         brains = api.content.find(
-            search_context,
+            context=portal,
             portal_type="imio.news.NewsFolder",
             sort_on="sortable_title",
         )
