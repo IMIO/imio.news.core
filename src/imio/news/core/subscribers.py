@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from imio.news.core.utils import get_news_folder_uid_for_news_item
+from imio.news.core.utils import get_news_folder_for_news_item
 from imio.smartweb.common.faceted.utils import configure_faceted
+from plone import api
 import os
-
 
 
 def set_default_news_folder_uid(news_item):

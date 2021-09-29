@@ -9,6 +9,14 @@
                    zope.lifecycleevent.interfaces.IObjectAddedEvent"
               handler=".subscribers.added_news_folder" />
 
+  <subscriber for="imio.news.core.contents.INewsFolder
+                   zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+            handler=".subscribers.modified_newsfolder" />
+
+  <subscriber for="imio.news.core.contents.INewsFolder
+                   zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+              handler=".subscribers.removed_newsfolder" />
+
   <subscriber for="imio.news.core.contents.INewsItem
                    zope.lifecycleevent.interfaces.IObjectAddedEvent"
               handler=".subscribers.added_news_item" />
