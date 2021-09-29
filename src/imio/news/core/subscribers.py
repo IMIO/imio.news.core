@@ -5,9 +5,10 @@ from imio.smartweb.common.faceted.utils import configure_faceted
 import os
 
 
+
 def set_default_news_folder_uid(news_item):
     news_item.selected_news_folders = news_item.selected_news_folders or []
-    uid = get_news_folder_uid_for_news_item(news_item)
+    uid = get_news_folder_for_news_item(news_item).UID()
     if uid not in news_item.selected_news_folders:
         news_item.selected_news_folders = news_item.selected_news_folders + [uid]
         news_item.reindexObject()
@@ -22,13 +23,70 @@ def added_entity(obj, event):
     init_faceted(obj)
 
 
-def added_news_folder(obj, event):
-    init_faceted(obj)
-
-
 def added_news_item(obj, event):
-    set_default_news_folder_uid(obj)
+    container_newsfolder = get_news_folder_for_news_item(obj)
+    set_uid_of_referrer_newsfolders(obj, event, container_newsfolder)
 
 
 def modified_news_item(obj, event):
     set_default_news_folder_uid(obj)
+
+
+def added_news_folder(obj, event):
+    init_faceted(obj)
+
+
+def modified_newsfolder(obj, event):
+    mark_current_newsfolder_in_newss_from_other_newsfolder(obj, event)
+
+
+def removed_newsfolder(obj, event):
+    brains = api.content.find(selected_news_folders=obj.UID())
+    for brain in brains:
+        news = brain.getObject()
+        news.selected_news_folders = [
+            uid for uid in news.selected_news_folders if uid != obj.UID()
+        ]
+
+
+def diff_list(li1, li2):
+    li_dif = [i for i in li1 + li2 if i not in li1 or i not in li2]
+    return li_dif
+
+
+def mark_current_newsfolder_in_newss_from_other_newsfolder(obj, event):
+    newsfolders_to_treat = []
+    for d in event.descriptions:
+        if "populating_newsfolders" in d.attributes:
+            uids_in_current_newsfolder = [
+                rf.to_object.UID() for rf in obj.populating_newsfolders
+            ]
+            newsfolders_to_treat = diff_list(
+                getattr(obj, "old_populating_newsfolders", []),
+                uids_in_current_newsfolder,
+            )
+    for uid_newsfolder in newsfolders_to_treat:
+        newsfolder = api.content.get(UID=uid_newsfolder)
+        for tuple in newsfolder.contentItems():
+            news = tuple[1]
+            if uid_newsfolder in uids_in_current_newsfolder:
+                news.selected_news_folders.append(obj.UID())
+            else:
+                news.selected_news_folders = [
+                    item for item in news.selected_news_folders if item != obj.UID()
+                ]
+            news.reindexObject()
+    # Keep a copy of populating_newsfolders
+    obj.old_populating_newsfolders = [
+        rf.to_object.UID() for rf in obj.populating_newsfolders
+    ]
+    return
+
+
+def set_uid_of_referrer_newsfolders(obj, event, container_newsfolder):
+    obj.selected_news_folders = [container_newsfolder.UID()]
+    brains = api.relation.get(
+        target=container_newsfolder, relationship="populating_newsfolders"
+    )
+    for brain in brains:
+        obj.selected_news_folders.append(brain.__parent__.UID())
