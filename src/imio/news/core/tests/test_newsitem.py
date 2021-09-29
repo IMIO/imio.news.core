@@ -8,10 +8,15 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.namedfile.file import NamedBlobFile
+from z3c.relationfield import RelationValue
+from z3c.relationfield.interfaces import IRelationList
 from zope.component import createObject
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
+from zope.intid.interfaces import IIntIds
+from zope.lifecycleevent import Attributes
+from zope.lifecycleevent import modified
 from zope.schema.interfaces import IVocabularyFactory
 
 import unittest
@@ -171,3 +176,50 @@ class TestNewsItem(unittest.TestCase):
         )
         lst = [brain.UID for brain in brains]
         self.assertEqual(lst, [news_item1.UID(), news_item2.UID()])
+
+    def test_referrer_newsfolders(self):
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        intids = getUtility(IIntIds)
+        entity2 = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            id="entity2",
+        )
+        newsfolder2 = api.content.create(
+            container=entity2,
+            type="imio.news.NewsFolder",
+            id="newsfolder2",
+        )
+        newsitem2 = api.content.create(
+            container=newsfolder2,
+            type="imio.news.NewsItem",
+            id="newsitem2",
+        )
+        setattr(
+            self.news_folder,
+            "populating_newsfolders",
+            [RelationValue(intids.getId(newsfolder2))],
+        )
+        modified(self.news_folder, Attributes(IRelationList, "populating_newsfolders"))
+        self.assertIn(self.news_folder.UID(), newsitem2.selected_news_folders)
+
+        # if we create an newsitem in an newsfolder that is referred in another newsfolder
+        # then, referrer newsfolder UID is in newsitem.selected_news_folders list.
+        newsitem2b = api.content.create(
+            container=newsfolder2,
+            type="imio.news.NewsItem",
+            id="newsitem2b",
+        )
+        self.assertIn(self.news_folder.UID(), newsitem2b.selected_news_folders)
+
+    def test_automaticaly_readd_container_newsfolder_uid(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            id="newsitem",
+        )
+        self.assertIn(self.news_folder.UID(), newsitem.selected_news_folders)
+        newsitem.selected_news_folders = []
+        newsitem.reindexObject()
+        modified(newsitem)
+        self.assertIn(self.news_folder.UID(), newsitem.selected_news_folders)
