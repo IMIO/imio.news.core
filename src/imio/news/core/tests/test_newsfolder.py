@@ -67,7 +67,6 @@ class TestNewsFolder(unittest.TestCase):
         )
 
     def test_ct_newsfolder_adding(self):
-        setRoles(self.portal, TEST_USER_ID, ["Contributor"])
         obj = api.content.create(
             container=self.entity,
             type="imio.news.NewsFolder",
@@ -96,7 +95,6 @@ class TestNewsFolder(unittest.TestCase):
         )
 
     def test_ct_newsfolder_filter_content_type_true(self):
-        setRoles(self.portal, TEST_USER_ID, ["Contributor"])
         fti = queryUtility(IDexterityFTI, name="imio.news.NewsFolder")
         portal_types = self.portal.portal_types
         parent_id = portal_types.constructContent(
@@ -119,7 +117,6 @@ class TestNewsFolder(unittest.TestCase):
                 type=t,
                 title="My {}".format(t),
             )
-        setRoles(self.portal, TEST_USER_ID, ["Manager"])
         with self.assertRaises(InvalidParameterError):
             api.content.create(
                 container=folder,
