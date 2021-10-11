@@ -11,36 +11,12 @@
   <include package=".browser" />
   <include package=".contents" />
 
+  <include file="indexers.zcml" />
   <include file="permissions.zcml" />
+  <include file="profiles.zcml" />
   <include file="subscribers.zcml" />
   <include file="vocabularies.zcml" />
 
   <includeOverrides file="overrides.zcml" />
-
-  <genericsetup:registerProfile
-      name="default"
-      title="imio.news.core"
-      directory="profiles/default"
-      description="Installs the imio.news.core add-on."
-      provides="Products.GenericSetup.interfaces.EXTENSION"
-      post_handler=".setuphandlers.post_install"
-      />
-
-  <genericsetup:registerProfile
-      name="uninstall"
-      title="imio.news.core (uninstall)"
-      directory="profiles/uninstall"
-      description="Uninstalls the imio.news.core add-on."
-      provides="Products.GenericSetup.interfaces.EXTENSION"
-      post_handler=".setuphandlers.uninstall"
-      />
-
-  <utility
-      factory=".setuphandlers.HiddenProfiles"
-      name="imio.news.core-hiddenprofiles"
-      />
-
-  <adapter factory=".indexers.category_and_topics_indexer" name="category_and_topics" />
-
 
 </configure>
