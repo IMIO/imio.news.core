@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from imio.smartweb.locales import SmartwebMessageFactory as _
+from plone.app.content.namechooser import NormalizingNameChooser
 from plone.app.z3cform.widget import SelectFieldWidget
 from plone.autoform import directives
 from plone.autoform.directives import read_permission
@@ -8,6 +9,7 @@ from plone.autoform.directives import write_permission
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from zope import schema
+from zope.container.interfaces import INameChooser
 from zope.interface import implementer
 
 
@@ -83,3 +85,11 @@ class INewsItem(model.Schema):
 @implementer(INewsItem)
 class NewsItem(Container):
     """NewsItem class"""
+
+
+@implementer(INameChooser)
+class NewsItemNameChooser(NormalizingNameChooser):
+    def chooseName(self, name, obj):
+        if INewsItem.providedBy(obj):
+            return obj.UID()
+        return super(NewsItemNameChooser, self).chooseName(name, obj)

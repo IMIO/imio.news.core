@@ -223,3 +223,19 @@ class TestNewsItem(unittest.TestCase):
         newsitem.reindexObject()
         modified(newsitem)
         self.assertIn(self.news_folder.UID(), newsitem.selected_news_folders)
+
+    def test_name_chooser(self):
+        news = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="news",
+        )
+        self.assertEqual(news.id, news.UID())
+
+        entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            title="my-entity",
+        )
+        self.assertNotEqual(entity.id, entity.UID())
+        self.assertEqual(entity.id, "my-entity")
