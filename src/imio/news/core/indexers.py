@@ -3,12 +3,14 @@
 from imio.news.core.contents.newsitem.content import INewsItem
 from plone.indexer import indexer
 
+import copy
+
 
 @indexer(INewsItem)
 def category_and_topics_indexer(obj):
     list = []
     if obj.topics is not None:
-        list = obj.topics
+        list = copy.deepcopy(obj.topics)
 
     if obj.category is not None:
         list.append(obj.category)
