@@ -7,12 +7,16 @@
   <index name="category_and_topics" meta_type="KeywordIndex">
     <indexed_attr value="category_and_topics"/>
   </index>
+  <index name="container_uid" meta_type="FieldIndex">
+    <indexed_attr value="container_uid"/>
+  </index>
   <index name="selected_news_folders" meta_type="KeywordIndex">
     <indexed_attr value="selected_news_folders"/>
   </index>
 
   <column value="category"/>
   <column value="category_and_topics"/>
+  <column value="container_uid"/>
   <column value="selected_news_folders"/>
   
 </object>

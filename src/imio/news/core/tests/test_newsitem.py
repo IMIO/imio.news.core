@@ -131,7 +131,7 @@ class TestNewsItem(unittest.TestCase):
         )
         self.assertEqual(news_item.selected_news_folders, [self.news_folder.UID()])
 
-    def test_index(self):
+    def test_indexes(self):
         news_item1 = api.content.create(
             container=self.news_folder,
             type="imio.news.NewsItem",
@@ -147,6 +147,11 @@ class TestNewsItem(unittest.TestCase):
             type="imio.news.NewsItem",
             title="NewsItem2",
         )
+        catalog = api.portal.get_tool("portal_catalog")
+        brain = api.content.find(UID=news_item1.UID())[0]
+        indexes = catalog.getIndexDataForRID(brain.getRID())
+        self.assertEqual(indexes.get("container_uid"), self.news_folder.UID())
+
         # On va requêter sur self.news_folder et trouver les 2 événements car news_item2 vient de s'ajouter dedans aussi.
         news_item2.selected_news_folders = [self.news_folder.UID()]
         news_item2.reindexObject()
@@ -176,6 +181,11 @@ class TestNewsItem(unittest.TestCase):
         )
         lst = [brain.UID for brain in brains]
         self.assertEqual(lst, [news_item1.UID(), news_item2.UID()])
+
+        api.content.move(news_item1, news_folder2)
+        brain = api.content.find(UID=news_item1.UID())[0]
+        indexes = catalog.getIndexDataForRID(brain.getRID())
+        self.assertEqual(indexes.get("container_uid"), news_folder2.UID())
 
     def test_referrer_newsfolders(self):
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
