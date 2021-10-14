@@ -37,7 +37,7 @@ def added_news_folder(obj, event):
 
 
 def modified_newsfolder(obj, event):
-    mark_current_newsfolder_in_newss_from_other_newsfolder(obj, event)
+    mark_current_newsfolder_in_news_from_other_newsfolder(obj, event)
 
 
 def removed_newsfolder(obj, event):
@@ -49,44 +49,42 @@ def removed_newsfolder(obj, event):
         ]
 
 
-def diff_list(li1, li2):
-    li_dif = [i for i in li1 + li2 if i not in li1 or i not in li2]
-    return li_dif
-
-
-def mark_current_newsfolder_in_newss_from_other_newsfolder(obj, event):
+def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
+    changed = False
     newsfolders_to_treat = []
     for d in event.descriptions:
         if "populating_newsfolders" in d.attributes:
+            changed = True
             uids_in_current_newsfolder = [
                 rf.to_object.UID() for rf in obj.populating_newsfolders
             ]
-            newsfolders_to_treat = diff_list(
-                getattr(obj, "old_populating_newsfolders", []),
-                uids_in_current_newsfolder,
-            )
+            old_uids = getattr(obj, "old_populating_newsfolders", [])
+            newsfolders_to_treat = set(old_uids) ^ set(uids_in_current_newsfolder)
+            break
+    if not changed:
+        return
     for uid_newsfolder in newsfolders_to_treat:
         newsfolder = api.content.get(UID=uid_newsfolder)
-        for tuple in newsfolder.contentItems():
-            news = tuple[1]
+        news_brains = api.content.find(
+            context=newsfolder, portal_type="imio.news.NewsItem"
+        )
+        for brain in news_brains:
+            news = brain.getObject()
             if uid_newsfolder in uids_in_current_newsfolder:
                 news.selected_news_folders.append(obj.UID())
             else:
                 news.selected_news_folders = [
                     item for item in news.selected_news_folders if item != obj.UID()
                 ]
-            news.reindexObject()
+            news.reindexObject(idxs=["selected_news_folders"])
     # Keep a copy of populating_newsfolders
-    obj.old_populating_newsfolders = [
-        rf.to_object.UID() for rf in obj.populating_newsfolders
-    ]
-    return
+    obj.old_populating_newsfolders = uids_in_current_newsfolder
 
 
 def set_uid_of_referrer_newsfolders(obj, event, container_newsfolder):
     obj.selected_news_folders = [container_newsfolder.UID()]
-    brains = api.relation.get(
+    rels = api.relation.get(
         target=container_newsfolder, relationship="populating_newsfolders"
     )
-    for brain in brains:
-        obj.selected_news_folders.append(brain.__parent__.UID())
+    for rel in rels:
+        obj.selected_news_folders.append(rel.from_object.UID())

@@ -156,8 +156,13 @@ class TestNewsFolder(unittest.TestCase):
             type="imio.news.NewsFolder",
             id="newsfolder3",
         )
-        newsitem3 = api.content.create(
+        folder = api.content.create(
             container=newsfolder3,
+            type="imio.news.Folder",
+            id="folder",
+        )
+        newsitem3 = api.content.create(
+            container=folder,
             type="imio.news.NewsItem",
             id="newsitem3",
         )
