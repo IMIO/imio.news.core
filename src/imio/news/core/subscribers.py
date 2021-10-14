@@ -13,7 +13,7 @@ def set_default_news_folder_uid(news_item):
     uid = get_news_folder_for_news_item(news_item).UID()
     if uid not in news_item.selected_news_folders:
         news_item.selected_news_folders = news_item.selected_news_folders + [uid]
-        news_item.reindexObject()
+        news_item.reindexObject(idxs=["selected_news_folders"])
 
 
 def init_faceted(obj):
@@ -49,6 +49,7 @@ def removed_newsfolder(obj, event):
         news.selected_news_folders = [
             uid for uid in news.selected_news_folders if uid != obj.UID()
         ]
+        news.reindexObject(idxs=["selected_news_folders"])
 
 
 def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
@@ -91,5 +92,8 @@ def set_uid_of_referrer_newsfolders(obj, event, container_newsfolder):
     rels = api.relation.get(
         target=container_newsfolder, relationship="populating_newsfolders"
     )
+    if not rels:
+        return
     for rel in rels:
         obj.selected_news_folders.append(rel.from_object.UID())
+    obj.reindexObject(idxs=["selected_news_folders"])
