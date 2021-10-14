@@ -55,7 +55,11 @@ def modified_newsfolder(obj, event):
 
 
 def removed_newsfolder(obj, event):
-    brains = api.content.find(selected_news_folders=obj.UID())
+    try:
+        brains = api.content.find(selected_news_folders=obj.UID())
+    except api.exc.CannotGetPortalError:
+        # This happen when we try to remove plone object
+        return
     for brain in brains:
         news = brain.getObject()
         news.selected_news_folders = [
