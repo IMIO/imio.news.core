@@ -10,10 +10,7 @@ from plone.dexterity.interfaces import IDexterityFTI
 from zope.component import createObject
 from zope.component import queryUtility
 from zope.lifecycleevent import modified
-from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
-from zope.component import getUtility
-from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import Attributes
 
 import unittest
@@ -166,34 +163,42 @@ class TestNewsFolder(unittest.TestCase):
             type="imio.news.NewsItem",
             id="newsitem3",
         )
-        intids = getUtility(IIntIds)
 
         # Link newsfolder2 (all these news) to our object "newsfolder".
-        setattr(
-            newsfolder,
-            "populating_newsfolders",
-            [RelationValue(intids.getId(newsfolder2))],
+        api.relation.create(
+            source=newsfolder, target=newsfolder2, relationship="populating_newsfolders"
         )
         modified(newsfolder, Attributes(IRelationList, "populating_newsfolders"))
+
         # So newsfolder.uid() can be find on newsitem2
         self.assertIn(newsfolder.UID(), newsitem2.selected_news_folders)
 
+        moving_newsitem = api.content.create(
+            container=newsfolder2,
+            type="imio.news.NewsItem",
+            id="moving_newsitem",
+        )
+        self.assertIn(newsfolder.UID(), moving_newsitem.selected_news_folders)
+        # We move a news item from one folder to another
+        api.content.move(moving_newsitem, newsfolder3)
+        self.assertNotIn(newsfolder.UID(), moving_newsitem.selected_news_folders)
+
         # Clear linking newsfolders out of our object "newsfolder".
-        setattr(newsfolder, "populating_newsfolders", [])
+        api.relation.delete(source=newsfolder, relationship="populating_newsfolders")
         modified(newsfolder, Attributes(IRelationList, "populating_newsfolders"))
+
         # So newsfolder.uid() can not be find on newsitem2
         self.assertNotIn(newsfolder.UID(), newsitem2.selected_news_folders)
 
         # First, link newsfolder2 and newsfolder3
-        setattr(
-            newsfolder,
-            "populating_newsfolders",
-            [
-                RelationValue(intids.getId(newsfolder2)),
-                RelationValue(intids.getId(newsfolder3)),
-            ],
+        api.relation.create(
+            source=newsfolder, target=newsfolder2, relationship="populating_newsfolders"
+        )
+        api.relation.create(
+            source=newsfolder, target=newsfolder3, relationship="populating_newsfolders"
         )
         modified(newsfolder, Attributes(IRelationList, "populating_newsfolders"))
+
         # Assert link is OK
         self.assertIn(newsfolder.UID(), newsitem2.selected_news_folders)
         self.assertIn(newsfolder.UID(), newsitem3.selected_news_folders)

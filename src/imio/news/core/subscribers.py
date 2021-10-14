@@ -3,6 +3,7 @@
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.smartweb.common.faceted.utils import configure_faceted
 from plone import api
+from zope.lifecycleevent import ObjectRemovedEvent
 from zope.lifecycleevent.interfaces import IAttributes
 
 import os
@@ -32,6 +33,17 @@ def added_news_item(obj, event):
 
 def modified_news_item(obj, event):
     set_default_news_folder_uid(obj)
+
+
+def moved_news_item(obj, event):
+    if event.oldParent == event.newParent and event.oldName != event.newName:
+        # item was simply renamed
+        return
+    if type(event) is ObjectRemovedEvent:
+        # We don't have anything to do if news item is being removed
+        return
+    container_newsfolder = get_news_folder_for_news_item(obj)
+    set_uid_of_referrer_newsfolders(obj, event, container_newsfolder)
 
 
 def added_news_folder(obj, event):

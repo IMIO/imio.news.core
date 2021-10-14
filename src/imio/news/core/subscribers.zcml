@@ -25,4 +25,8 @@
                    zope.lifecycleevent.interfaces.IObjectModifiedEvent"
               handler=".subscribers.modified_news_item" />
 
+  <subscriber for="imio.news.core.contents.INewsItem
+                   zope.lifecycleevent.interfaces.IObjectMovedEvent"
+              handler=".subscribers.moved_news_item" />
+
 </configure>
