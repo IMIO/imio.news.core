@@ -17,7 +17,7 @@ class INewsFolder(model.Schema):
     populating_newsfolders = RelationList(
         title=_(u"Populating news folders"),
         description=_(
-            u"News folders that populate current news folder with their events."
+            u"News folders that automatically populates this news folder with their news."
         ),
         value_type=RelationChoice(
             title=u"Items selection",
