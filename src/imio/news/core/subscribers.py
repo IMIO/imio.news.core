@@ -3,6 +3,8 @@
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.smartweb.common.faceted.utils import configure_faceted
 from plone import api
+from zope.lifecycleevent.interfaces import IAttributes
+
 import os
 
 
@@ -53,6 +55,9 @@ def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
     changed = False
     newsfolders_to_treat = []
     for d in event.descriptions:
+        if not IAttributes.providedBy(d):
+            # we do not have fields change description, but maybe a request
+            continue
         if "populating_newsfolders" in d.attributes:
             changed = True
             uids_in_current_newsfolder = [
