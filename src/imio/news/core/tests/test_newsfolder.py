@@ -169,7 +169,6 @@ class TestNewsFolder(unittest.TestCase):
             source=newsfolder, target=newsfolder2, relationship="populating_newsfolders"
         )
         modified(newsfolder, Attributes(IRelationList, "populating_newsfolders"))
-
         # So newsfolder.uid() can be find on newsitem2
         self.assertIn(newsfolder.UID(), newsitem2.selected_news_folders)
 
@@ -198,7 +197,6 @@ class TestNewsFolder(unittest.TestCase):
             source=newsfolder, target=newsfolder3, relationship="populating_newsfolders"
         )
         modified(newsfolder, Attributes(IRelationList, "populating_newsfolders"))
-
         # Assert link is OK
         self.assertIn(newsfolder.UID(), newsitem2.selected_news_folders)
         self.assertIn(newsfolder.UID(), newsitem3.selected_news_folders)
