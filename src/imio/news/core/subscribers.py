@@ -26,26 +26,6 @@ def added_entity(obj, event):
     init_faceted(obj)
 
 
-def added_news_item(obj, event):
-    container_newsfolder = get_news_folder_for_news_item(obj)
-    set_uid_of_referrer_newsfolders(obj, event, container_newsfolder)
-
-
-def modified_news_item(obj, event):
-    set_default_news_folder_uid(obj)
-
-
-def moved_news_item(obj, event):
-    if event.oldParent == event.newParent and event.oldName != event.newName:
-        # item was simply renamed
-        return
-    if type(event) is ObjectRemovedEvent:
-        # We don't have anything to do if news item is being removed
-        return
-    container_newsfolder = get_news_folder_for_news_item(obj)
-    set_uid_of_referrer_newsfolders(obj, event, container_newsfolder)
-
-
 def added_news_folder(obj, event):
     init_faceted(obj)
 
@@ -66,6 +46,26 @@ def removed_newsfolder(obj, event):
             uid for uid in news.selected_news_folders if uid != obj.UID()
         ]
         news.reindexObject(idxs=["selected_news_folders"])
+
+
+def added_news_item(obj, event):
+    container_newsfolder = get_news_folder_for_news_item(obj)
+    set_uid_of_referrer_newsfolders(obj, event, container_newsfolder)
+
+
+def modified_news_item(obj, event):
+    set_default_news_folder_uid(obj)
+
+
+def moved_news_item(obj, event):
+    if event.oldParent == event.newParent and event.oldName != event.newName:
+        # item was simply renamed
+        return
+    if type(event) is ObjectRemovedEvent:
+        # We don't have anything to do if news item is being removed
+        return
+    container_newsfolder = get_news_folder_for_news_item(obj)
+    set_uid_of_referrer_newsfolders(obj, event, container_newsfolder)
 
 
 def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
