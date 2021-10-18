@@ -23,6 +23,13 @@ class TestVocabularies(unittest.TestCase):
         vocabulary = factory()
         self.assertEqual(len(vocabulary), 4)
 
+    def test_news_local_categories_on_root(self):
+        factory = getUtility(
+            IVocabularyFactory, "imio.news.vocabulary.NewsLocalCategories"
+        )
+        vocabulary = factory(self.portal)
+        self.assertEqual(len(vocabulary), 0)
+
     def test_news_categories_topics_basic(self):
         entity = api.content.create(
             container=self.portal,
