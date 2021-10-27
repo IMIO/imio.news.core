@@ -9,12 +9,6 @@ class View(FolderView):
 
     GALLERY_IMAGES_NUMBER = 3
 
-    def description(self):
-        """Description with html carriage return"""
-        description = self.context.description
-        description = "<br/>".join(description.split("\r\n"))
-        return description
-
     def files(self):
         return self.context.listFolderContents(contentFilter={"portal_type": "File"})
 
