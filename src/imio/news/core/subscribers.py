@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from eea.facetednavigation.settings.interfaces import IHidePloneLeftColumn
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.smartweb.common.faceted.utils import configure_faceted
 from plone import api
+from zope.interface import noLongerProvides
 from zope.lifecycleevent import ObjectRemovedEvent
 from zope.lifecycleevent.interfaces import IAttributes
 
@@ -20,6 +22,8 @@ def set_default_news_folder_uid(news_item):
 def init_faceted(obj):
     faceted_config_path = "{}/faceted/config/news.xml".format(os.path.dirname(__file__))
     configure_faceted(obj, faceted_config_path)
+    if IHidePloneLeftColumn.providedBy(obj):
+        noLongerProvides(obj, IHidePloneLeftColumn)
 
 
 def added_entity(obj, event):
