@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from imio.smartweb.common.adapters import BaseCroppingProvider
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from plone.app.content.namechooser import NormalizingNameChooser
 from plone.app.z3cform.widget import SelectFieldWidget
@@ -11,6 +12,14 @@ from plone.supermodel import model
 from zope import schema
 from zope.container.interfaces import INameChooser
 from zope.interface import implementer
+
+
+class NewsItemCroppingProvider(BaseCroppingProvider):
+    def get_scales(self, fieldname, request=None):
+        if fieldname == "image":
+            # scales used for lead image field
+            return ["vignette", "slide", "affiche"]
+        return []
 
 
 class INewsItem(model.Schema):
