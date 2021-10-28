@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from eea.facetednavigation.settings.interfaces import IHidePloneLeftColumn
+from imio.news.core.utils import get_entity_for_obj
 from imio.news.core.utils import get_news_folder_for_news_item
-from imio.smartweb.common.faceted.utils import configure_faceted
+from imio.news.core.utils import reload_faceted_config
 from plone import api
-from zope.interface import noLongerProvides
+from zope.globalrequest import getRequest
 from zope.lifecycleevent import ObjectRemovedEvent
 from zope.lifecycleevent.interfaces import IAttributes
-
-import os
 
 
 def set_default_news_folder_uid(news_item):
@@ -19,19 +17,16 @@ def set_default_news_folder_uid(news_item):
         news_item.reindexObject(idxs=["selected_news_folders"])
 
 
-def init_faceted(obj):
-    faceted_config_path = "{}/faceted/config/news.xml".format(os.path.dirname(__file__))
-    configure_faceted(obj, faceted_config_path)
-    if IHidePloneLeftColumn.providedBy(obj):
-        noLongerProvides(obj, IHidePloneLeftColumn)
-
-
 def added_entity(obj, event):
-    init_faceted(obj)
+    request = getRequest()
+    reload_faceted_config(obj, request)
 
 
 def added_news_folder(obj, event):
-    init_faceted(obj)
+    request = getRequest()
+    reload_faceted_config(obj, request)
+    entity = get_entity_for_obj(obj)
+    reload_faceted_config(entity, request)
 
 
 def modified_newsfolder(obj, event):
@@ -50,6 +45,9 @@ def removed_newsfolder(obj, event):
             uid for uid in news.selected_news_folders if uid != obj.UID()
         ]
         news.reindexObject(idxs=["selected_news_folders"])
+    request = getRequest()
+    entity = get_entity_for_obj(obj)
+    reload_faceted_config(entity, request)
 
 
 def added_news_item(obj, event):
