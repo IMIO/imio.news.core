@@ -3,6 +3,7 @@
   <version>1001</version>
   <dependencies>
     <dependency>profile-plone.app.dexterity:default</dependency>
+    <dependency>profile-plone.app.imagecropping:default</dependency>
     <dependency>profile-imio.smartweb.common:default</dependency>
     <dependency>profile-eea.facetednavigation:default</dependency>
   </dependencies>
