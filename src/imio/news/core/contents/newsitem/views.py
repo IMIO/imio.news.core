@@ -30,7 +30,9 @@ class View(FolderView):
         return embedder(self.context.video_url, params=dict(autoplay=False))
 
     def category(self):
-        term = get_term_from_vocabulary('imio.news.vocabulary.NewsCategories', self.context.category)
+        term = get_term_from_vocabulary(
+            "imio.news.vocabulary.NewsCategories", self.context.category
+        )
         return term.title
 
     def topics(self):
