@@ -16,15 +16,15 @@ from zope.interface import implementer
 class INewsItem(model.Schema):
     """Marker interface and Dexterity Python Schema for NewsItem"""
 
-    video_url = schema.URI(
-        title=_(u"Video url"),
-        description=_(u"Video url from youtube, vimeo"),
-        required=False,
-    )
-
     site_url = schema.URI(
         title=_(u"Website"),
         description=_(u"NewsItem website url"),
+        required=False,
+    )
+
+    video_url = schema.URI(
+        title=_(u"Video url"),
+        description=_(u"Video url from youtube, vimeo"),
         required=False,
     )
 
