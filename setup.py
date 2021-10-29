@@ -52,6 +52,7 @@ setup(
         "embeddify",
         "z3c.jbot",
         "plone.api>=1.8.4",
+        "plone.gallery",
         "plone.restapi",
         "plone.app.dexterity",
         "plone.app.imagecropping",

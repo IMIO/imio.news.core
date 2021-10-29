@@ -5,12 +5,17 @@ from imio.smartweb.common.utils import get_term_from_vocabulary
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from plone.app.contenttypes.behaviors.leadimage import ILeadImage
 from plone.app.contenttypes.browser.folder import FolderView
+from Products.CMFPlone.resources import add_bundle_on_request
 from zope.i18n import translate
 
 
 class View(FolderView):
-
-    GALLERY_IMAGES_NUMBER = 3
+    def __call__(self):
+        images = self.context.listFolderContents(contentFilter={"portal_type": "Image"})
+        if len(images) > 0:
+            add_bundle_on_request(self.request, "spotlightjs")
+            add_bundle_on_request(self.request, "flexbin")
+        return self.index()
 
     def files(self):
         return self.context.listFolderContents(contentFilter={"portal_type": "File"})

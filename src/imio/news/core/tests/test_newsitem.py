@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from imio.news.core.contents import INewsItem
+from imio.news.core.interfaces import IImioNewsCoreLayer
 from imio.news.core.testing import IMIO_NEWS_CORE_FUNCTIONAL_TESTING
 from imio.news.core.tests.utils import get_leadimage_filename
 from plone import api
@@ -12,8 +13,10 @@ from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
 from zope.component import createObject
 from zope.component import getUtility
+from zope.component import getMultiAdapter
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
+from zope.interface import alsoProvides
 from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import modified
@@ -249,3 +252,24 @@ class TestNewsItem(unittest.TestCase):
         )
         self.assertNotEqual(entity.id, entity.UID())
         self.assertEqual(entity.id, "my-entity")
+
+    def test_js_bundles(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="NewsItem",
+        )
+
+        alsoProvides(self.request, IImioNewsCoreLayer)
+        getMultiAdapter((newsitem, self.request), name="view")()
+        bundles = getattr(self.request, "enabled_bundles", [])
+        self.assertEqual(len(bundles), 0)
+        api.content.create(
+            container=newsitem,
+            type="Image",
+            title="Image",
+        )
+        getMultiAdapter((newsitem, self.request), name="view")()
+        bundles = getattr(self.request, "enabled_bundles", [])
+        self.assertEqual(len(bundles), 2)
+        self.assertListEqual(bundles, ["spotlightjs", "flexbin"])
