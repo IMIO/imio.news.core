@@ -102,7 +102,9 @@ class NewsFoldersUIDsVocabularyFactory:
             portal_type="imio.news.NewsFolder",
             sort_on="sortable_title",
         )
-        terms = [SimpleTerm(value=b.UID, token=b.UID, title=b.Title) for b in brains]
+        terms = [
+            SimpleTerm(value=b.UID, token=b.UID, title=b.breadcrumb) for b in brains
+        ]
         return SimpleVocabulary(terms)
 
 
