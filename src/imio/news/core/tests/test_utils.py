@@ -68,22 +68,22 @@ class TestNewsFolder(unittest.TestCase):
         )
 
     def test_get_entity_for_obj(self):
-        self.assertEquals(get_entity_for_obj(self.entity1), self.entity1)
-        self.assertEquals(get_entity_for_obj(self.news_folder1), self.entity1)
-        self.assertEquals(get_entity_for_obj(self.news1), self.entity1)
+        self.assertEqual(get_entity_for_obj(self.entity1), self.entity1)
+        self.assertEqual(get_entity_for_obj(self.news_folder1), self.entity1)
+        self.assertEqual(get_entity_for_obj(self.news1), self.entity1)
 
     def test_get_news_folder_for_news_item(self):
-        self.assertEquals(get_news_folder_for_news_item(self.news1), self.news_folder1)
-        self.assertEquals(get_news_folder_for_news_item(self.news2), self.news_folder2)
+        self.assertEqual(get_news_folder_for_news_item(self.news1), self.news_folder1)
+        self.assertEqual(get_news_folder_for_news_item(self.news2), self.news_folder2)
 
     def test_get_news_folders_uids_for_faceted(self):
         with self.assertRaises(NotImplementedError):
             get_news_folders_uids_for_faceted(self.news1)
-        self.assertEquals(
+        self.assertEqual(
             get_news_folders_uids_for_faceted(self.news_folder1),
             [self.news_folder1.UID()],
         )
-        self.assertEquals(
+        self.assertEqual(
             get_news_folders_uids_for_faceted(self.entity1),
             [self.news_folder1.UID(), self.news_folder3.UID()],
         )
