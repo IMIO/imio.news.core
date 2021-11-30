@@ -7,6 +7,7 @@ from imio.news.core.tests.utils import get_leadimage_filename
 from plone import api
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
+from plone.app.textfield.value import RichTextValue
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.namedfile.file import NamedBlobFile
 from z3c.relationfield import RelationValue
@@ -189,6 +190,37 @@ class TestNewsItem(unittest.TestCase):
         brain = api.content.find(UID=news_item1.UID())[0]
         indexes = catalog.getIndexDataForRID(brain.getRID())
         self.assertEqual(indexes.get("container_uid"), news_folder2.UID())
+
+    def test_searchable_text(self):
+        news_item = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="Title",
+        )
+        catalog = api.portal.get_tool("portal_catalog")
+        brain = api.content.find(UID=news_item.UID())[0]
+        indexes = catalog.getIndexDataForRID(brain.getRID())
+        self.assertEqual(indexes.get("SearchableText"), ["title"])
+
+        news_item.description = "Description"
+        news_item.topics = ["agriculture"]
+        news_item.category = "works"
+        news_item.text = RichTextValue("<p>Text</p>", "text/html", "text/html")
+        news_item.reindexObject()
+
+        catalog = api.portal.get_tool("portal_catalog")
+        brain = api.content.find(UID=news_item.UID())[0]
+        indexes = catalog.getIndexDataForRID(brain.getRID())
+        self.assertEqual(
+            indexes.get("SearchableText"),
+            [
+                "title",
+                "description",
+                "text",
+                "agriculture",
+                "works",
+            ],
+        )
 
     def test_referrer_newsfolders(self):
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
