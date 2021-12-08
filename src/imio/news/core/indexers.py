@@ -14,6 +14,14 @@ import copy
 
 
 @indexer(INewsItem)
+def category_title(obj):
+    if obj.category is not None:
+        return translate_vocabulary_term(
+            "imio.news.vocabulary.NewsCategories", obj.category
+        )
+
+
+@indexer(INewsItem)
 def category_and_topics_indexer(obj):
     list = []
     if obj.topics is not None:

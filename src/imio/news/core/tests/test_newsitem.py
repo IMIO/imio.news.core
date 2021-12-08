@@ -222,6 +222,19 @@ class TestNewsItem(unittest.TestCase):
             ],
         )
 
+    def test_category_title_index(self):
+        news_item = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="Title",
+        )
+        news_item.category = "works"
+        news_item.reindexObject()
+        catalog = api.portal.get_tool("portal_catalog")
+        brain = api.content.find(UID=news_item.UID())[0]
+        indexes = catalog.getIndexDataForRID(brain.getRID())
+        self.assertEqual(indexes.get("category_title"), "Works")
+
     def test_referrer_newsfolders(self):
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
         intids = getUtility(IIntIds)
