@@ -218,7 +218,7 @@ class TestNewsItem(unittest.TestCase):
                 "description",
                 "text",
                 "agriculture",
-                "works",
+                "travaux",
             ],
         )
 
@@ -233,7 +233,7 @@ class TestNewsItem(unittest.TestCase):
         catalog = api.portal.get_tool("portal_catalog")
         brain = api.content.find(UID=news_item.UID())[0]
         indexes = catalog.getIndexDataForRID(brain.getRID())
-        self.assertEqual(indexes.get("category_title"), "Works")
+        self.assertEqual(indexes.get("category_title"), "Travaux")
 
     def test_referrer_newsfolders(self):
         setRoles(self.portal, TEST_USER_ID, ["Manager"])

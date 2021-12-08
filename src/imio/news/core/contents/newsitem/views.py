@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from embeddify import Embedder
-from imio.smartweb.common.utils import get_term_from_vocabulary
-from imio.smartweb.locales import SmartwebMessageFactory as _
+from imio.smartweb.common.utils import translate_vocabulary_term
 from plone.app.contenttypes.behaviors.leadimage import ILeadImage
 from plone.app.contenttypes.browser.folder import FolderView
 from Products.CMFPlone.resources import add_bundle_on_request
-from zope.i18n import translate
 
 
 class View(FolderView):
@@ -35,27 +33,30 @@ class View(FolderView):
         return embedder(self.context.video_url, params=dict(autoplay=False))
 
     def category(self):
-        term = get_term_from_vocabulary(
-            "imio.news.vocabulary.NewsCategories", self.context.category
+        title = translate_vocabulary_term(
+            "imio.events.vocabulary.EventsCategories", self.context.category
         )
-        return term.title
+        if title:
+            return title
 
     def topics(self):
         topics = self.context.topics
+        if topics is None:
+            return
         items = []
         for item in topics:
-            term = get_term_from_vocabulary("imio.smartweb.vocabulary.Topics", item)
-            translated_title = translate(_(term.title), context=self.request)
-            items.append(translated_title)
+            title = translate_vocabulary_term("imio.smartweb.vocabulary.Topics", item)
+            items.append(title)
         return ", ".join(items)
 
     def iam(self):
         iam = self.context.iam
+        if iam is None:
+            return
         items = []
         for item in iam:
-            term = get_term_from_vocabulary("imio.smartweb.vocabulary.IAm", item)
-            translated_title = translate(_(term.title), context=self.request)
-            items.append(translated_title)
+            title = translate_vocabulary_term("imio.smartweb.vocabulary.IAm", item)
+            items.append(title)
         return ", ".join(items)
 
     def effective_date(self):
