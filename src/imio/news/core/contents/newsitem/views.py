@@ -34,7 +34,7 @@ class View(FolderView):
 
     def category(self):
         title = translate_vocabulary_term(
-            "imio.events.vocabulary.EventsCategories", self.context.category
+            "imio.news.vocabulary.NewsCategories", self.context.category
         )
         if title:
             return title
