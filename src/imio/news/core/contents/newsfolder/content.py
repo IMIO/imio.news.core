@@ -15,12 +15,12 @@ class INewsFolder(model.Schema):
     """Marker interface and Dexterity Python Schema for NewsFolder"""
 
     populating_newsfolders = RelationList(
-        title=_(u"Populating news folders"),
+        title=_("Populating news folders"),
         description=_(
-            u"News folders that automatically populates this news folder with their news."
+            "News folders that automatically populates this news folder with their news."
         ),
         value_type=RelationChoice(
-            title=u"Items selection",
+            title="Items selection",
             source=CatalogSource(),
         ),
         default=[],

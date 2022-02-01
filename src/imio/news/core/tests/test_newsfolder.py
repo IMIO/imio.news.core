@@ -58,7 +58,7 @@ class TestNewsFolder(unittest.TestCase):
 
         self.assertTrue(
             INewsFolder.providedBy(obj),
-            u"INewsFolder not provided by {0}!".format(
+            "INewsFolder not provided by {0}!".format(
                 obj,
             ),
         )
@@ -73,7 +73,7 @@ class TestNewsFolder(unittest.TestCase):
 
         self.assertTrue(
             INewsFolder.providedBy(obj),
-            u"INewsFolder not provided by {0}!".format(
+            "INewsFolder not provided by {0}!".format(
                 obj.id,
             ),
         )
@@ -89,7 +89,7 @@ class TestNewsFolder(unittest.TestCase):
         setRoles(self.portal, TEST_USER_ID, ["Contributor"])
         fti = queryUtility(IDexterityFTI, name="imio.news.NewsFolder")
         self.assertFalse(
-            fti.global_allow, u"{0} is not globally addable!".format(fti.id)
+            fti.global_allow, "{0} is not globally addable!".format(fti.id)
         )
 
     def test_ct_newsfolder_filter_content_type_true(self):

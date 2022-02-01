@@ -65,18 +65,18 @@ class TestIndexer(unittest.TestCase):
             container=self.news_folder,
             type="imio.news.NewsItem",
             id="id_news",
-            category=u"works",
-            local_category=u"Foo",
-            topics=[u"culture", u"health"],
+            category="works",
+            local_category="Foo",
+            topics=["culture", "health"],
         )
 
         api.content.create(
             container=self.news_folder,
             type="imio.news.NewsItem",
             id="id_news2",
-            category=u"presse",
-            local_category=u"baz",
-            topics=[u"tourism", u"health"],
+            category="presse",
+            local_category="baz",
+            topics=["tourism", "health"],
         )
 
         search_result = self._search_all_from_vocabulary(

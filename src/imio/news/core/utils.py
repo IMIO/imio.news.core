@@ -45,7 +45,7 @@ def reload_faceted_config(obj, request):
         "cid": "newsfolders",
         "faceted.newsfolders.default": news_folders_uids,
     }
-    handler = getMultiAdapter((obj, request), name=u"faceted_update_criterion")
+    handler = getMultiAdapter((obj, request), name="faceted_update_criterion")
     handler.edit(**request.form)
     if IHidePloneLeftColumn.providedBy(obj):
         noLongerProvides(obj, IHidePloneLeftColumn)

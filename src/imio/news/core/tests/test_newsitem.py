@@ -70,7 +70,7 @@ class TestNewsItem(unittest.TestCase):
 
         self.assertTrue(
             INewsItem.providedBy(obj),
-            u"INewsItem not provided by {0}!".format(
+            "INewsItem not provided by {0}!".format(
                 obj,
             ),
         )

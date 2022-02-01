@@ -26,32 +26,32 @@ class INewsItem(model.Schema):
     """Marker interface and Dexterity Python Schema for NewsItem"""
 
     site_url = schema.URI(
-        title=_(u"Website"),
-        description=_(u"NewsItem website url"),
+        title=_("Website"),
+        description=_("NewsItem website url"),
         required=False,
     )
 
     video_url = schema.URI(
-        title=_(u"Video url"),
-        description=_(u"Video url from youtube, vimeo"),
+        title=_("Video url"),
+        description=_("Video url from youtube, vimeo"),
         required=False,
     )
 
     facebook = schema.URI(
-        title=_(u"Facebook"),
-        description=_(u"Facebook url for this news"),
+        title=_("Facebook"),
+        description=_("Facebook url for this news"),
         required=False,
     )
 
     twitter = schema.URI(
-        title=_(u"Twitter"),
-        description=_(u"Twitter url for this news"),
+        title=_("Twitter"),
+        description=_("Twitter url for this news"),
         required=False,
     )
 
     instagram = schema.URI(
-        title=_(u"Instagram"),
-        description=_(u"Instagram url for this news"),
+        title=_("Instagram"),
+        description=_("Instagram url for this news"),
         required=False,
     )
 
@@ -60,9 +60,9 @@ class INewsItem(model.Schema):
     )
     directives.widget(selected_news_folders=SelectFieldWidget)
     selected_news_folders = schema.List(
-        title=_(u"Selected news folders"),
+        title=_("Selected news folders"),
         description=_(
-            u"Select news folders where this news item will be displayed. Current news folder is always selected."
+            "Select news folders where this news item will be displayed. Current news folder is always selected."
         ),
         value_type=schema.Choice(vocabulary="imio.news.vocabulary.NewsFoldersUIDs"),
         default=[],
@@ -70,18 +70,18 @@ class INewsItem(model.Schema):
     )
 
     category = schema.Choice(
-        title=_(u"Category"),
+        title=_("Category"),
         description=_(
-            u"Important! These categories are used to supplement the information provided by the topics"
+            "Important! These categories are used to supplement the information provided by the topics"
         ),
         source="imio.news.vocabulary.NewsCategories",
         required=False,
     )
 
     local_category = schema.Choice(
-        title=_(u"Specific category"),
+        title=_("Specific category"),
         description=_(
-            u"Important! These categories allow you to use criteria that are specific to your organization"
+            "Important! These categories allow you to use criteria that are specific to your organization"
         ),
         source="imio.news.vocabulary.NewsLocalCategories",
         required=False,
