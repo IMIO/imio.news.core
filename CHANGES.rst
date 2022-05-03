@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0a2 (unreleased)
+1.0a2 (2022-05-03)
 ------------------
 
 - Use unique urls for images scales to ease caching
