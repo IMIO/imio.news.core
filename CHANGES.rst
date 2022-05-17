@@ -5,7 +5,8 @@ Changelog
 1.0a3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix selected_news_folders on newsitems after creating a "linked" newsfolder
+  [boulch]
 
 
 1.0a2 (2022-05-03)

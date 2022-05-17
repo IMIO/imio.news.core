@@ -7,10 +7,13 @@ from plone.api.exc import InvalidParameterError
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.dexterity.interfaces import IDexterityFTI
-from zope.component import createObject
-from zope.component import queryUtility
-from zope.lifecycleevent import modified
+from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
+from zope.component import createObject
+from zope.component import getUtility
+from zope.component import queryUtility
+from zope.intid.interfaces import IIntIds
+from zope.lifecycleevent import modified
 from zope.lifecycleevent import Attributes
 
 import unittest
@@ -131,6 +134,11 @@ class TestNewsFolder(unittest.TestCase):
             type="imio.news.NewsFolder",
             id="imio.news.NewsFolder",
         )
+        newsitem = api.content.create(
+            container=newsfolder,
+            type="imio.news.NewsItem",
+            id="newsitem",
+        )
         entity2 = api.content.create(
             container=self.portal,
             type="imio.news.Entity",
@@ -166,6 +174,16 @@ class TestNewsFolder(unittest.TestCase):
             type="imio.news.NewsItem",
             id="newsitem3",
         )
+        # Add new newsfolder + subscription to existing newsfolder.
+        intids = getUtility(IIntIds)
+        newsfolder4 = api.content.create(
+            container=self.entity,
+            type="imio.news.NewsFolder",
+            id="newsfolder4",
+            populating_newsfolders=[RelationValue(intids.getId(newsfolder))],
+        )
+        self.assertIn(newsfolder4.UID(), newsitem.selected_news_folders)
+        api.content.delete(newsfolder4)
 
         # Link newsfolder2 (all these news) to our object "newsfolder".
         api.relation.create(
