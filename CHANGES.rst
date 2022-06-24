@@ -5,6 +5,9 @@ Changelog
 1.0a3 (unreleased)
 ------------------
 
+- Ensure objects are marked as modified after appending to a list attribute
+  [laulaz]
+
 - Fix selected_news_folders on newsitems after creating a "linked" newsfolder
   [boulch]
 

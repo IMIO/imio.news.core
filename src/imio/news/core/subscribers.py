@@ -100,6 +100,7 @@ def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
             news = brain.getObject()
             if uid_newsfolder in uids_in_current_newsfolder:
                 news.selected_news_folders.append(obj.UID())
+                news._p_changed = 1
             else:
                 news.selected_news_folders = [
                     item for item in news.selected_news_folders if item != obj.UID()
@@ -118,4 +119,5 @@ def set_uid_of_referrer_newsfolders(obj, event, container_newsfolder):
         return
     for rel in rels:
         obj.selected_news_folders.append(rel.from_object.UID())
+        obj._p_changed = 1
     obj.reindexObject(idxs=["selected_news_folders"])
