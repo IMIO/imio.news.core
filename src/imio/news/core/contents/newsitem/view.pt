@@ -86,9 +86,7 @@
                                title item/title;
                                data-description item/description">
               <img tal:define="thumb python: image_view.scale('image', 'preview')"
-                   tal:attributes="src thumb/url | nothing;
-                                   alt item/title;
-                                   title item/title" />
+                   tal:replace="structure thumb/tag" />
             </a>
         </tal:images>
     </div>
