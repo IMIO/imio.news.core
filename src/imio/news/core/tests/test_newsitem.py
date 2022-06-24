@@ -3,13 +3,13 @@
 from imio.news.core.contents import INewsItem
 from imio.news.core.interfaces import IImioNewsCoreLayer
 from imio.news.core.testing import IMIO_NEWS_CORE_FUNCTIONAL_TESTING
-from imio.news.core.tests.utils import get_leadimage_filename
+from imio.news.core.tests.utils import make_named_image
 from plone import api
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.interfaces import IDexterityFTI
-from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.file import NamedBlobImage
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
 from zope.component import createObject
@@ -122,9 +122,7 @@ class TestNewsItem(unittest.TestCase):
         )
         view = queryMultiAdapter((newsitem, self.request), name="view")
         self.assertEqual(view.has_leadimage(), False)
-        newsitem.image = NamedBlobFile(
-            "ploneLeadImage", filename=get_leadimage_filename()
-        )
+        newsitem.image = NamedBlobImage(**make_named_image())
         self.assertEqual(view.has_leadimage(), True)
 
     def test_subscriber_to_select_current_news_folder(self):
@@ -309,11 +307,12 @@ class TestNewsItem(unittest.TestCase):
         getMultiAdapter((newsitem, self.request), name="view")()
         bundles = getattr(self.request, "enabled_bundles", [])
         self.assertEqual(len(bundles), 0)
-        api.content.create(
+        image = api.content.create(
             container=newsitem,
             type="Image",
             title="Image",
         )
+        image.image = NamedBlobImage(**make_named_image())
         getMultiAdapter((newsitem, self.request), name="view")()
         bundles = getattr(self.request, "enabled_bundles", [])
         self.assertEqual(len(bundles), 2)

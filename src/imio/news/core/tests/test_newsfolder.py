@@ -13,8 +13,8 @@ from zope.component import createObject
 from zope.component import getUtility
 from zope.component import queryUtility
 from zope.intid.interfaces import IIntIds
-from zope.lifecycleevent import modified
 from zope.lifecycleevent import Attributes
+from zope.lifecycleevent import modified
 
 import unittest
 
@@ -132,12 +132,17 @@ class TestNewsFolder(unittest.TestCase):
         newsfolder = api.content.create(
             container=self.entity,
             type="imio.news.NewsFolder",
-            id="imio.news.NewsFolder",
+            id="newsfolder",
         )
         newsitem = api.content.create(
             container=newsfolder,
             type="imio.news.NewsItem",
             id="newsitem",
+        )
+        newsitem = api.content.create(
+            container=newsfolder,
+            type="imio.news.NewsItem",
+            id="newsitem1",
         )
         entity2 = api.content.create(
             container=self.portal,
@@ -181,6 +186,18 @@ class TestNewsFolder(unittest.TestCase):
             type="imio.news.NewsFolder",
             id="newsfolder4",
             populating_newsfolders=[RelationValue(intids.getId(newsfolder))],
+        )
+        self.assertIn(newsfolder4.UID(), newsitem.selected_news_folders)
+        api.content.delete(newsfolder4)
+
+        # Add new newsfolder + subscription to existing newsfolder.
+        intids = getUtility(IIntIds)
+
+        newsfolder4 = api.content.create(
+            container=self.entity,
+            type="imio.news.NewsFolder",
+            id="newsfolder4",
+            populating_newsfolders=[RelationValue(intids.getId(newsitem))],
         )
         self.assertIn(newsfolder4.UID(), newsitem.selected_news_folders)
         api.content.delete(newsfolder4)
