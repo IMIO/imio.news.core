@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0a3 (unreleased)
+1.0a3 (2022-07-14)
 ------------------
 
 - Ensure objects are marked as modified after appending to a list attribute
