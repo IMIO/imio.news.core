@@ -11,6 +11,9 @@ Changelog
 1.0a3 (2022-07-14)
 ------------------
 
+- Add serializer to get included items when you request an imio.news.NewsItem fullbobjects
+  [boulch]
+
 - Ensure objects are marked as modified after appending to a list attribute
   [laulaz]
 
