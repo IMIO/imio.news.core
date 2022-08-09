@@ -12,4 +12,13 @@
       profile="imio.news.core:default"
       />
 
+  <genericsetup:upgradeStep
+      title="Reindex SearchableText index to add Subjects"
+      description="Reindex SearchableText index to add Subjects"
+      source="1001"
+      destination="1002"
+      handler=".upgrades.reindex_searchable_text"
+      profile="imio.news.core:default"
+      />
+
 </configure>

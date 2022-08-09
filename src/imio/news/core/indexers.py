@@ -67,13 +67,14 @@ def SearchableText_news_item(obj):
     category = translate_vocabulary_term(
         "imio.news.vocabulary.NewsCategories", getattr(obj.aq_base, "category", None)
     )
-
+    subjects = obj.Subject()
     result = " ".join(
         (
             safe_unicode(obj.title) or "",
             safe_unicode(obj.description) or "",
             safe_unicode(text),
             *topics,
+            *subjects,
             safe_unicode(category),
         )
     )

@@ -5,7 +5,8 @@ Changelog
 1.0a4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- WEB-3726 : Add subjects (keyword) in SearchableText
+  [boulch]
 
 
 1.0a3 (2022-07-14)

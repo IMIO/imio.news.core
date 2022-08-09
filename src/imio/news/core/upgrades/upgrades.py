@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from imio.news.core.utils import reload_faceted_config
+from imio.smartweb.common.upgrades import upgrades
 from plone import api
 from zope.globalrequest import getRequest
 
@@ -16,3 +17,7 @@ def refresh_objects_faceted(context):
         obj = brain.getObject()
         reload_faceted_config(obj, request)
         logger.info("Faceted refreshed on {}".format(obj.Title()))
+
+
+def reindex_searchable_text(context):
+    upgrades.reindex_searchable_text(context)
