@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from eea.facetednavigation.subtypes.interfaces import IFacetedNavigable
 from imio.news.core.contents.newsfolder.content import INewsFolder  # NOQA E501
 from imio.news.core.testing import IMIO_NEWS_CORE_INTEGRATION_TESTING  # noqa
 from plone import api
@@ -80,6 +81,8 @@ class TestNewsFolder(unittest.TestCase):
                 obj.id,
             ),
         )
+
+        self.assertTrue(IFacetedNavigable.providedBy(obj))
 
         parent = obj.__parent__
         self.assertIn("imio.news.NewsFolder", parent.objectIds())
