@@ -5,7 +5,8 @@ Changelog
 1.0a5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add eea.faceted.navigable behavior on Entity & NewsFolder types
+  [laulaz]
 
 
 1.0a4 (2022-08-10)
