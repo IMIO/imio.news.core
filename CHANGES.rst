@@ -27,6 +27,7 @@ Changelog
 
 - WEB-3757 : Automaticaly create some defaults newsfolders (with newsfolder subscription) when creating a new entity
 - Fix deprecated get_mimetype_icon
+- WEB-3757 : Automaticaly create some defaults newsfolders (with newsfolder subscription) when creating a new entity
   [boulch]
 
 - Add eea.faceted.navigable behavior on Entity & NewsFolder types
