@@ -83,7 +83,19 @@ class TestNewsFolder(unittest.TestCase):
             get_news_folders_uids_for_faceted(self.news_folder1),
             [self.news_folder1.UID()],
         )
+        default_news_folders = self.entity1.listFolderContents(
+            contentFilter={"portal_type": "imio.news.NewsFolder"}
+        )
+        uids = []
+        for news_folder in default_news_folders:
+            uids.append(news_folder.UID())
         self.assertEqual(
             get_news_folders_uids_for_faceted(self.entity1),
-            [self.news_folder1.UID(), self.news_folder3.UID()],
+            uids,
+        )
+        self.assertIn(
+            self.news_folder1.UID(), get_news_folders_uids_for_faceted(self.entity1)
+        )
+        self.assertIn(
+            self.news_folder3.UID(), get_news_folders_uids_for_faceted(self.entity1)
         )

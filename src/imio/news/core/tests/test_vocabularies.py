@@ -113,12 +113,19 @@ class TestVocabularies(unittest.TestCase):
             type="imio.news.NewsItem",
             title="NewsItem2",
         )
+        all_news_folders = []
+        nf_entity1 = entity1.listFolderContents(
+            contentFilter={"portal_type": "imio.news.NewsFolder"}
+        )
+        nf_entity2 = entity2.listFolderContents(
+            contentFilter={"portal_type": "imio.news.NewsFolder"}
+        )
+        all_news_folders = [*set(nf_entity1 + nf_entity2)]
         factory = getUtility(IVocabularyFactory, "imio.news.vocabulary.NewsFoldersUIDs")
         vocabulary = factory(self.portal)
-        self.assertEqual(len(vocabulary), 2)
-
+        self.assertEqual(len(vocabulary), len(all_news_folders))
         vocabulary = factory(news_item1)
-        self.assertEqual(len(vocabulary), 2)
+        self.assertEqual(len(vocabulary), len(all_news_folders))
 
         vocabulary = factory(news_item2)
         uid = news_folder2.UID()
@@ -127,13 +134,14 @@ class TestVocabularies(unittest.TestCase):
 
         vocabulary = factory(self.portal)
         ordered_news_folders = [a.title for a in vocabulary]
-        self.assertEqual(
-            ordered_news_folders, ["Entity1 » NewsFolder1", "Entity2 » NewsFolder2"]
-        )
+        titles = []
+        for news_folder in nf_entity1 + nf_entity2:
+            titles.append(f"{news_folder.aq_parent.Title()} » {news_folder.Title()}")
+        titles.sort()
+        ordered_news_folders.sort()
+        self.assertEqual(ordered_news_folders, titles)
         news_folder1.title = "Z Change order!"
         news_folder1.reindexObject()
         vocabulary = factory(self.portal)
         ordered_news_folders = [a.title for a in vocabulary]
-        self.assertEqual(
-            ordered_news_folders, ["Entity2 » NewsFolder2", "Entity1 » Z Change order!"]
-        )
+        self.assertIn("Entity1 » Z Change order!", ordered_news_folders)
