@@ -4,8 +4,11 @@ from imio.news.core.utils import get_entity_for_obj
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import reload_faceted_config
 from plone import api
+from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
+from zope.component import getUtility
 from zope.globalrequest import getRequest
+from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import modified
 from zope.lifecycleevent import ObjectRemovedEvent
@@ -23,6 +26,28 @@ def set_default_news_folder_uid(news_item):
 def added_entity(obj, event):
     request = getRequest()
     reload_faceted_config(obj, request)
+    news_folder_ac = api.content.create(
+        container=obj,
+        type="imio.news.NewsFolder",
+        title="Administration communale",
+        id="administration-communale",
+    )
+    api.content.transition(news_folder_ac, transition="publish")
+    news_folder_all = api.content.create(
+        container=obj,
+        type="imio.news.NewsFolder",
+        title="Dossier reprenant toutes les actualités",
+        id="toutes-les-actualites",
+    )
+    api.content.transition(news_folder_all, transition="publish")
+    intids = getUtility(IIntIds)
+    setattr(
+        news_folder_all,
+        "populating_newsfolders",
+        [RelationValue(intids.getId(news_folder_ac))],
+    )
+    modified(news_folder_all, Attributes(IRelationList, "populating_newsfolders"))
+    api.content.transition(obj, transition="publish")
 
 
 def added_news_folder(obj, event):
