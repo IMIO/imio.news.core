@@ -42,7 +42,7 @@ This products contains:
 Examples
 --------
 
-Hopefully soon in production :-)
+- https://actualites.enwallonie.be
 
 
 Documentation
