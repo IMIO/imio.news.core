@@ -3,6 +3,7 @@ Changelog
 
 
 1.0.2 (unreleased)
+1.0a5 (2022-10-30)
 ------------------
 
 - Nothing changed yet.
