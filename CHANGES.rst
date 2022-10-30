@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0a5 (unreleased)
+1.0a5 (2022-10-30)
 ------------------
 
 - WEB-3757 : Automaticaly create some defaults newsfolders (with newsfolder subscription) when creating a new entity
