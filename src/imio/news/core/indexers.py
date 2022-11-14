@@ -37,6 +37,32 @@ def category_title(obj):
 
 
 @indexer(INewsItem)
+def title_fr(obj):
+    return obj.title
+
+
+@indexer(INewsItem)
+def title_nl(obj):
+    if not obj.title_nl:
+        raise AttributeError
+    return obj.title_nl
+
+
+@indexer(INewsItem)
+def title_de(obj):
+    if not obj.title_de:
+        raise AttributeError
+    return obj.title_de
+
+
+@indexer(INewsItem)
+def title_en(obj):
+    if not obj.title_en:
+        raise AttributeError
+    return obj.title_en
+
+
+@indexer(INewsItem)
 def category_and_topics_indexer(obj):
     list = []
     if obj.topics is not None:
