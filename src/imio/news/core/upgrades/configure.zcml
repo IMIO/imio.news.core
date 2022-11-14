@@ -21,4 +21,13 @@
       profile="imio.news.core:default"
       />
 
+  <genericsetup:upgradeStep
+      title="Add translations related indexes"
+      description=""
+      source="1002"
+      destination="1003"
+      handler=".upgrades.add_translations_indexes"
+      profile="imio.news.core:default"
+      />
+
 </configure>
