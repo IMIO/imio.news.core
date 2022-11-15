@@ -82,6 +82,10 @@ class TestMultilingual(unittest.TestCase):
         news_item.title_en = "My news item that I will test in several languages"
         news_item.title_nl = "Mijn nieuws die ik in verschillende talen zal testen"
         news_item.title_de = "Mein nieuws, den ich in mehreren Sprachen testen werde"
+        news_item.text = RichTextValue("<p>Mon texte</p>", "text/html", "text/html")
+        news_item.text_en = RichTextValue("<p>My newstext</p>", "text/html", "text/html")
+        news_item.text_nl = RichTextValue("<p>Mijn nieuwstekst</p>", "text/html", "text/html")
+        news_item.text_de = RichTextValue("<p>Meine nieuwstext</p>", "text/html", "text/html")
         news_item.reindexObject()
         transaction.commit()
         catalog = api.portal.get_tool("portal_catalog")
@@ -89,6 +93,11 @@ class TestMultilingual(unittest.TestCase):
         indexes = catalog.getIndexDataForRID(brain.getRID())
         self.assertIn("several", indexes.get("SearchableText"))
         self.assertIn("verschillende", indexes.get("SearchableText"))
+        self.assertIn("mehreren", indexes.get("SearchableText"))
+        self.assertIn("texte", indexes.get("SearchableText"))
+        self.assertIn("newstext", indexes.get("SearchableText"))
+        self.assertIn("nieuwstekst", indexes.get("SearchableText"))
+        self.assertIn("nieuwstext", indexes.get("SearchableText"))
         metadatas = catalog.getMetadataForRID(brain.getRID())
         self.assertEqual(news_item.title, metadatas.get("title_fr"))
         self.assertEqual(news_item.title_nl, metadatas.get("title_nl"))

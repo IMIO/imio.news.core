@@ -84,20 +84,26 @@ def container_uid(obj):
 
 @indexer(INewsItem)
 def SearchableText_news_item(obj):
-    text = ""
-    textvalue = IRichText(obj).text
-    if IRichTextValue.providedBy(textvalue):
-        transforms = api.portal.get_tool("portal_transforms")
-        raw = safe_unicode(textvalue.raw)
-        text = (
-            transforms.convertTo(
-                "text/plain",
-                raw,
-                mimetype=textvalue.mimeType,
+
+    def get_text(lang):
+        text = ""
+        if lang == "fr":
+            textvalue = IRichText(obj).text
+        else:
+            textvalue = getattr(IRichText(obj), f"text_{lang}")
+        if IRichTextValue.providedBy(textvalue):
+            transforms = api.portal.get_tool("portal_transforms")
+            raw = safe_unicode(textvalue.raw)
+            text = (
+                transforms.convertTo(
+                    "text/plain",
+                    raw,
+                    mimetype=textvalue.mimeType,
+                )
+                .getData()
+                .strip()
             )
-            .getData()
-            .strip()
-        )
+        return text
 
     topics = []
     for topic in getattr(obj.aq_base, "topics", []) or []:
@@ -113,16 +119,16 @@ def SearchableText_news_item(obj):
         (
             safe_unicode(obj.title) or "",
             safe_unicode(obj.description) or "",
-            safe_unicode(text),
+            safe_unicode(get_text("fr")),
             safe_unicode(obj.title_nl) or "",
             safe_unicode(obj.description_nl) or "",
-            safe_unicode(obj.text_nl) or "",
+            safe_unicode(get_text("nl")),
             safe_unicode(obj.title_de) or "",
             safe_unicode(obj.description_de) or "",
-            safe_unicode(obj.text_de) or "",
+            safe_unicode(get_text("de")),
             safe_unicode(obj.title_en) or "",
             safe_unicode(obj.description_en) or "",
-            safe_unicode(obj.text_en) or "",
+            safe_unicode(get_text("en")),
             *topics,
             *subjects,
             safe_unicode(category),
