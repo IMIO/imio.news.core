@@ -16,11 +16,24 @@
   <index name="selected_news_folders" meta_type="KeywordIndex">
     <indexed_attr value="selected_news_folders"/>
   </index>
+  <index name="translated_in_nl" meta_type="BooleanIndex">
+    <indexed_attr value="translated_in_nl"/>
+  </index>
+  <index name="translated_in_de" meta_type="BooleanIndex">
+    <indexed_attr value="translated_in_de"/>
+  </index>
+  <index name="translated_in_en" meta_type="BooleanIndex">
+    <indexed_attr value="translated_in_en"/>
+  </index>
 
   <column value="category"/>
   <column value="category_title"/>
   <column value="category_and_topics"/>
   <column value="container_uid"/>
   <column value="selected_news_folders"/>
-  
+  <column value="title_fr"/>
+  <column value="title_nl"/>
+  <column value="title_de"/>
+  <column value="title_en"/>
+
 </object>

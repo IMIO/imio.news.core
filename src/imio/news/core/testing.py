@@ -28,6 +28,7 @@ class ImioNewsCoreLayer(PloneSandboxLayer):
 
         self.loadZCML(package=plone.restapi)
         self.loadZCML(package=imio.news.core)
+        self.loadZCML(package=imio.news.core, name="overrides.zcml")
 
     def setUpPloneSite(self, portal):
         request = portal.REQUEST
