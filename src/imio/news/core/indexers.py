@@ -84,7 +84,6 @@ def container_uid(obj):
 
 @indexer(INewsItem)
 def SearchableText_news_item(obj):
-
     def get_text(lang):
         text = ""
         if lang == "fr":
