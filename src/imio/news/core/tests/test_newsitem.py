@@ -9,6 +9,7 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.interfaces import IDexterityFTI
+from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
@@ -317,3 +318,20 @@ class TestNewsItem(unittest.TestCase):
         bundles = getattr(self.request, "enabled_bundles", [])
         self.assertEqual(len(bundles), 2)
         self.assertListEqual(bundles, ["spotlightjs", "flexbin"])
+
+    def test_files_in_newsitem_view(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="NewsItem",
+        )
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertNotIn("event-files", view())
+        file_obj = api.content.create(
+            container=newsitem,
+            type="File",
+            title="file",
+        )
+        file_obj.file = NamedBlobFile(data="file data", filename="file.txt")
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertIn("++resource++mimetype.icons/txt.png", view())

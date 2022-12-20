@@ -5,7 +5,8 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update to Plone 6.0.0 final
+  [boulch]
 
 
 1.0.1 (2022-11-15)
@@ -26,6 +27,9 @@ Changelog
 ------------------
 
 - WEB-3757 : Automaticaly create some defaults newsfolders (with newsfolder subscription) when creating a new entity
+- Fix deprecated get_mimetype_icon
+- WEB-3757 : Automaticaly create some defaults newsfolders (with newsfolder subscription) when creating a new entity
+- Fix deprecated get_mimetype_icon
   [boulch]
 
 - Add eea.faceted.navigable behavior on Entity & NewsFolder types
