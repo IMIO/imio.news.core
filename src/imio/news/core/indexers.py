@@ -63,6 +63,34 @@ def title_en(obj):
 
 
 @indexer(INewsItem)
+def description_fr(obj):
+    if not obj.description:
+        raise AttributeError
+    return obj.description
+
+
+@indexer(INewsItem)
+def description_nl(obj):
+    if not obj.description_nl:
+        raise AttributeError
+    return obj.description_nl
+
+
+@indexer(INewsItem)
+def description_de(obj):
+    if not obj.description_de:
+        raise AttributeError
+    return obj.description_de
+
+
+@indexer(INewsItem)
+def description_en(obj):
+    if not obj.description_en:
+        raise AttributeError
+    return obj.description_en
+
+
+@indexer(INewsItem)
 def category_and_topics_indexer(obj):
     list = []
     if obj.topics is not None:
@@ -82,8 +110,7 @@ def container_uid(obj):
     return uid
 
 
-@indexer(INewsItem)
-def SearchableText_news_item(obj):
+def get_searchable_text(obj, lang):
     def get_text(lang):
         text = ""
         if lang == "fr":
@@ -114,23 +141,40 @@ def SearchableText_news_item(obj):
         "imio.news.vocabulary.NewsCategories", getattr(obj.aq_base, "category", None)
     )
     subjects = obj.Subject()
+    title_field_name = "title"
+    description_field_name = "description"
+    if lang != "fr":
+        title_field_name = f"{title_field_name}_{lang}"
+        description_field_name = f"{description_field_name}_{lang}"
+
     result = " ".join(
         (
-            safe_unicode(obj.title) or "",
-            safe_unicode(obj.description) or "",
-            safe_unicode(get_text("fr")),
-            safe_unicode(obj.title_nl) or "",
-            safe_unicode(obj.description_nl) or "",
-            safe_unicode(get_text("nl")),
-            safe_unicode(obj.title_de) or "",
-            safe_unicode(obj.description_de) or "",
-            safe_unicode(get_text("de")),
-            safe_unicode(obj.title_en) or "",
-            safe_unicode(obj.description_en) or "",
-            safe_unicode(get_text("en")),
+            safe_unicode(getattr(obj, title_field_name)) or "",
+            safe_unicode(getattr(obj, description_field_name)) or "",
+            safe_unicode(get_text(lang)) or "",
             *topics,
             *subjects,
             safe_unicode(category),
         )
     )
     return _unicode_save_string_concat(result)
+
+
+@indexer(INewsItem)
+def SearchableText_fr_contact(obj):
+    return get_searchable_text(obj, "fr")
+
+
+@indexer(INewsItem)
+def SearchableText_nl_contact(obj):
+    return get_searchable_text(obj, "nl")
+
+
+@indexer(INewsItem)
+def SearchableText_de_contact(obj):
+    return get_searchable_text(obj, "de")
+
+
+@indexer(INewsItem)
+def SearchableText_en_contact(obj):
+    return get_searchable_text(obj, "en")

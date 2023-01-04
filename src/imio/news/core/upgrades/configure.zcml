@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="imio.smartweb">
 
+  <genericsetup:registerProfile
+      name="upgrade_1003_to_1004"
+      title="Upgrade core from 1003 to 1004"
+      directory="profiles/1003_to_1004"
+      description="Add more missing translations indexes / metadata"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <genericsetup:upgradeStep
       title="Refresh faceted"
       description="Refresh faceted configurations on all entities / news folders"
@@ -29,5 +37,19 @@
       handler=".upgrades.add_translations_indexes"
       profile="imio.news.core:default"
       />
+
+  <genericsetup:upgradeSteps
+      source="1003"
+      destination="1004"
+      profile="imio.news.core:default">
+    <genericsetup:upgradeDepends
+        title="Add more missing translations indexes / metadata"
+        import_profile="imio.news.core.upgrades:upgrade_1003_to_1004"
+        />
+    <genericsetup:upgradeStep
+        title="Reindex catalog"
+        handler=".upgrades.reindex_catalog"
+        />
+  </genericsetup:upgradeSteps>
 
 </configure>

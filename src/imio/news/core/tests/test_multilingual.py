@@ -82,6 +82,10 @@ class TestMultilingual(unittest.TestCase):
         news_item.title_en = "My news item that I will test in several languages"
         news_item.title_nl = "Mijn nieuws die ik in verschillende talen zal testen"
         news_item.title_de = "Mein nieuws, den ich in mehreren Sprachen testen werde"
+        news_item.description = "Ma description_fr"
+        news_item.description_nl = "Mijn beschrijving"
+        news_item.description_de = "Meine Beschreibung"
+        news_item.description_en = "My description_en"
         news_item.text = RichTextValue("<p>Mon texte</p>", "text/html", "text/html")
         news_item.text_en = RichTextValue(
             "<p>My newstext</p>", "text/html", "text/html"
@@ -97,18 +101,23 @@ class TestMultilingual(unittest.TestCase):
         catalog = api.portal.get_tool("portal_catalog")
         brain = api.content.find(UID=news_item.UID())[0]
         indexes = catalog.getIndexDataForRID(brain.getRID())
-        self.assertIn("several", indexes.get("SearchableText"))
-        self.assertIn("verschillende", indexes.get("SearchableText"))
-        self.assertIn("mehreren", indexes.get("SearchableText"))
+        self.assertIn("several", indexes.get("SearchableText_en"))
+        self.assertIn("verschillende", indexes.get("SearchableText_nl"))
+        self.assertIn("mehreren", indexes.get("SearchableText_de"))
         self.assertIn("texte", indexes.get("SearchableText"))
-        self.assertIn("newstext", indexes.get("SearchableText"))
-        self.assertIn("nieuwstekst", indexes.get("SearchableText"))
-        self.assertIn("nieuwstext", indexes.get("SearchableText"))
+        self.assertIn("texte", indexes.get("SearchableText_fr"))
+        self.assertIn("newstext", indexes.get("SearchableText_en"))
+        self.assertIn("nieuwstekst", indexes.get("SearchableText_nl"))
+        self.assertIn("nieuwstext", indexes.get("SearchableText_de"))
         metadatas = catalog.getMetadataForRID(brain.getRID())
         self.assertEqual(news_item.title, metadatas.get("title_fr"))
         self.assertEqual(news_item.title_nl, metadatas.get("title_nl"))
         self.assertEqual(news_item.title_de, metadatas.get("title_de"))
         self.assertEqual(news_item.title_en, metadatas.get("title_en"))
+        self.assertEqual(news_item.description, metadatas.get("description_fr"))
+        self.assertEqual(news_item.description_nl, metadatas.get("description_nl"))
+        self.assertEqual(news_item.description_de, metadatas.get("description_de"))
+        self.assertEqual(news_item.description_en, metadatas.get("description_en"))
 
         news_item.title_en = None
         news_item.reindexObject()
@@ -116,7 +125,7 @@ class TestMultilingual(unittest.TestCase):
         catalog = api.portal.get_tool("portal_catalog")
         brain = api.content.find(UID=news_item.UID())[0]
         indexes = catalog.getIndexDataForRID(brain.getRID())
-        self.assertNotIn("several", indexes.get("SearchableText"))
+        self.assertNotIn("several", indexes.get("SearchableText_en"))
 
     def test_news_item_serializer(self):
         alsoProvides(self.request, IImioNewsCoreLayer)
