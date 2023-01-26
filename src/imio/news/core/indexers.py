@@ -161,20 +161,20 @@ def get_searchable_text(obj, lang):
 
 
 @indexer(INewsItem)
-def SearchableText_fr_contact(obj):
+def SearchableText_fr_news(obj):
     return get_searchable_text(obj, "fr")
 
 
 @indexer(INewsItem)
-def SearchableText_nl_contact(obj):
+def SearchableText_nl_news(obj):
     return get_searchable_text(obj, "nl")
 
 
 @indexer(INewsItem)
-def SearchableText_de_contact(obj):
+def SearchableText_de_news(obj):
     return get_searchable_text(obj, "de")
 
 
 @indexer(INewsItem)
-def SearchableText_en_contact(obj):
+def SearchableText_en_news(obj):
     return get_searchable_text(obj, "en")
