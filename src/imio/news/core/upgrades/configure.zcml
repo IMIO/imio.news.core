@@ -61,4 +61,13 @@
       profile="imio.news.core:default"
       />
 
+  <genericsetup:upgradeStep
+      title="Remove unused title_fr and description_fr metadatas"
+      description=""
+      source="1005"
+      destination="1006"
+      handler=".upgrades.remove_title_description_fr"
+      profile="imio.news.core:default"
+      />
+
 </configure>
