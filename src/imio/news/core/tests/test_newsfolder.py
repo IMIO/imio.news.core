@@ -21,7 +21,6 @@ import unittest
 
 
 class TestNewsFolder(unittest.TestCase):
-
     layer = IMIO_NEWS_CORE_INTEGRATION_TESTING
 
     def setUp(self):

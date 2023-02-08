@@ -24,7 +24,6 @@ class NewsItemCroppingProvider(BaseCroppingProvider):
 
 
 class IDETranslations(model.Schema):
-
     model.fieldset(
         "de_translations",
         label=_("German translations"),
@@ -42,7 +41,6 @@ class IDETranslations(model.Schema):
 
 
 class IENTranslations(model.Schema):
-
     model.fieldset(
         "en_translations",
         label=_("English translations"),
@@ -60,7 +58,6 @@ class IENTranslations(model.Schema):
 
 
 class INLTranslations(model.Schema):
-
     model.fieldset(
         "nl_translations",
         label=_("Dutch translations"),

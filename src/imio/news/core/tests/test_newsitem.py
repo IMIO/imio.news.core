@@ -28,7 +28,6 @@ import unittest
 
 
 class TestNewsItem(unittest.TestCase):
-
     layer = IMIO_NEWS_CORE_FUNCTIONAL_TESTING
 
     def setUp(self):

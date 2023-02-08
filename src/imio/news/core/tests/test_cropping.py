@@ -11,7 +11,6 @@ import unittest
 
 
 class TestCropping(unittest.TestCase):
-
     layer = IMIO_NEWS_CORE_INTEGRATION_TESTING
 
     def setUp(self):
