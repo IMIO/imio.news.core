@@ -20,7 +20,7 @@ def set_default_news_folder_uid(news_item):
     uid = get_news_folder_for_news_item(news_item).UID()
     if uid not in news_item.selected_news_folders:
         news_item.selected_news_folders = news_item.selected_news_folders + [uid]
-        news_item.reindexObject(idxs=["selected_news_folders"])
+    news_item.reindexObject(idxs=["selected_news_folders"])
 
 
 def added_entity(obj, event):
@@ -141,6 +141,7 @@ def set_uid_of_referrer_newsfolders(obj, event, container_newsfolder):
         target=container_newsfolder, relationship="populating_newsfolders"
     )
     if not rels:
+        obj.reindexObject(idxs=["selected_news_folders"])
         return
     for rel in rels:
         obj.selected_news_folders.append(rel.from_object.UID())
