@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from embeddify import Embedder
+from imio.smartweb.common.utils import show_warning_for_scales
 from imio.smartweb.common.utils import translate_vocabulary_term
 from plone.app.contenttypes.behaviors.leadimage import ILeadImage
 from plone.app.contenttypes.browser.folder import FolderView
@@ -9,6 +10,7 @@ from Products.CMFPlone.resources import add_bundle_on_request
 
 class View(FolderView):
     def __call__(self):
+        show_warning_for_scales(self.context, self.request)
         images = self.context.listFolderContents(contentFilter={"portal_type": "Image"})
         if len(images) > 0:
             add_bundle_on_request(self.request, "spotlightjs")
