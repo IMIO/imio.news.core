@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.1.4 (unreleased)
+1.1.4 (2023-09-21)
 ------------------
 
 - WEB-3989 : Fix infinite loop on object deletion
