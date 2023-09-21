@@ -5,6 +5,9 @@ Changelog
 1.1.4 (unreleased)
 ------------------
 
+- WEB-3989 : Fix infinite loop on object deletion
+  [laulaz]
+
 - Migrate to Plone 6.0.4
   [boulch]
 

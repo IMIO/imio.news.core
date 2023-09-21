@@ -13,7 +13,7 @@ import os
 
 
 def get_entity_for_obj(obj):
-    while not IEntity.providedBy(obj):
+    while not IEntity.providedBy(obj) and obj is not None:
         obj = parent(obj)
     entity = obj
     return entity
@@ -21,7 +21,7 @@ def get_entity_for_obj(obj):
 
 def get_news_folder_for_news_item(news_item):
     obj = news_item
-    while not INewsFolder.providedBy(obj):
+    while not INewsFolder.providedBy(obj) and obj is not None:
         obj = parent(obj)
     news_folder = obj
     return news_folder

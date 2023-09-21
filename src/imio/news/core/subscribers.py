@@ -17,7 +17,10 @@ from zope.lifecycleevent.interfaces import IAttributes
 
 def set_default_news_folder_uid(news_item):
     news_item.selected_news_folders = news_item.selected_news_folders or []
-    uid = get_news_folder_for_news_item(news_item).UID()
+    news_folder = get_news_folder_for_news_item(news_item)
+    if news_folder is None:
+        return
+    uid = news_folder.UID()
     if uid not in news_item.selected_news_folders:
         news_item.selected_news_folders = news_item.selected_news_folders + [uid]
     news_item.reindexObject(idxs=["selected_news_folders"])
