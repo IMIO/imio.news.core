@@ -84,7 +84,7 @@ def removed_newsfolder(obj, event):
 
 def added_news_item(obj, event):
     container_newsfolder = get_news_folder_for_news_item(obj)
-    set_uid_of_referrer_newsfolders(obj, event, container_newsfolder)
+    set_uid_of_referrer_newsfolders(obj, container_newsfolder)
 
 
 def modified_news_item(obj, event):
@@ -99,7 +99,7 @@ def moved_news_item(obj, event):
         # We don't have anything to do if news item is being removed
         return
     container_newsfolder = get_news_folder_for_news_item(obj)
-    set_uid_of_referrer_newsfolders(obj, event, container_newsfolder)
+    set_uid_of_referrer_newsfolders(obj, container_newsfolder)
 
 
 def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
@@ -138,7 +138,7 @@ def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
     obj.old_populating_newsfolders = uids_in_current_newsfolder
 
 
-def set_uid_of_referrer_newsfolders(obj, event, container_newsfolder):
+def set_uid_of_referrer_newsfolders(obj, container_newsfolder):
     obj.selected_news_folders = [container_newsfolder.UID()]
     rels = api.relation.get(
         target=container_newsfolder, relationship="populating_newsfolders"
