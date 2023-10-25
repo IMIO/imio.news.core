@@ -3,6 +3,7 @@
 from imio.news.core.utils import get_entity_for_obj
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import reload_faceted_config
+from imio.smartweb.common.utils import remove_cropping
 from plone import api
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
@@ -89,6 +90,13 @@ def added_news_item(obj, event):
 
 def modified_news_item(obj, event):
     set_default_news_folder_uid(obj)
+
+    if not hasattr(event, "descriptions") or not event.descriptions:
+        return
+    for d in event.descriptions:
+        if IAttributes.providedBy(d) and "ILeadImageBehavior.image" in d.attributes:
+            # we need to remove cropping information of previous image
+            remove_cropping(obj, "image", ["portrait_affiche", "paysage_affiche"])
 
 
 def moved_news_item(obj, event):
