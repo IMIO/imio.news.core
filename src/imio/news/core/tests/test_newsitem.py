@@ -5,6 +5,9 @@ from imio.news.core.interfaces import IImioNewsCoreLayer
 from imio.news.core.testing import IMIO_NEWS_CORE_FUNCTIONAL_TESTING
 from imio.news.core.tests.utils import make_named_image
 from plone import api
+from plone.app.contenttypes.behaviors.leadimage import ILeadImageBehavior
+from plone.app.dexterity.behaviors.metadata import IBasic
+from plone.app.imagecropping import PAI_STORAGE_KEY
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.textfield.value import RichTextValue
@@ -13,6 +16,7 @@ from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
+from zope.annotation.interfaces import IAnnotations
 from zope.component import createObject
 from zope.component import getUtility
 from zope.component import getMultiAdapter
@@ -279,6 +283,26 @@ class TestNewsItem(unittest.TestCase):
         newsitem.reindexObject()
         modified(newsitem)
         self.assertIn(self.news_folder.UID(), newsitem.selected_news_folders)
+
+    def test_removing_old_cropping(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            id="newsitem",
+        )
+        newsitem.image = NamedBlobImage(**make_named_image())
+        view = newsitem.restrictedTraverse("@@crop-image")
+        view._crop(fieldname="image", scale="portrait_affiche", box=(1, 1, 200, 200))
+        annotation = IAnnotations(newsitem).get(PAI_STORAGE_KEY)
+        self.assertEqual(annotation, {"image_portrait_affiche": (1, 1, 200, 200)})
+
+        modified(newsitem, Attributes(IBasic, "IBasic.title"))
+        annotation = IAnnotations(newsitem).get(PAI_STORAGE_KEY)
+        self.assertEqual(annotation, {"image_portrait_affiche": (1, 1, 200, 200)})
+
+        modified(newsitem, Attributes(ILeadImageBehavior, "ILeadImageBehavior.image"))
+        annotation = IAnnotations(newsitem).get(PAI_STORAGE_KEY)
+        self.assertEqual(annotation, {})
 
     def test_name_chooser(self):
         news = api.content.create(

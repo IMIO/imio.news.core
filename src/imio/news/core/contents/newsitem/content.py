@@ -19,7 +19,10 @@ class NewsItemCroppingProvider(BaseCroppingProvider):
     def get_scales(self, fieldname, request=None):
         if fieldname == "image":
             # scales used for lead image field
-            return ["vignette", "slide", "affiche"]
+            return [
+                "portrait_affiche",
+                "paysage_affiche",
+            ]
         return []
 
 
