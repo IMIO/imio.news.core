@@ -96,7 +96,9 @@ def modified_news_item(obj, event):
     for d in event.descriptions:
         if IAttributes.providedBy(d) and "ILeadImageBehavior.image" in d.attributes:
             # we need to remove cropping information of previous image
-            remove_cropping(obj, "image", ["portrait_affiche", "paysage_affiche"])
+            remove_cropping(
+                obj, "image", ["portrait_affiche", "paysage_affiche", "carre_affiche"]
+            )
 
 
 def moved_news_item(obj, event):

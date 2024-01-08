@@ -12,8 +12,6 @@ from zope.interface import implementer
 
 
 class INewsFolder(model.Schema):
-    """Marker interface and Dexterity Python Schema for NewsFolder"""
-
     populating_newsfolders = RelationList(
         title=_("Populating news folders"),
         description=_(

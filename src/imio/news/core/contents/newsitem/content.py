@@ -22,6 +22,7 @@ class NewsItemCroppingProvider(BaseCroppingProvider):
             return [
                 "portrait_affiche",
                 "paysage_affiche",
+                "carre_affiche",
             ]
         return []
 
