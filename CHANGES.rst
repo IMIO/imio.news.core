@@ -5,13 +5,15 @@ Changelog
 1.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- MWEBRCHA-13 : Add versioning on imio.news.NewsItem
+  [boulch]
 
 
 1.2.1 (2024-01-09)
 ------------------
 
 - WEB-4041 : Handle new "carre" scale
+  [boulch]
 
 
 1.2 (2023-10-25)

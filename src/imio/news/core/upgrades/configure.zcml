@@ -11,6 +11,14 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <genericsetup:registerProfile
+      name="upgrade_1006_to_1007"
+      title="Upgrade core from 1006 to 1007"
+      directory="profiles/1006_to_1007"
+      description="Add versioning on imio.news.NewsItem"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <genericsetup:upgradeStep
       title="Refresh faceted"
       description="Refresh faceted configurations on all entities / news folders"
@@ -69,5 +77,15 @@
       handler=".upgrades.remove_title_description_fr"
       profile="imio.news.core:default"
       />
+
+  <genericsetup:upgradeSteps
+      source="1006"
+      destination="1007"
+      profile="imio.news.core:default">
+    <genericsetup:upgradeDepends
+        title="Add versioning on imio.news.NewsItem"
+        import_profile="imio.news.core.upgrades:upgrade_1006_to_1007"
+        />
+  </genericsetup:upgradeSteps>
 
 </configure>

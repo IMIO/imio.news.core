@@ -37,6 +37,7 @@
     <element value="plone.constraintypes" />
     <element value="plone.publication" />
     <element value="plone.richtext"/>
+    <element value="plone.versioning"/>
     <element value="imio.smartweb.topics"/>
     <element value="imio.smartweb.iam"/>
     <element value="plone.categorization"/>

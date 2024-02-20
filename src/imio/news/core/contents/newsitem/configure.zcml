@@ -6,7 +6,7 @@
   <adapter factory=".serializer.NewsItemJSONSummarySerializer" />
 
   <adapter
-      for=".content.NewsItem"
+      for="imio.news.core.contents.INewsItem"
       provides="imio.smartweb.common.interfaces.ICropping"
       factory=".content.NewsItemCroppingProvider"
       />
