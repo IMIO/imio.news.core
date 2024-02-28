@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.2 (unreleased)
+1.2.2 (2024-02-28)
 ------------------
 
 - WEB-4072, WEB-4073 : Enable solr.fields behavior on some content types
