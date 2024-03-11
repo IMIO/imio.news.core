@@ -16,6 +16,7 @@
   <include package=".contents" />
   <include package=".serializer" />
   <include package=".upgrades" />
+  <include package=".viewlets" />
 
   <include file="indexers.zcml" />
   <include file="permissions.zcml" />

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from AccessControl import Unauthorized
 from imio.news.core.contents import IEntity
+from imio.news.core.contents import INewsFolder
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from plone import api
 from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
@@ -108,3 +110,30 @@ class NewsFoldersUIDsVocabularyFactory:
 
 
 NewsFoldersUIDsVocabulary = NewsFoldersUIDsVocabularyFactory()
+
+
+class UserNewsFoldersVocabularyFactory:
+
+    def __call__(self, context=None):
+        site = api.portal.get()
+        user = site.portal_membership.getAuthenticatedMember()
+        results = []
+        permission = "imio.news.core: Add NewsItem"
+        brains = api.content.find(object_provides=[INewsFolder])
+        for brain in brains:
+            obj = brain.getObject()
+            try:
+                # Display only news fodlers where user has the permission to add a news
+                if user.has_permission(permission, obj):
+                    results.append(
+                        SimpleTerm(
+                            value=brain.UID, token=brain.UID, title=brain.breadcrumb
+                        )
+                    )
+            except Unauthorized:
+                pass
+        sorted_results = sorted(results, key=lambda x: x.title)
+        return SimpleVocabulary(sorted_results)
+
+
+UserNewsFoldersVocabulary = UserNewsFoldersVocabularyFactory()

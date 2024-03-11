@@ -1,0 +1,12 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      name="bring_news_into_news_folders_form"
+      for="imio.news.core.contents.INewsItem"
+      class=".news_folders.BringNewsIntoNewsFoldersForm"
+      permission="zope.Public"
+      />
+
+</configure>

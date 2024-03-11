@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+  <browser:viewlet
+      name="imio.news.bring_news_link"
+      for="imio.news.core.contents.INewsItem"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      layer="imio.news.core.interfaces.IImioNewsCoreLayer"
+      template="news/button_to_bring_news.pt"
+      class="imio.news.core.viewlets.news.BringNewsIntoNewsFoldersViewlet"
+      permission="zope2.View"
+      />
+</configure>

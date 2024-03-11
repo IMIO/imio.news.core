@@ -5,7 +5,8 @@ Changelog
 1.2.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- WEB-4068 : Adding news in any news folders where user have rights
+  [boulch]
 
 
 1.2.2 (2024-02-28)

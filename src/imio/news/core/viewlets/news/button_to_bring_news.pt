@@ -1,0 +1,9 @@
+<div class="bring_news_into_news_folders"
+     tal:condition="view/available">
+    <a tal:attributes="href string:${context/absolute_url}/@@bring_news_into_news_folders_form"
+       class="btn btn-primary"
+       i18n:domain="imio.smartweb"
+       i18n:translate=""
+       title="Add/Remove news folder(s)">
+        Add/Remove news folder(s)
+</div>
