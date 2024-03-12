@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.3 (unreleased)
+1.2.3 (2024-03-12)
 ------------------
 
 - WEB-4068 : Adding news in any news folders where user have rights
