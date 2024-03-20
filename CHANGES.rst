@@ -5,7 +5,8 @@ Changelog
 1.2.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- WEB-4068 : Add field to limit the new feature "adding news in any news folders" to some entities
+  [boulch]
 
 
 1.2.3 (2024-03-12)

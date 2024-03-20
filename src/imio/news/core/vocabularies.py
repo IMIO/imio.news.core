@@ -117,7 +117,7 @@ class UserNewsFoldersVocabularyFactory:
     def __call__(self, context=None):
         site = api.portal.get()
         user = site.portal_membership.getAuthenticatedMember()
-        results = []
+        terms = []
         permission = "imio.news.core: Add NewsItem"
         brains = api.content.find(object_provides=[INewsFolder])
         for brain in brains:
@@ -125,15 +125,11 @@ class UserNewsFoldersVocabularyFactory:
             try:
                 # Display only news fodlers where user has the permission to add a news
                 if user.has_permission(permission, obj):
-                    results.append(
-                        SimpleTerm(
-                            value=brain.UID, token=brain.UID, title=brain.breadcrumb
-                        )
-                    )
+                    terms.append(SimpleTerm(value=brain.UID, title=brain.breadcrumb))
             except Unauthorized:
                 pass
-        sorted_results = sorted(results, key=lambda x: x.title)
-        return SimpleVocabulary(sorted_results)
+        sorted_terms = sorted(terms, key=lambda x: x.title)
+        return SimpleVocabulary(sorted_terms)
 
 
 UserNewsFoldersVocabulary = UserNewsFoldersVocabularyFactory()
