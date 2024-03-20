@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.4 (unreleased)
+1.2.4 (2024-03-20)
 ------------------
 
 - WEB-4068 : Add field to limit the new feature "adding news in any news folders" to some entities
