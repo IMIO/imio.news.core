@@ -6,7 +6,8 @@
       name="bring_news_into_news_folders_form"
       for="imio.news.core.contents.INewsItem"
       class=".news_folders.BringNewsIntoNewsFoldersForm"
-      permission="zope.Public"
+      permission="zope2.Public"
+      layer="imio.news.core.interfaces.IImioNewsCoreLayer"
       />
 
 </configure>

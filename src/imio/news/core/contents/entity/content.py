@@ -29,6 +29,21 @@ class IEntity(model.Schema):
         required=False,
     )
 
+    directives.read_permission(
+        authorize_to_bring_news_anywhere="imio.news.core.BringNewsIntoPersonnalNewsFolder"
+    )
+    directives.write_permission(
+        authorize_to_bring_news_anywhere="imio.events.core.BringNewsIntoPersonnalNewsFolder"
+    )
+    authorize_to_bring_news_anywhere = schema.Bool(
+        title=_("Authorize to bring news anywhere"),
+        description=_(
+            "If selected, contributor of this entity can bring news in any news folders independently of news folders subscribing feature"
+        ),
+        required=False,
+        default=False,
+    )
+
 
 @implementer(IEntity, ILocalManagerAware)
 class Entity(Container):

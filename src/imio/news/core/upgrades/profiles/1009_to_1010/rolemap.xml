@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<rolemap>
+  <permissions>
+
+    <permission name="imio.news.core: Bring news into personnal news folder" acquire="True">
+      <role name="Manager"/>
+    </permission>
+
+  </permissions>
+</rolemap>

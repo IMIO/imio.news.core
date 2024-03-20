@@ -27,4 +27,9 @@
       title="imio.news.core: Add Page"
       />
 
+  <permission
+      id="imio.news.core.BringNewsIntoPersonnalNewsFolder"
+      title="imio.news.core: Bring news into personnal news folder"
+      />
+
 </configure>
