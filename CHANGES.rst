@@ -5,7 +5,8 @@ Changelog
 1.2.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix template for translations
+  [boulch]
 
 
 1.2.4 (2024-03-20)
