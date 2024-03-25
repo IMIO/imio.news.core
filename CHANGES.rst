@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.5 (unreleased)
+1.2.5 (2024-03-25)
 ------------------
 
 - Fix template for translations
