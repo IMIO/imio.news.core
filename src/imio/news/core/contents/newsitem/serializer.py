@@ -3,6 +3,7 @@
 from imio.news.core.contents import INewsItem
 from imio.news.core.interfaces import IImioNewsCoreLayer
 from imio.smartweb.common.rest.utils import get_restapi_query_lang
+from plone import api
 from plone.app.contentlisting.interfaces import IContentListingObject
 from plone.restapi.interfaces import ISerializeToJson
 from plone.restapi.interfaces import ISerializeToJsonSummary
@@ -45,8 +46,22 @@ class SerializeNewsItemToJson(SerializeFolderToJson):
 class NewsItemJSONSummarySerializer(DefaultJSONSummarySerializer):
     def __call__(self):
         summary = super(NewsItemJSONSummarySerializer, self).__call__()
-
         query = self.request.form
+        # To get news folder title and use it in carousel,...
+        if query.get("metadata_fields") is not None and "container_uid" in query.get(
+            "metadata_fields"
+        ):
+            news_folder = None
+            container_uid = summary.get("container_uid")
+            # News folders can be private (admin to access them). That doesn't stop news to be bring.
+            with api.env.adopt_user(username="admin"):
+                news_folder = api.content.get(UID=container_uid)
+            if not news_folder:
+                return summary
+            # To make a specific news folder css class in smartweb carousel common template
+            summary["usefull_container_id"] = news_folder.id
+            # To display news folder title in smartweb carousel common template
+            summary["usefull_container_title"] = news_folder.title
         lang = get_restapi_query_lang(query)
         if lang == "fr":
             # nothing to go, fr is the default language
