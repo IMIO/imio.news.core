@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from imio.news.core.contents import IFolder
+from imio.news.core.contents import INewsFolder
 from imio.news.core.contents import INewsItem
 from imio.news.core.interfaces import IImioNewsCoreLayer
 from imio.smartweb.common.rest.utils import get_restapi_query_lang
@@ -14,6 +16,16 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import Interface
+
+
+def get_container_uid(event_uid, summary=None):
+    if summary is not None:
+        container_uid = summary.get("UID") or summary.get("container_uid")
+        if container_uid:
+            return container_uid
+    brain = api.content.find(UID=event_uid)[0]
+    container_uid = getattr(brain, "container_uid", None)
+    return container_uid
 
 
 @implementer(ISerializeToJson)
@@ -34,6 +46,22 @@ class SerializeNewsItemToJson(SerializeFolderToJson):
             result["description"] = result[f"description_{lang}"]
             result["text"] = result[f"text_{lang}"]
 
+        # Getting news folder title/id to use it in rest views
+        if query.get("metadata_fields") is not None and "container_uid" in query.get(
+            "metadata_fields"
+        ):
+            newsfolder = None
+            news_uid = self.context.UID()
+            container_uid = get_container_uid(news_uid)
+            if container_uid is not None:
+                # newsfolder can be private (admin to access them). That doesn't stop events to be bring.
+                with api.env.adopt_user(username="admin"):
+                    newsfolder = api.content.get(UID=container_uid)
+                # To make a specific newsfolder css class in smartweb carousel common template
+                result["usefull_container_id"] = newsfolder.id
+                # To display newsfolder title in smartweb carousel common template
+                result["usefull_container_title"] = newsfolder.title
+
         # maybe not necessary :
         result["title_fr"] = title
         result["description_fr"] = desc
@@ -52,7 +80,19 @@ class NewsItemJSONSummarySerializer(DefaultJSONSummarySerializer):
             "metadata_fields"
         ):
             news_folder = None
-            container_uid = summary.get("container_uid")
+            if INewsItem.providedBy(self.context):
+                news_uid = self.context.UID()
+                container_uid = get_container_uid(news_uid)
+            elif INewsFolder.providedBy(self.context) or IFolder.providedBy(
+                self.context
+            ):
+                container_uid = get_container_uid(None, summary)
+            elif INewsItem.providedBy(self.context.getObject()):
+                # context can be a brain
+                news_uid = self.context.UID
+                container_uid = get_container_uid(news_uid)
+            else:
+                container_uid = get_container_uid(None, summary)
             # News folders can be private (admin to access them). That doesn't stop news to be bring.
             with api.env.adopt_user(username="admin"):
                 news_folder = api.content.get(UID=container_uid)

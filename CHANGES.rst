@@ -5,7 +5,8 @@ Changelog
 1.2.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix : serializer and message "At least one of these parameters must be supplied: path, UID"
+  [boulch]
 
 
 1.2.6 (2024-03-28)
