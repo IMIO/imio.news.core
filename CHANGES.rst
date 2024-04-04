@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.7 (unreleased)
+1.2.7 (2024-04-04)
 ------------------
 
 - Fix : serializer and message "At least one of these parameters must be supplied: path, UID"
