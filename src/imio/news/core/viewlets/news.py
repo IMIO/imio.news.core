@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from imio.news.core.contents import IEntity
-from imio.news.core.utils import get_entity_for_obj
 from plone import api
 from plone.app.layout.viewlets import common
 
@@ -27,7 +26,7 @@ def user_is_contributor_in_entity_which_authorize_to_bring_news():
         entity = brain.getObject()
         if (
             api.user.get_permissions(user=user, obj=entity).get("Modify portal content")
-            == True
+            is True
         ):
             if entity.authorize_to_bring_news_anywhere:
                 has_permission = True
