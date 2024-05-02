@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.8 (unreleased)
+1.2.8 (2024-05-02)
 ------------------
 
 - WEB-4101 : Use local category (if any) instead of category in `category_title` indexer
