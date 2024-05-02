@@ -5,7 +5,8 @@ Changelog
 1.2.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- WEB-4101 : Use local category (if any) instead of category in `category_title` indexer
+  [laulaz]
 
 
 1.2.7 (2024-04-04)

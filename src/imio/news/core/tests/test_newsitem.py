@@ -236,6 +236,11 @@ class TestNewsItem(unittest.TestCase):
         brain = api.content.find(UID=news_item.UID())[0]
         indexes = catalog.getIndexDataForRID(brain.getRID())
         self.assertEqual(indexes.get("category_title"), "Travaux")
+        news_item.local_category = "Local category"
+        news_item.reindexObject()
+        brain = api.content.find(UID=news_item.UID())[0]
+        indexes = catalog.getIndexDataForRID(brain.getRID())
+        self.assertEqual(indexes.get("category_title"), "Local category")
 
     def test_referrer_newsfolders(self):
         setRoles(self.portal, TEST_USER_ID, ["Manager"])

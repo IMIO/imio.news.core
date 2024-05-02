@@ -30,6 +30,8 @@ def translated_in_en(obj):
 
 @indexer(INewsItem)
 def category_title(obj):
+    if obj.local_category is not None:
+        return obj.local_category
     if obj.category is not None:
         return translate_vocabulary_term(
             "imio.news.vocabulary.NewsCategories", obj.category
