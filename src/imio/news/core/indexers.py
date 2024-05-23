@@ -123,12 +123,12 @@ def get_searchable_text(obj, lang):
 
     topics = []
     for topic in getattr(obj.aq_base, "topics", []) or []:
-        topics.append(
-            translate_vocabulary_term("imio.smartweb.vocabulary.Topics", topic)
-        )
+        term = translate_vocabulary_term("imio.smartweb.vocabulary.Topics", topic, lang)
+        topics.append(term)
 
-    category = translate_vocabulary_term(
-        "imio.news.vocabulary.NewsCategories", getattr(obj.aq_base, "category", None)
+    category = getattr(obj.aq_base, "category", None)
+    category_term = translate_vocabulary_term(
+        "imio.news.vocabulary.NewsCategories", category, lang
     )
     subjects = obj.Subject()
     title_field_name = "title"
@@ -144,7 +144,7 @@ def get_searchable_text(obj, lang):
             safe_unicode(get_text(lang)) or "",
             *topics,
             *subjects,
-            safe_unicode(category),
+            safe_unicode(category_term),
         )
     )
     return _unicode_save_string_concat(result)

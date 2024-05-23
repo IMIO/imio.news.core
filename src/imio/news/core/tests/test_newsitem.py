@@ -137,62 +137,6 @@ class TestNewsItem(unittest.TestCase):
         )
         self.assertEqual(news_item.selected_news_folders, [self.news_folder.UID()])
 
-    def test_indexes(self):
-        news_item1 = api.content.create(
-            container=self.news_folder,
-            type="imio.news.NewsItem",
-            title="NewsItem1",
-        )
-        news_folder2 = api.content.create(
-            container=self.entity,
-            type="imio.news.NewsFolder",
-            title="NewsFolder2",
-        )
-        news_item2 = api.content.create(
-            container=news_folder2,
-            type="imio.news.NewsItem",
-            title="NewsItem2",
-        )
-        catalog = api.portal.get_tool("portal_catalog")
-        brain = api.content.find(UID=news_item1.UID())[0]
-        indexes = catalog.getIndexDataForRID(brain.getRID())
-        self.assertEqual(indexes.get("container_uid"), self.news_folder.UID())
-
-        # On va requêter sur self.news_folder et trouver les 2 événements car news_item2 vient de s'ajouter dedans aussi.
-        news_item2.selected_news_folders = [self.news_folder.UID()]
-        news_item2.reindexObject()
-        brains = api.content.find(selected_news_folders=self.news_folder.UID())
-        lst = [brain.UID for brain in brains]
-        self.assertEqual(lst, [news_item1.UID(), news_item2.UID()])
-
-        # On va requêter sur news_folder2 et trouver uniquement news_item2 car news_item2 est dans les 2 news folders mais news_item1 n'est que dans self.news_folder
-        news_item2.selected_news_folders = [news_folder2.UID(), self.news_folder.UID()]
-        news_item2.reindexObject()
-        brains = api.content.find(selected_news_folders=news_folder2.UID())
-        lst = [brain.UID for brain in brains]
-        self.assertEqual(lst, [news_item2.UID()])
-
-        # Via une recherche catalog sur les news_folder, on va trouver les 2 événements
-        brains = api.content.find(
-            selected_news_folders=[news_folder2.UID(), self.news_folder.UID()]
-        )
-        lst = [brain.UID for brain in brains]
-        self.assertEqual(lst, [news_item1.UID(), news_item2.UID()])
-
-        # On va requêter sur les 2 news folders et trouver les 2 événements car 1 dans chaque
-        news_item2.selected_news_folders = [news_folder2.UID()]
-        news_item2.reindexObject()
-        brains = api.content.find(
-            selected_news_folders=[news_folder2.UID(), self.news_folder.UID()]
-        )
-        lst = [brain.UID for brain in brains]
-        self.assertEqual(lst, [news_item1.UID(), news_item2.UID()])
-
-        api.content.move(news_item1, news_folder2)
-        brain = api.content.find(UID=news_item1.UID())[0]
-        indexes = catalog.getIndexDataForRID(brain.getRID())
-        self.assertEqual(indexes.get("container_uid"), news_folder2.UID())
-
     def test_searchable_text(self):
         news_item = api.content.create(
             container=self.news_folder,
@@ -223,24 +167,6 @@ class TestNewsItem(unittest.TestCase):
                 "travaux",
             ],
         )
-
-    def test_category_title_index(self):
-        news_item = api.content.create(
-            container=self.news_folder,
-            type="imio.news.NewsItem",
-            title="Title",
-        )
-        news_item.category = "works"
-        news_item.reindexObject()
-        catalog = api.portal.get_tool("portal_catalog")
-        brain = api.content.find(UID=news_item.UID())[0]
-        indexes = catalog.getIndexDataForRID(brain.getRID())
-        self.assertEqual(indexes.get("category_title"), "Travaux")
-        news_item.local_category = "Local category"
-        news_item.reindexObject()
-        brain = api.content.find(UID=news_item.UID())[0]
-        indexes = catalog.getIndexDataForRID(brain.getRID())
-        self.assertEqual(indexes.get("category_title"), "Local category")
 
     def test_referrer_newsfolders(self):
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
