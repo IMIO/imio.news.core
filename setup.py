@@ -56,6 +56,7 @@ setup(
         "plone.restapi",
         "plone.app.dexterity",
         "plone.app.imagecropping",
+        "collective.taxonomy",
         "eea.facetednavigation",
         "embeddify",
         "imio.smartweb.common",

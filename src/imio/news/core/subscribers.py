@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-
+from imio.news.core.rest.odwb_endpoint import OdwbEndpointGet
 from imio.news.core.utils import get_entity_for_obj
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import reload_faceted_config
 from imio.smartweb.common.utils import remove_cropping
 from plone import api
+from plone.api.content import get_state
+from Products.DCWorkflow.interfaces import IAfterTransitionEvent
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
 from zope.component import getUtility
@@ -72,6 +74,7 @@ def removed_newsfolder(obj, event):
     except api.exc.CannotGetPortalError:
         # This happen when we try to remove plone object
         return
+    # We remove reference to this news folder out of all news items
     for brain in brains:
         news = brain.getObject()
         news.selected_news_folders = [
@@ -99,6 +102,10 @@ def modified_news_item(obj, event):
             remove_cropping(
                 obj, "image", ["portrait_affiche", "paysage_affiche", "carre_affiche"]
             )
+    if get_state(obj) == "published":
+        request = getRequest()
+        endpoint = OdwbEndpointGet(obj, request)
+        endpoint.reply()
 
 
 def moved_news_item(obj, event):
@@ -110,6 +117,29 @@ def moved_news_item(obj, event):
         return
     container_newsfolder = get_news_folder_for_news_item(obj)
     set_uid_of_referrer_newsfolders(obj, container_newsfolder)
+    if event.oldParent is not None and get_state(obj) == "published":
+        request = getRequest()
+        endpoint = OdwbEndpointGet(obj, request)
+        endpoint.reply()
+
+
+def removed_news_item(obj, event):
+    request = getRequest()
+    endpoint = OdwbEndpointGet(obj, request)
+    endpoint.remove()
+
+
+def published_news_item_transition(obj, event):
+    if not IAfterTransitionEvent.providedBy(event):
+        return
+    if event.new_state.id == "published":
+        request = getRequest()
+        endpoint = OdwbEndpointGet(obj, request)
+        endpoint.reply()
+    if event.new_state.id == "private" and event.old_state.id != event.new_state.id:
+        request = getRequest()
+        endpoint = OdwbEndpointGet(obj, request)
+        endpoint.remove()
 
 
 def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):

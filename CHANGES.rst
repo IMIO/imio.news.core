@@ -5,7 +5,8 @@ Changelog
 1.2.9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- WEB-4088 : Add some odwb endpoints (for news , for entities)
+  [boulch]
 
 
 1.2.8 (2024-05-02)

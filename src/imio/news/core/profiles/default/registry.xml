@@ -18,5 +18,18 @@
         <element>TempFolder</element>
         <element>Event</element>
       </value>
-    </record>
+  </record>
+
+  <record name="imio.news.core.odwb_entites-des-actualites-en-wallonie_pushkey">
+    <field type="plone.registry.field.TextLine">
+      <title>ODWB : Entit&#233;s des actualit&#233;s en Wallonie - pushkey</title>
+    </field>
+  </record>
+
+  <record name="imio.news.core.odwb_actualites-en-wallonie_pushkey">
+    <field type="plone.registry.field.TextLine">
+      <title>ODWB : Actualit&#233;s en Wallonie - pushkey</title>
+    </field>
+  </record>
+
 </registry>
