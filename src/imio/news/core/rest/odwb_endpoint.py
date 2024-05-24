@@ -8,6 +8,9 @@ from imio.news.core.contents import INewsItem
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import get_entity_for_obj
 from imio.smartweb.common.rest.odwb import OdwbBaseEndpointGet
+from imio.smartweb.common.utils import (
+    activate_sending_data_to_odwb_for_staging as odwb_staging,
+)
 from plone import api
 from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 
@@ -20,8 +23,12 @@ logger = logging.getLogger("imio.news.core")
 
 class OdwbEndpointGet(OdwbBaseEndpointGet):
     def __init__(self, context, request):
-        pushkey = "imio.news.core.odwb_actualites-en-wallonie_pushkey"
-        imio_service = "actualites-en-wallonie"
+        imio_service = (
+            "actualites-en-wallonie"
+            if not odwb_staging()
+            else "staging-actualites-en-wallonie"
+        )
+        pushkey = f"imio.news.core.odwb_{imio_service}_pushkey"
         super(OdwbEndpointGet, self).__init__(context, request, imio_service, pushkey)
 
     def reply(self):
@@ -133,8 +140,12 @@ class NewsEncoder(json.JSONEncoder):
 class OdwbEntitiesEndpointGet(OdwbBaseEndpointGet):
 
     def __init__(self, context, request):
-        pushkey = "imio.news.core.odwb_entites-des-actualites-en-wallonie_pushkey"
-        imio_service = "entites-des-actualites-en-wallonie"
+        imio_service = (
+            "entites-des-actualites-en-wallonie"
+            if not odwb_staging()
+            else "staging-entites-des-actualites-en-wallonie"
+        )
+        pushkey = f"imio.news.core.odwb_{imio_service}_pushkey"
         super(OdwbEntitiesEndpointGet, self).__init__(
             context, request, imio_service, pushkey
         )

@@ -5,6 +5,9 @@ Changelog
 1.2.9 (unreleased)
 ------------------
 
+- WEB-4088 : Cover use case for sending data in odwb for a staging environment
+  [boulch]
+
 - WEB-4088 : Add some odwb endpoints (for news , for entities)
   [boulch]
 

@@ -15,4 +15,16 @@
     </field>
   </record>
 
+  <record name="imio.news.core.odwb_staging-entites-des-actualites-en-wallonie_pushkey">
+    <field type="plone.registry.field.TextLine">
+      <title>ODWB : Entit&#233;s des actualit&#233;s en Wallonie (STAGING) - pushkey</title>
+    </field>
+  </record>
+
+  <record name="imio.news.core.odwb_staging-actualites-en-wallonie_pushkey">
+    <field type="plone.registry.field.TextLine">
+      <title>ODWB : Actualit&#233;s en Wallonie (STAGING) - pushkey</title>
+    </field>
+  </record>
+
 </registry>
