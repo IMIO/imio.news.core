@@ -5,6 +5,9 @@ Changelog
 1.2.9 (unreleased)
 ------------------
 
+- Fix bad permission name
+  [laulaz]
+
 - WEB-4088 : Cover use case for sending data in odwb for a staging environment
   [boulch]
 

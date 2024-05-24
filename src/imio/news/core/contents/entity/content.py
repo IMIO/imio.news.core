@@ -33,7 +33,7 @@ class IEntity(model.Schema):
         authorize_to_bring_news_anywhere="imio.news.core.BringNewsIntoPersonnalNewsFolder"
     )
     directives.write_permission(
-        authorize_to_bring_news_anywhere="imio.events.core.BringNewsIntoPersonnalNewsFolder"
+        authorize_to_bring_news_anywhere="imio.news.core.BringNewsIntoPersonnalNewsFolder"
     )
     authorize_to_bring_news_anywhere = schema.Bool(
         title=_("Authorize to bring news anywhere"),
