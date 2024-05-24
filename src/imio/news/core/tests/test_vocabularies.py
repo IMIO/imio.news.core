@@ -34,7 +34,7 @@ class TestVocabularies(unittest.TestCase):
             container=self.portal,
             type="imio.news.Entity",
             title="Entity",
-            local_categories="",
+            local_categories=[],
         )
         newsfolder = api.content.create(
             container=entity,
@@ -57,7 +57,11 @@ class TestVocabularies(unittest.TestCase):
             container=self.portal,
             type="imio.news.Entity",
             title="Entity",
-            local_categories="Foo\r\nbaz\r\nbar",
+            local_categories=[
+                {"fr": "Foo", "nl": "", "de": "", "en": ""},
+                {"fr": "baz", "nl": "", "de": "", "en": ""},
+                {"fr": "bar", "nl": "", "de": "", "en": ""},
+            ],
         )
         newsfolder = api.content.create(
             container=entity,

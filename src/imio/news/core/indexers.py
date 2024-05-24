@@ -9,6 +9,8 @@ from plone.app.contenttypes.indexers import _unicode_save_string_concat
 from plone.app.textfield.value import IRichTextValue
 from plone.indexer import indexer
 from Products.CMFPlone.utils import safe_unicode
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
 
 import copy
 
@@ -28,14 +30,56 @@ def translated_in_en(obj):
     return bool(obj.title_en)
 
 
-@indexer(INewsItem)
-def category_title(obj):
-    if obj.local_category is not None:
-        return obj.local_category
+def get_category_title(obj, lang):
     if obj.category is not None:
         return translate_vocabulary_term(
-            "imio.news.vocabulary.NewsCategories", obj.category
+            "imio.news.vocabulary.NewsCategories", obj.category, lang
         )
+    raise AttributeError
+
+
+@indexer(INewsItem)
+def category_title_fr(obj):
+    return get_category_title(obj, "fr")
+
+
+@indexer(INewsItem)
+def category_title_nl(obj):
+    return get_category_title(obj, "nl")
+
+
+@indexer(INewsItem)
+def category_title_de(obj):
+    return get_category_title(obj, "de")
+
+
+@indexer(INewsItem)
+def category_title_en(obj):
+    return get_category_title(obj, "en")
+
+
+def get_local_category(obj, lang):
+    if not obj.local_category:
+        raise AttributeError
+    factory = getUtility(IVocabularyFactory, "imio.news.vocabulary.NewsLocalCategories")
+    vocabulary = factory(obj, lang=lang)
+    term = vocabulary.getTerm(obj.local_category)
+    return term.title
+
+
+@indexer(INewsItem)
+def local_category_nl(obj):
+    return get_local_category(obj, "nl")
+
+
+@indexer(INewsItem)
+def local_category_de(obj):
+    return get_local_category(obj, "de")
+
+
+@indexer(INewsItem)
+def local_category_en(obj):
+    return get_local_category(obj, "en")
 
 
 @indexer(INewsItem)

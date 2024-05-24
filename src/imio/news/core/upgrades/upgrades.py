@@ -67,3 +67,18 @@ def remove_title_description_fr(context):
     catalog = api.portal.get_tool("portal_catalog")
     catalog.delColumn("title_fr")
     catalog.delColumn("description_fr")
+
+
+def migrate_local_categories(context):
+    brains = api.content.find(portal_type=["imio.news.Entity"])
+    for brain in brains:
+        obj = brain.getObject()
+        if obj.local_categories:
+            categories = obj.local_categories.splitlines()
+            datagrid_categories = [
+                {"fr": cat, "nl": "", "de": "", "en": ""} for cat in categories
+            ]
+            obj.local_categories = datagrid_categories
+            logger.info(
+                "Categories migrated to Datagrid for entity {}".format(obj.Title())
+            )

@@ -14,8 +14,10 @@ from plone.restapi.serializer.dxcontent import SerializeFolderToJson
 from plone.restapi.serializer.summary import DefaultJSONSummarySerializer
 from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.component import adapter
+from zope.component import getUtility
 from zope.interface import implementer
 from zope.interface import Interface
+from zope.schema.interfaces import IVocabularyFactory
 
 
 def get_container_uid(event_uid, summary=None):
@@ -45,6 +47,16 @@ class SerializeNewsItemToJson(SerializeFolderToJson):
             result["title"] = result[f"title_{lang}"]
             result["description"] = result[f"description_{lang}"]
             result["text"] = result[f"text_{lang}"]
+            if self.context.local_category:
+                factory = getUtility(
+                    IVocabularyFactory, "imio.news.vocabulary.NewsLocalCategories"
+                )
+                vocabulary = factory(self.context, lang=lang)
+                term = vocabulary.getTerm(self.context.local_category)
+                result["local_category"] = {
+                    "token": self.context.local_category,
+                    "title": term.title,
+                }
 
         # Getting news folder title/id to use it in rest views
         if query.get("metadata_fields") is not None and "container_uid" in query.get(
@@ -108,10 +120,10 @@ class NewsItemJSONSummarySerializer(DefaultJSONSummarySerializer):
             return summary
 
         obj = IContentListingObject(self.context)
-        for orig_field in ["title", "description"]:
+        for orig_field in ["title", "description", "category_title", "local_category"]:
             field = f"{orig_field}_{lang}"
             accessor = self.field_accessors.get(field, field)
-            value = getattr(obj, accessor, None)
+            value = getattr(obj, accessor, None) or None
             try:
                 if callable(value):
                     value = value()

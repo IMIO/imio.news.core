@@ -91,7 +91,11 @@ class TestNewsItem(unittest.TestCase):
         vocabulary = factory(news)
         self.assertEqual(len(vocabulary), 0)
 
-        self.entity.local_categories = "First\nSecond\nThird"
+        self.entity.local_categories = [
+            {"fr": "First", "nl": "", "de": "", "en": ""},
+            {"fr": "Second", "nl": "", "de": "", "en": ""},
+            {"fr": "Third", "nl": "", "de": "", "en": ""},
+        ]
         vocabulary = factory(news)
         self.assertEqual(len(vocabulary), 3)
 

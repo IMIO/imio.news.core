@@ -38,7 +38,12 @@ class TestIndexes(unittest.TestCase):
             container=self.portal,
             type="imio.news.Entity",
             id="imio.news.Entity",
-            local_categories="Foo\r\nbaz\r\nbar",
+            local_categories=[
+                {"fr": "Foo", "nl": "", "de": "", "en": ""},
+                {"fr": "baz", "nl": "", "de": "", "en": ""},
+                {"fr": "bar", "nl": "", "de": "", "en": ""},
+                {"fr": "Local category", "nl": "", "de": "", "en": ""},
+            ],
         )
         self.news_folder = api.content.create(
             container=self.entity,
@@ -114,11 +119,16 @@ class TestIndexes(unittest.TestCase):
         brain = api.content.find(UID=news_item.UID())[0]
         indexes = catalog.getIndexDataForRID(brain.getRID())
         self.assertEqual(indexes.get("category_title"), "Travaux")
+        metadatas = catalog.getMetadataForRID(brain.getRID())
+        self.assertEqual(metadatas.get("category_title"), "Travaux")
+        self.assertEqual(metadatas.get("category_title_nl"), "Werken")
+        self.assertEqual(metadatas.get("category_title_de"), "Arbeiten")
+        self.assertEqual(metadatas.get("category_title_en"), "Works")
         news_item.local_category = "Local category"
         news_item.reindexObject()
         brain = api.content.find(UID=news_item.UID())[0]
         indexes = catalog.getIndexDataForRID(brain.getRID())
-        self.assertEqual(indexes.get("category_title"), "Local category")
+        self.assertEqual(indexes.get("category_title"), "Travaux")
 
     def test_selected_news_folders_index(self):
         news_item1 = api.content.create(

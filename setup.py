@@ -57,6 +57,7 @@ setup(
         "plone.app.dexterity",
         "plone.app.imagecropping",
         "collective.taxonomy",
+        "collective.z3cform.datagridfield",
         "eea.facetednavigation",
         "embeddify",
         "imio.smartweb.common",
