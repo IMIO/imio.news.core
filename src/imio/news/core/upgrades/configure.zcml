@@ -59,6 +59,14 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <genericsetup:registerProfile
+      name="upgrade_1013_to_1014"
+      title="Upgrade core from 1013 to 1014"
+      directory="profiles/1013_to_1014"
+      description="Add index for local category search"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <genericsetup:upgradeStep
       title="Refresh faceted"
       description="Refresh faceted configurations on all entities / news folders"
@@ -199,5 +207,19 @@
         handler=".upgrades.reindex_catalog"
         />
   </genericsetup:upgradeSteps>
-  
+
+  <genericsetup:upgradeSteps
+      source="1013"
+      destination="1014"
+      profile="imio.news.core:default">
+    <genericsetup:upgradeDepends
+        title="Add index for local category search"
+        import_profile="imio.news.core.upgrades:upgrade_1013_to_1014"
+        />
+    <genericsetup:upgradeStep
+        title="Reindex catalog"
+        handler=".upgrades.reindex_catalog"
+        />
+  </genericsetup:upgradeSteps>
+
 </configure>

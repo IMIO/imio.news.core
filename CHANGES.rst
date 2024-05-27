@@ -5,6 +5,9 @@ Changelog
 1.2.9 (unreleased)
 ------------------
 
+- WEB-4101 : Add index for local category search
+  [laulaz]
+
 - Fix bad permission name
   [laulaz]
 
