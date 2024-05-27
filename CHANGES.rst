@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.9 (unreleased)
+1.2.9 (2024-05-27)
 ------------------
 
 - WEB-4101 : Add index for local category search
