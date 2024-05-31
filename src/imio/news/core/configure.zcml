@@ -16,6 +16,7 @@
 
   <include package=".browser" />
   <include package=".contents" />
+  <include package=".rest" />
   <include package=".serializer" />
   <include package=".upgrades" />
   <include package=".viewlets" />

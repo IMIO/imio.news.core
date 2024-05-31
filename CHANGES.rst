@@ -5,7 +5,8 @@ Changelog
 1.2.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4088 : Fix missing include in zcml for ODWB endpoints
+  [laulaz]
 
 
 1.2.9 (2024-05-27)
