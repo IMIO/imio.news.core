@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.10 (unreleased)
+1.2.10 (2024-05-31)
 -------------------
 
 - WEB-4088 : Fix missing include in zcml for ODWB endpoints
