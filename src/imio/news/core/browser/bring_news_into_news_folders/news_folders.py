@@ -4,11 +4,11 @@ from imio.news.core.viewlets.news import (
     user_is_contributor_in_entity_which_authorize_to_bring_news,
 )
 from imio.smartweb.common.utils import get_vocabulary
+from imio.smartweb.common.widgets.select import TranslatedAjaxSelectWidget
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from plone import api
 from plone.autoform import directives
 from plone.autoform.form import AutoExtensibleForm
-from plone.app.z3cform.widget import AjaxSelectFieldWidget
 from zope import schema
 from z3c.form import button
 from z3c.form import form
@@ -21,7 +21,7 @@ class IBringNewsIntoNewsFoldersForm(model.Schema):
 
     directives.widget(
         "news_folders",
-        AjaxSelectFieldWidget,
+        TranslatedAjaxSelectWidget,
         vocabulary="imio.news.vocabulary.UserNewsFolders",
         pattern_options={"multiple": True},
     )

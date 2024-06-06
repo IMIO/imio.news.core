@@ -5,7 +5,8 @@ Changelog
 1.2.11 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4113 : Use `TranslatedAjaxSelectWidget` to fix select2 values translation
+  [laulaz]
 
 
 1.2.10 (2024-05-31)
