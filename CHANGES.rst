@@ -5,7 +5,8 @@ Changelog
 1.2.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add news lead image (preview scale) for odwb
+  [boulch]
 
 
 1.2.11 (2024-06-06)

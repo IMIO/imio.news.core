@@ -82,10 +82,26 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
 class News:
 
     def __init__(self, context):
-        self.category = context.category
-        # DateTime(2024/02/14 13:59:7.829612 GMT+1),
-        self.creation_date = context.creation_date
+        self.id = context.id
+        self.title = context.title
         self.description = context.description
+        self.image = f"{context.absolute_url()}/@@images/image/preview"
+        self.category = context.category
+        self.topics = context.topics
+        self.text = context.text.raw if context.text else None
+        self.facebook_url = context.facebook
+        self.instagram_url = context.instagram
+        self.twitter_url = context.twitter
+        self.video_url = context.video_url
+        self.owner_id = get_entity_for_obj(context).UID()
+        self.owner_name = get_entity_for_obj(context).Title()
+        self.owner_news_folder_id = get_news_folder_for_news_item(context).UID()
+        self.owner_news_folder_name = get_news_folder_for_news_item(context).Title()
+        # DateTime(2024/02/14 13:59:7.829612 GMT+1),
+        self.creation_datetime = context.creation_date
+        # DateTime(2024/02/14 15:51:52.128648 GMT+1),
+        self.modification_datetime = context.modification_date
+
         self.description_de = context.description_de
         self.description_en = context.description_en
         self.description_nl = context.description_nl
@@ -94,32 +110,18 @@ class News:
         # datetime.datetime(2024, 2, 14, 13, 0, tzinfo=<UTC>),
         self.exclude_from_nav = context.exclude_from_nav
         self.expiration_date = context.expiration_date
-        self.facebook_url = context.facebook
         self.iam = context.iam
-        self.id = context.id
-        self.instagram_url = context.instagram
         self.language = context.language
         self.local_category = context.local_category
-        # DateTime(2024/02/14 15:51:52.128648 GMT+1),
-        self.modification_date = context.modification_date
         # datetime.datetime(2024, 2, 14, 12, 0, tzinfo=<UTC>),
         self.subjects = context.subject
         # self.taxonomy_event_public = context.taxonomy_event_public
-        self.text = context.text.raw if context.text else None
         self.text_de = context.text_de.raw if context.text_de else None
         self.text_en = context.text_en.raw if context.text_en else None
         self.text_nl = context.text_nl.raw if context.text_nl else None
-        self.title = context.title
         self.title_de = context.title_de
         self.title_en = context.title_en
         self.title_nl = context.title_nl
-        self.topics = context.topics
-        self.twitter_url = context.twitter
-        self.video_url = context.video_url
-        self.owner_id = get_entity_for_obj(context).UID()
-        self.owner_name = get_entity_for_obj(context).Title()
-        self.owner_news_folder_id = get_news_folder_for_news_item(context).UID()
-        self.owner_news_folder_name = get_news_folder_for_news_item(context).Title()
 
     def to_json(self):
         return json.dumps(self.__dict__, cls=NewsEncoder)
