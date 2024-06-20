@@ -5,7 +5,8 @@ Changelog
 1.2.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4088 : Use one state workflow for imio.news.NewsFolder / imio.news.Folder
+  [boulch]
 
 
 1.2.12 (2024-06-19)

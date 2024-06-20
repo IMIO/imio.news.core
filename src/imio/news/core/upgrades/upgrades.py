@@ -82,3 +82,25 @@ def migrate_local_categories(context):
             logger.info(
                 "Categories migrated to Datagrid for entity {}".format(obj.Title())
             )
+
+
+def unpublish_news_in_private_newsfolders(context):
+    brains = api.content.find(
+        portal_type=["imio.news.NewsFolder"], review_state="private"
+    )
+    for brain in brains:
+        news_brains = api.content.find(
+            context=brain.getObject(),
+            portal_type=["imio.news.NewsItem"],
+            review_state="published",
+        )
+        for n_brain in news_brains:
+            news = n_brain.getObject()
+            api.content.transition(news, "retract")
+            logger.info("News {} go to private status".format(news.absolute_url()))
+
+
+def reindex_newsfolders_and_folders(context):
+    brains = api.content.find(portal_type=["imio.news.NewsFolder", "imio.news.Folder"])
+    for brain in brains:
+        brain.getObject().reindexObject()

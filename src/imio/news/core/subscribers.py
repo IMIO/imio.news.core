@@ -38,14 +38,12 @@ def added_entity(obj, event):
         title="Administration communale",
         id="administration-communale",
     )
-    api.content.transition(news_folder_ac, transition="publish")
     news_folder_all = api.content.create(
         container=obj,
         type="imio.news.NewsFolder",
         title="Dossier reprenant toutes les actualités",
         id="toutes-les-actualites",
     )
-    api.content.transition(news_folder_all, transition="publish")
     intids = getUtility(IIntIds)
     setattr(
         news_folder_all,

@@ -67,6 +67,14 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <genericsetup:registerProfile
+      name="upgrade_1014_to_1015"
+      title="Upgrade core from 1014 to 1015"
+      directory="profiles/1014_to_1015"
+      description="Unpublish news in private newsfolders and remove workflow out of NewsFolder / Folder"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <genericsetup:upgradeStep
       title="Refresh faceted"
       description="Refresh faceted configurations on all entities / news folders"
@@ -219,6 +227,24 @@
     <genericsetup:upgradeStep
         title="Reindex catalog"
         handler=".upgrades.reindex_catalog"
+        />
+  </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="1014"
+      destination="1015"
+      profile="imio.news.core:default">
+    <genericsetup:upgradeStep
+        title="Unpublish news in private news folders"
+        handler=".upgrades.unpublish_news_in_private_newsfolders"
+        />
+    <genericsetup:upgradeDepends
+        title="Remove imio.news.NewsFolder / imio.news.Folder workflows"
+        import_profile="imio.news.core.upgrades:upgrade_1014_to_1015"
+        />
+    <genericsetup:upgradeStep
+        title="Reindex NewsFolders and folders"
+        handler=".upgrades.reindex_newsfolders_and_folders"
         />
   </genericsetup:upgradeSteps>
 
