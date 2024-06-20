@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.13 (unreleased)
+1.2.13 (2024-06-20)
 -------------------
 
 - WEB-4088 : Use one state workflow for imio.news.NewsFolder / imio.news.Folder
