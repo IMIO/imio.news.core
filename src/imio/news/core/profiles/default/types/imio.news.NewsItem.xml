@@ -32,14 +32,14 @@
     <element value="plone.excludefromnavigation"/>
     <element value="plone.basic"/>
     <element value="plone.locking" />
-    <element value="plone.leadimage"/>
     <element value="plone.imagecropping"/>
     <element value="plone.constraintypes" />
     <element value="plone.publication" />
     <element value="plone.richtext"/>
     <element value="plone.versioning"/>
-    <element value="imio.smartweb.topics"/>
+    <element value="imio.smartweb.leadimage" />
     <element value="imio.smartweb.iam"/>
+    <element value="imio.smartweb.topics"/>
     <element value="plone.categorization"/>
     <element value="solr.fields" />
   </property>

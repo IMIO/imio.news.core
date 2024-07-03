@@ -75,6 +75,14 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <genericsetup:registerProfile
+      name="upgrade_1015_to_1016"
+      title="Upgrade core from 1015 to 1016"
+      directory="profiles/1015_to_1016"
+      description="Use imio.smartweb.common.behaviors.ICustomLeadImage to limit image formats available for upload"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <genericsetup:upgradeStep
       title="Refresh faceted"
       description="Refresh faceted configurations on all entities / news folders"
@@ -245,6 +253,16 @@
     <genericsetup:upgradeStep
         title="Reindex NewsFolders and folders"
         handler=".upgrades.reindex_newsfolders_and_folders"
+        />
+  </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="1015"
+      destination="1016"
+      profile="imio.news.core:default">
+    <genericsetup:upgradeDepends
+        title="Use imio.smartweb.common.behaviors.ICustomLeadImage to limit image formats available for upload"
+        import_profile="imio.news.core.upgrades:upgrade_1015_to_1016"
         />
   </genericsetup:upgradeSteps>
 
