@@ -5,6 +5,9 @@ Changelog
 1.2.14 (unreleased)
 -------------------
 
+- WEB-4119 : Prevent removing news folder if there is at least 1 news in it
+  [boulch]
+
 - GHA tests on Python 3.8 3.9 and 3.10
   [remdub]
 
