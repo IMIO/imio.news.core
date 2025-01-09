@@ -5,6 +5,9 @@ Changelog
 1.2.14 (unreleased)
 -------------------
 
+- WEB-4153 : Add a new cacheRuleset to use with our custom rest endpoints
+  [remdub]
+
 - WEB-4119 : Prevent removing news folder if there is at least 1 news in it
   [boulch]
 

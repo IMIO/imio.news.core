@@ -1,6 +1,10 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:plone="http://namespaces.plone.org/plone">
+      xmlns:cache="http://namespaces.zope.org/cache"
+      xmlns:plone="http://namespaces.plone.org/plone"
+      xmlns:zcml="http://namespaces.zope.org/zcml">
+
+<include package=".search" />
 
   <plone:service
       name="@odwb"
@@ -21,5 +25,11 @@
       permission="zope2.View"
       layer="imio.news.core.interfaces.IImioNewsCoreLayer"
       />
+
+  <cache:rulesetType
+    name="imio.news.core.rest"
+    title="imio.news.core rest endpoints"
+    description="rest endpoints overriden by imio.news.core"
+    />
 
 </configure>
