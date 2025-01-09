@@ -5,7 +5,8 @@ Changelog
 1.2.15 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4119 : Prevent removing news folder if there is at least 1 news in it
+  [boulch]
 
 
 1.2.14 (2025-01-09)
