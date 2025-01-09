@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.14 (unreleased)
+1.2.14 (2025-01-09)
 -------------------
 
 - WEB-4153 : Add a new cacheRuleset to use with our custom rest endpoints
