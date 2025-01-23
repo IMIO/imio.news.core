@@ -5,6 +5,9 @@ Changelog
 1.2.15 (unreleased)
 -------------------
 
+- WEB-4206 : Remove wcatoken from query parameters when using @search endpoint
+  [remdub]
+
 - WEB-4119 : Prevent removing news folder if there is at least 1 news in it
   [boulch]
 
