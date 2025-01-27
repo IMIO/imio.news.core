@@ -5,6 +5,9 @@ Changelog
 1.2.15 (unreleased)
 -------------------
 
+- Migrate to Plone 6.0.14
+  [boulch]
+
 - WEB-4119 : Prevent removing news folder if there is at least 1 news in it
   [boulch]
 
