@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.15 (unreleased)
+1.2.15 (2025-05-14)
 -------------------
 
 - Update Python classifiers to be compatible with Python 3.13
