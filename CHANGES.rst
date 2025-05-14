@@ -5,6 +5,12 @@ Changelog
 1.2.15 (unreleased)
 -------------------
 
+- Update Python classifiers to be compatible with Python 3.13
+  [remdub]
+
+- Upgrade dev environment to Plone 6.1-latest
+  [remdub]
+
 - Update Python classifiers to be compatible with Python 3.12
   [remdub]
 
