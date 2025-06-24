@@ -5,6 +5,10 @@ Changelog
 1.2.16 (unreleased)
 -------------------
 
+- WEB-4279 : Fix a bug when subscripting news folder to another
+  Sometimes, removed/missing local categories failed when reindexing objects
+  [boulch]
+
 - WEB-4278 : Create translated (de) news categories vocabulary for e-guichet (citizen project)
   [boulch]
 

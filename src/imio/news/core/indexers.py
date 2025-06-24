@@ -63,8 +63,11 @@ def get_local_category(obj, lang):
         raise AttributeError
     factory = getUtility(IVocabularyFactory, "imio.news.vocabulary.NewsLocalCategories")
     vocabulary = factory(obj, lang=lang)
-    term = vocabulary.getTerm(obj.local_category)
-    return term.title
+    try:
+        term = vocabulary.getTerm(obj.local_category)
+        return term.title
+    except LookupError:
+        return obj.local_category
 
 
 @indexer(INewsItem)
