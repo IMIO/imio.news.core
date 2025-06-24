@@ -11,6 +11,7 @@ from zope.component import getUtility
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.interfaces import IVocabularyFactory
+from zope.i18n import translate
 
 
 class NewsCategoriesVocabularyFactory:
@@ -26,6 +27,23 @@ class NewsCategoriesVocabularyFactory:
 
 
 NewsCategoriesVocabulary = NewsCategoriesVocabularyFactory()
+
+
+class NewsDeCategoriesVocabularyFactory:
+    def __call__(self, context=None):
+        vocabulary = NewsCategoriesVocabularyFactory()(context)
+        translated_terms = [
+            SimpleTerm(
+                value=term.value,
+                token=term.token,
+                title=translate(term.title, target_language="de"),
+            )
+            for term in vocabulary
+        ]
+        return SimpleVocabulary(translated_terms)
+
+
+NewsDeCategoriesVocabulary = NewsDeCategoriesVocabularyFactory()
 
 
 class NewsLocalCategoriesVocabularyFactory:

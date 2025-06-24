@@ -6,6 +6,12 @@
     component=".vocabularies.NewsCategoriesVocabulary"
     provides="zope.schema.interfaces.IVocabularyFactory"
     />
+  
+  <utility
+    name="imio.news.vocabulary.NewsDeCategories"
+    component=".vocabularies.NewsDeCategoriesVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    />    
 
   <utility
     name="imio.news.vocabulary.NewsLocalCategories"

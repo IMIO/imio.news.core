@@ -5,7 +5,8 @@ Changelog
 1.2.16 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4278 : Create translated (de) news categories vocabulary for e-guichet (citizen project)
+  [boulch]
 
 
 1.2.15 (2025-05-14)
