@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.16 (unreleased)
+1.2.16 (2025-06-25)
 -------------------
 
 - WEB-4279 : Fix a bug when subscripting news folder to another
