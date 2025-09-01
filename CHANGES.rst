@@ -5,7 +5,9 @@ Changelog
 1.2.17 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- SUP-46633 : Refactored deletion checks: ignore news items when counting
+  apply restriction only to news folders or folders containing items.
+  [boulch]
 
 
 1.2.16 (2025-06-25)

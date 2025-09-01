@@ -15,19 +15,27 @@ class DeleteConfirmationForm(BaseDeleteConfirmationForm):
 
     @property
     def items_to_delete(self):
-        if not INewsFolder.providedBy(self.context) or not IFolder.providedBy(
-            self.context
-        ):
-            return super(DeleteConfirmationForm, self).items_to_delete
-        count = len(self.context.items())
+        """Delete from action in left menu"""
+
+        obj = self.context
+        count = len(obj.items())
+        if not INewsFolder.providedBy(obj) and not IFolder.providedBy(obj):
+            return count
         if count >= 1:
+            container_to_delete = (
+                _("News folder") if INewsFolder.providedBy(obj) else _("Folder")
+            )
             txt = _(
-                "News folder ${val1} can't be removed because it contains ${val2} news",
-                mapping={"val1": self.context.Title(), "val2": count},
+                "${val1} ${val2} can't be removed because it contains ${val3} element(s)",
+                mapping={
+                    "val1": container_to_delete,
+                    "val2": obj.Title(),
+                    "val3": count,
+                },
             )
             msg = translate(txt, context=self.request)
             api.portal.show_message(msg, self.request, type="warn")
-            self.request.response.redirect(self.context.absolute_url())
+            self.request.response.redirect(obj.absolute_url())
             return 0
         return count
 
@@ -35,13 +43,25 @@ class DeleteConfirmationForm(BaseDeleteConfirmationForm):
 class DeleteActionView(BaseDeleteActionView):
 
     def action(self, obj):
-        count = len(obj.items())
-        if count >= 1:
-            txt = _(
-                "News folder ${val1} can't be removed because it contains ${val2} news...",
-                mapping={"val1": obj.Title(), "val2": count},
-            )
-            msg = translate(txt, context=self.request)
-            self.errors.append(msg)
-            return
-        return super(DeleteActionView, self).action(obj)
+        """Delete from trash icon in folder_contents view"""
+
+        if not INewsFolder.providedBy(obj) and not IFolder.providedBy(obj):
+            return super(DeleteActionView, self).action(obj)
+        else:
+            count = len(obj.items())
+            if count >= 1:
+                container_to_delete = (
+                    _("News folder") if INewsFolder.providedBy(obj) else _("Folder")
+                )
+                txt = _(
+                    "${val1} ${val2} can't be removed because it contains ${val3} element(s)",
+                    mapping={
+                        "val1": container_to_delete,
+                        "val2": obj.Title(),
+                        "val3": count,
+                    },
+                )
+                msg = translate(txt, context=self.request)
+                self.errors.append(msg)
+                return
+            return super(DeleteActionView, self).action(obj)
