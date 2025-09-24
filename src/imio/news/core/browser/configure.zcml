@@ -29,15 +29,7 @@
 
   <browser:page
       name="fc-delete"
-      for="imio.news.core.contents.INewsFolder"
-      class=".actions.DeleteActionView"
-      permission="cmf.ListFolderContents"
-      layer="imio.news.core.interfaces.IImioNewsCoreLayer"
-      />
-
-  <browser:page
-      name="fc-delete"
-      for="imio.news.core.contents.IFolder"
+      for="Products.CMFCore.interfaces._content.IFolderish"
       class=".actions.DeleteActionView"
       permission="cmf.ListFolderContents"
       layer="imio.news.core.interfaces.IImioNewsCoreLayer"

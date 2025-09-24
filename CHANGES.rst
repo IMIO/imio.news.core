@@ -5,6 +5,9 @@ Changelog
 1.2.17 (unreleased)
 -------------------
 
+- WEB-4307: Fix zcml override for fc-delete action (trash icon in folder_contents)
+  [boulch]
+
 - SUP-46633 : Refactored deletion checks: ignore news items when counting
   apply restriction only to news folders or folders containing items.
   [boulch]
