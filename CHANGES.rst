@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.17 (unreleased)
+1.2.17 (2025-10-06)
 -------------------
 
 - WEB-4307: Fix zcml override for fc-delete action (trash icon in folder_contents)
