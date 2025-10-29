@@ -76,6 +76,7 @@ setup(
             "plone.testing>=5.0.0",
             "plone.app.robotframework[debug]",
             "mock",
+            "freezegun",
         ],
     },
     entry_points="""""",

@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime, timezone
+from freezegun import freeze_time
+from imio.smartweb.common.behaviors.iam import IAm
+from imio.smartweb.common.behaviors.topics import ITopics
 from imio.news.core.contents import INewsItem
 from imio.news.core.interfaces import IImioNewsCoreLayer
 from imio.news.core.testing import IMIO_NEWS_CORE_FUNCTIONAL_TESTING
 from imio.news.core.tests.utils import make_named_image
 from plone import api
+from plone.api import portal as portal_api
 from plone.app.contenttypes.behaviors.leadimage import ILeadImageBehavior
 from plone.app.dexterity.behaviors.metadata import IBasic
+from plone.app.dexterity.behaviors.metadata import IPublication
 from plone.app.imagecropping import PAI_STORAGE_KEY
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
@@ -14,6 +20,7 @@ from plone.app.textfield.value import RichTextValue
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
+from unittest.mock import patch
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
 from zope.annotation.interfaces import IAnnotations
@@ -28,6 +35,7 @@ from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import modified
 from zope.schema.interfaces import IVocabularyFactory
 
+import mock
 import unittest
 
 
@@ -293,3 +301,93 @@ class TestNewsItem(unittest.TestCase):
         file_obj.file = NamedBlobFile(data="file data", filename="file.txt")
         view = queryMultiAdapter((newsitem, self.request), name="view")
         self.assertIn("++resource++mimetype.icons/txt.png", view())
+
+    def test_get_translated_category(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="My news item",
+        )
+        newsitem.category = "job_offer"
+        portal_api.get_current_language = mock.Mock(return_value="fr")
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertIn("Emploi", view())
+
+        portal_api.get_current_language = mock.Mock(return_value="en")
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertNotIn("Emploi", view())
+        self.assertIn("Job offer", view())
+
+    def test_get_translated_topics(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="My news item",
+        )
+        ITopics(newsitem).topics = ["tourism", "citizenship"]
+        portal_api.get_current_language = mock.Mock(return_value="fr")
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertIn("Tourisme", view())
+        self.assertIn("Citoyenneté", view())
+
+        portal_api.get_current_language = mock.Mock(return_value="en")
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertNotIn("Tourisme", view())
+        self.assertNotIn("Citoyenneté", view())
+        self.assertIn("Tourism", view())
+        self.assertIn("Citizenship", view())
+
+    def test_get_translated_iam(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="My news item",
+        )
+        IAm(newsitem).iam = ("job_seeker",)
+        portal_api.get_current_language = mock.Mock(return_value="fr")
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertIn("Demandeur d'emploi", view())
+
+        portal_api.get_current_language = mock.Mock(return_value="en")
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertNotIn("Demandeur d'emploi", view())
+        self.assertIn("Job seeker", view())
+
+    @freeze_time("2025-10-28 10:00:00")
+    def test_get_effective_date(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="My news item",
+        )
+        IPublication(newsitem).effective = datetime.now(timezone.utc)
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertIn("<span>Effective</span> :\n        28/10/2025</div>", view())
+        self.assertNotIn("<span>Expires</span>", view())
+
+    @freeze_time("2025-10-29 14:00:00")
+    def test_get_expires_date(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="My news item",
+        )
+        IPublication(newsitem).expires = datetime.now(timezone.utc)
+        view = queryMultiAdapter((newsitem, self.request), name="view")
+        self.assertIn("<span>Expires</span> :\n        29/10/2025</div>", view())
+        self.assertNotIn("<span>Effective</span>", view())
+
+    def test_modify_published_newitems_odwb(self):
+        newsitem = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            id="newsitem",
+            title="Sample news",
+        )
+        api.content.transition(newsitem, "publish")
+        with patch(
+            "imio.news.core.subscribers.OdwbEndpointGet.reply", return_value="call odwb"
+        ) as mock_reply:
+            modified(newsitem, Attributes(IBasic, "IBasic.title"))
+            # Assert we call odwb reply if newsitem is published and modified
+            self.assertEqual(mock_reply.return_value, "call odwb")

@@ -42,7 +42,7 @@ class DeleteConfirmationForm(BaseDeleteConfirmationForm):
 
 class DeleteActionView(BaseDeleteActionView):
 
-    def action(self, obj):
+    def action(self, obj, **kwargs):
         """Delete from trash icon in folder_contents view"""
 
         if not INewsFolder.providedBy(obj) and not IFolder.providedBy(obj):

@@ -25,7 +25,9 @@ def user_is_contributor_in_entity_which_authorize_to_bring_news():
     for brain in brains:
         entity = brain.getObject()
         if (
-            api.user.get_permissions(user=user, obj=entity).get("Modify portal content")
+            api.user.get_permissions(user=user, obj=entity).get(
+                "imio.news.core: Bring news into personnal news folder"
+            )
             is True
         ):
             if entity.authorize_to_bring_news_anywhere:

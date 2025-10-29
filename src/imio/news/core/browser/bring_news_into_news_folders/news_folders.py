@@ -43,7 +43,7 @@ class BringNewsIntoNewsFoldersForm(AutoExtensibleForm, form.Form):
 
     def update(self):
         super(BringNewsIntoNewsFoldersForm, self).update()
-        if user_is_contributor_in_entity_which_authorize_to_bring_news is False:
+        if user_is_contributor_in_entity_which_authorize_to_bring_news() is False:
             api.portal.show_message(
                 _("You don't have rights to access this page."), self.request
             )
