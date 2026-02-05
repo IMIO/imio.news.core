@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 from imio.news.core.rest.odwb_endpoint import OdwbEndpointGet
+from imio.news.core.utils import ENDPOINT_CACHE_KEY
 from imio.news.core.utils import get_entity_for_obj
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import reload_faceted_config
+from imio.smartweb.common.utils import is_log_active
 from imio.smartweb.common.utils import remove_cropping
 from plone import api
 from plone.api.content import get_state
 from Products.DCWorkflow.interfaces import IAfterTransitionEvent
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
+from zope.annotation.interfaces import IAnnotations
 from zope.component import getUtility
 from zope.globalrequest import getRequest
 from zope.intid.interfaces import IIntIds
@@ -16,6 +19,12 @@ from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import modified
 from zope.lifecycleevent import ObjectRemovedEvent
 from zope.lifecycleevent.interfaces import IAttributes
+
+import logging
+import time
+
+logger = logging.getLogger("imio.news.core")
+logger.setLevel(logging.INFO)
 
 
 def set_default_news_folder_uid(news_item):
@@ -88,6 +97,11 @@ def added_news_item(obj, event):
     container_newsfolder = get_news_folder_for_news_item(obj)
     set_uid_of_referrer_newsfolders(obj, container_newsfolder)
 
+    # @search endpoint invaldation
+    site = api.portal.get()
+    ann = IAnnotations(site)
+    ann[ENDPOINT_CACHE_KEY] = int(ann.get(ENDPOINT_CACHE_KEY, 0)) + 1
+
 
 def modified_news_item(obj, event):
     set_default_news_folder_uid(obj)
@@ -104,6 +118,11 @@ def modified_news_item(obj, event):
         request = getRequest()
         endpoint = OdwbEndpointGet(obj, request)
         endpoint.reply()
+
+    # @search endpoint invaldation
+    site = api.portal.get()
+    ann = IAnnotations(site)
+    ann[ENDPOINT_CACHE_KEY] = int(ann.get(ENDPOINT_CACHE_KEY, 0)) + 1
 
 
 def moved_news_item(obj, event):
@@ -141,6 +160,7 @@ def published_news_item_transition(obj, event):
 
 
 def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
+    tps1 = time.time()
     changed = False
     newsfolders_to_treat = []
     for d in event.descriptions:
@@ -174,6 +194,11 @@ def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
             news.reindexObject(idxs=["selected_news_folders"])
     # Keep a copy of populating_newsfolders
     obj.old_populating_newsfolders = uids_in_current_newsfolder
+    tps2 = time.time()
+    if is_log_active():
+        logger.info(
+            f"TIME subscribers/mark_current_newsfolder_in_news_from_other_newsfolder : {tps2 - tps1}"
+        )
 
 
 def set_uid_of_referrer_newsfolders(obj, container_newsfolder):

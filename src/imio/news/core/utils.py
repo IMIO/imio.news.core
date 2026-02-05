@@ -12,6 +12,9 @@ from zope.interface import noLongerProvides
 import os
 
 
+ENDPOINT_CACHE_KEY = "imio.news.search_cache_generation"
+
+
 def get_entity_for_obj(obj):
     while not IEntity.providedBy(obj) and obj is not None:
         obj = parent(obj)
