@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.18 (unreleased)
+1.2.18 (2026-02-06)
 -------------------
 
 - WEB-4366 : Add RAM caching to @search endpoint. Try to reduce latency
