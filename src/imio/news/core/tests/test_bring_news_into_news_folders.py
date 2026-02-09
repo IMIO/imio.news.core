@@ -125,9 +125,7 @@ class TestBringNews(unittest.TestCase):
         # Patch reindex and redirect to observe side effects
         with mock.patch.object(
             self.news1, "reindexObject"
-        ) as reindex_mock, mock.patch.object(
-            self.request.response, "redirect"
-        ) as redirect_mock:
+        ) as reindex_mock, mock.patch.object(self.request.response, "redirect"):
             view.update()  # z3c.form processes the submit here
 
             self.assertIn(uid1, self.news1.selected_news_folders)
@@ -159,9 +157,7 @@ class TestBringNews(unittest.TestCase):
 
         with mock.patch.object(
             self.news1, "reindexObject"
-        ) as reindex_mock, mock.patch.object(
-            self.request.response, "redirect"
-        ) as redirect_mock:
+        ) as reindex_mock, mock.patch.object(self.request.response, "redirect"):
             view.update()  # déclenche handle_submit
 
             self.assertIn(uid1, self.news1.selected_news_folders)
@@ -178,9 +174,7 @@ class TestBringNews(unittest.TestCase):
 
         view = self.news1.restrictedTraverse("@@bring_news_into_news_folders_form")
 
-        with mock.patch.object(
-            self.request.response, "redirect"
-        ) as redirect_mock, mock.patch.object(
+        with mock.patch.object(self.request.response, "redirect"), mock.patch.object(
             self.news1, "reindexObject"
         ) as reindex_mock:
             view.update()

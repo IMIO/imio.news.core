@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from AccessControl import Unauthorized
 from imio.news.core.contents import IEntity
 from imio.news.core.contents import INewsFolder
 from imio.smartweb.locales import SmartwebMessageFactory as _
