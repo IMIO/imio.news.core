@@ -5,8 +5,8 @@ Changelog
 1.2.19 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- WEB-4366 : Enhance @search caching endpoint.
+  [boulch]
 
 1.2.18 (2026-02-06)
 -------------------

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from imio.news.core.contents import IEntity
 from imio.news.core.rest.odwb_endpoint import OdwbEndpointGet
 from imio.news.core.utils import ENDPOINT_CACHE_KEY
 from imio.news.core.utils import get_entity_for_obj
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import reload_faceted_config
+from imio.smartweb.common.utils import get_parent_providing
 from imio.smartweb.common.utils import is_log_active
 from imio.smartweb.common.utils import remove_cropping
 from plone import api
@@ -69,10 +71,14 @@ def added_news_folder(obj, event):
     entity = get_entity_for_obj(obj)
     reload_faceted_config(entity, request)
     modified(obj, Attributes(IRelationList, "populating_newsfolders"))
+    # @search endpoint invaldation
+    invalidate_endpoint_search_cache(obj)
 
 
 def modified_newsfolder(obj, event):
     mark_current_newsfolder_in_news_from_other_newsfolder(obj, event)
+    # @search endpoint invaldation
+    invalidate_endpoint_search_cache(obj)
 
 
 def removed_newsfolder(obj, event):
@@ -91,16 +97,15 @@ def removed_newsfolder(obj, event):
     request = getRequest()
     entity = get_entity_for_obj(obj)
     reload_faceted_config(entity, request)
+    # @search endpoint invaldation
+    invalidate_endpoint_search_cache(obj)
 
 
 def added_news_item(obj, event):
     container_newsfolder = get_news_folder_for_news_item(obj)
     set_uid_of_referrer_newsfolders(obj, container_newsfolder)
-
     # @search endpoint invaldation
-    site = api.portal.get()
-    ann = IAnnotations(site)
-    ann[ENDPOINT_CACHE_KEY] = int(ann.get(ENDPOINT_CACHE_KEY, 0)) + 1
+    invalidate_endpoint_search_cache(obj)
 
 
 def modified_news_item(obj, event):
@@ -120,9 +125,7 @@ def modified_news_item(obj, event):
         endpoint.reply()
 
     # @search endpoint invaldation
-    site = api.portal.get()
-    ann = IAnnotations(site)
-    ann[ENDPOINT_CACHE_KEY] = int(ann.get(ENDPOINT_CACHE_KEY, 0)) + 1
+    invalidate_endpoint_search_cache(obj)
 
 
 def moved_news_item(obj, event):
@@ -213,3 +216,14 @@ def set_uid_of_referrer_newsfolders(obj, container_newsfolder):
         obj.selected_news_folders.append(rel.from_object.UID())
         obj._p_changed = 1
     obj.reindexObject(idxs=["selected_news_folders"])
+
+
+def invalidate_endpoint_search_cache(obj):
+    site = api.portal.get()
+    ann = IAnnotations(site)
+    entity = get_parent_providing(obj, IEntity)
+    # if we're curently removing an entity
+    # there is no more this entity here
+    if entity:
+        ann_full_key = f"{ENDPOINT_CACHE_KEY}{entity.UID()}"
+        ann[ann_full_key] = int(ann.get(ann_full_key, 0)) + 1
