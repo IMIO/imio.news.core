@@ -3,6 +3,7 @@
 from imio.news.core.rest.odwb_endpoint import OdwbEndpointGet
 from imio.news.core.rest.odwb_endpoint import OdwbEntitiesEndpointGet
 from imio.news.core.testing import IMIO_NEWS_CORE_INTEGRATION_TESTING
+from imio.news.core.tests.utils import mock_odwb
 from plone import api
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
@@ -132,12 +133,13 @@ class RestFunctionalTest(unittest.TestCase):
             title="Entity 2",
         )
         # OdwbEntitiesEndpointGet.test_in_staging_or_local = True
-        endpoint = OdwbEntitiesEndpointGet(self.portal, self.request)
-        endpoint.reply()
-        # 2 entities are returned on self.portal (entities are automaticly published)
-        self.assertEqual(len(endpoint.__datas__), 2)
+        with mock_odwb():
+            endpoint = OdwbEntitiesEndpointGet(self.portal, self.request)
+            endpoint.reply()
+            # 2 entities are returned on self.portal (entities are automaticly published)
+            self.assertEqual(len(endpoint.__datas__), 2)
 
-        api.content.transition(self.entity, "reject")
-        endpoint = OdwbEntitiesEndpointGet(self.portal, self.request)
-        endpoint.reply()
-        self.assertEqual(len(endpoint.__datas__), 1)
+            api.content.transition(self.entity, "reject")
+            endpoint = OdwbEntitiesEndpointGet(self.portal, self.request)
+            endpoint.reply()
+            self.assertEqual(len(endpoint.__datas__), 1)

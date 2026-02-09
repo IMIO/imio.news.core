@@ -16,7 +16,6 @@ from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 
 import json
 import logging
-import requests
 
 logger = logging.getLogger("imio.news.core")
 
@@ -42,7 +41,7 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
         for elem in batched_lst:
             payload = json.dumps(elem)
             response_text = self.odwb_query(url, payload)
-            logger.info(response_text)
+            # logger.info(response_text)
         return response_text
 
     def get_news(self):
@@ -74,9 +73,9 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
             lst_news.append(json.loads(news.to_json()))
         url = f"{self.odwb_api_push_url}/{self.odwb_imio_service}/temps_reel/delete/?pushkey={self.odwb_pushkey}"
         payload = json.dumps(lst_news)
-        headers = {"Content-Type": "application/json"}
-        response = requests.request("POST", url, headers=headers, data=payload)
-        return response.text
+        response_text = self.odwb_query(url, payload)
+        # logger.info(response_text)
+        return response_text
 
 
 class News:
@@ -168,6 +167,5 @@ class OdwbEntitiesEndpointGet(OdwbBaseEndpointGet):
         self.__datas__ = lst_entities
         url = f"{self.odwb_api_push_url}/{self.odwb_imio_service}/temps_reel/push/?pushkey={self.odwb_pushkey}"
         payload = json.dumps(lst_entities)
-        headers = {"Content-Type": "application/json"}
-        response = requests.request("POST", url, headers=headers, data=payload)
-        return response.text
+        response_text = self.odwb_query(url, payload)
+        return response_text

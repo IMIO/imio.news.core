@@ -8,6 +8,7 @@ from imio.news.core.contents import INewsItem
 from imio.news.core.interfaces import IImioNewsCoreLayer
 from imio.news.core.testing import IMIO_NEWS_CORE_FUNCTIONAL_TESTING
 from imio.news.core.tests.utils import make_named_image
+from imio.news.core.tests.utils import mock_odwb
 from plone import api
 from plone.api import portal as portal_api
 from plone.app.contenttypes.behaviors.leadimage import ILeadImageBehavior
@@ -20,7 +21,6 @@ from plone.app.textfield.value import RichTextValue
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
-from unittest.mock import patch
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
 from zope.annotation.interfaces import IAnnotations
@@ -385,9 +385,8 @@ class TestNewsItem(unittest.TestCase):
             title="Sample news",
         )
         api.content.transition(newsitem, "publish")
-        with patch(
-            "imio.news.core.subscribers.OdwbEndpointGet.reply", return_value="call odwb"
-        ) as mock_reply:
+        with mock_odwb() as mock_reply:
             modified(newsitem, Attributes(IBasic, "IBasic.title"))
             # Assert we call odwb reply if newsitem is published and modified
-            self.assertEqual(mock_reply.return_value, "call odwb")
+            mock_reply.assert_called()
+            self.assertEqual(mock_reply.return_value, '{"ok": true}')

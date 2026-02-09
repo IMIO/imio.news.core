@@ -3,6 +3,7 @@
 from eea.facetednavigation.subtypes.interfaces import IFacetedNavigable
 from imio.news.core.contents.newsfolder.content import INewsFolder  # NOQA E501
 from imio.news.core.testing import IMIO_NEWS_CORE_INTEGRATION_TESTING  # noqa
+from imio.news.core.tests.utils import mock_odwb
 from plone import api
 from plone.api.exc import InvalidParameterError
 from plone.app.testing import setRoles
@@ -242,6 +243,7 @@ class TestNewsFolder(unittest.TestCase):
         self.assertIn(newsfolder.UID(), newsitem3.selected_news_folders)
 
         # Next, we delete newsfolder so we remove this newsfolder.UID() out of news.
-        api.content.delete(newsfolder)
-        self.assertNotIn(newsfolder.UID(), newsitem2.selected_news_folders)
-        self.assertNotIn(newsfolder.UID(), newsitem3.selected_news_folders)
+        with mock_odwb():
+            api.content.delete(newsfolder)
+            self.assertNotIn(newsfolder.UID(), newsitem2.selected_news_folders)
+            self.assertNotIn(newsfolder.UID(), newsitem3.selected_news_folders)

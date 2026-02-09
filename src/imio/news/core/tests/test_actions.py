@@ -2,6 +2,7 @@
 
 from imio.news.core.interfaces import IImioNewsCoreLayer
 from imio.news.core.testing import IMIO_NEWS_CORE_FUNCTIONAL_TESTING
+from imio.news.core.tests.utils import mock_odwb
 from plone import api
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
@@ -56,10 +57,13 @@ class TestCropping(unittest.TestCase):
         self.assertIn("folder", self.entity.objectIds())
 
     def test_can_delete_empty_news_folder(self):
-        api.content.delete(self.news)
-        transaction.commit()
-        self.browser.open(self.news_folder.absolute_url() + "/@@delete_confirmation")
-        self.assertIn("Delete", self.browser.contents)
+        with mock_odwb():
+            api.content.delete(self.news)
+            transaction.commit()
+            self.browser.open(
+                self.news_folder.absolute_url() + "/@@delete_confirmation"
+            )
+            self.assertIn("Delete", self.browser.contents)
 
         # Click Delete button
         self.browser.getControl(name="form.buttons.Delete").click()
@@ -67,27 +71,30 @@ class TestCropping(unittest.TestCase):
         self.assertEqual(self.browser.url, self.entity.absolute_url())
 
     def test_can_delete_news(self):
-        transaction.commit()
-        self.browser.open(self.news.absolute_url() + "/@@delete_confirmation")
-        self.assertIn("Delete", self.browser.contents)
-        self.browser.getControl(name="form.buttons.Delete").click()
-        self.assertNotIn("news", self.news_folder.objectIds())
-        self.assertEqual(self.browser.url, self.news_folder.absolute_url())
+        with mock_odwb():
+            transaction.commit()
+            self.browser.open(self.news.absolute_url() + "/@@delete_confirmation")
+            self.assertIn("Delete", self.browser.contents)
+            self.browser.getControl(name="form.buttons.Delete").click()
+            self.assertNotIn("news", self.news_folder.objectIds())
+            self.assertEqual(self.browser.url, self.news_folder.absolute_url())
 
     # action “trash” in folder_contents
     def test_trash_cannot_delete_non_empty_news_folder(self):
         request = TestRequest()
         alsoProvides(request, IImioNewsCoreLayer)
-        view = getMultiAdapter((self.entity, request), name="fc-delete")
-        view.errors = []
-        view.action(self.news_folder)
-        self.assertIn("folder", self.entity.objectIds())
+        with mock_odwb():
+            view = getMultiAdapter((self.entity, request), name="fc-delete")
+            view.errors = []
+            view.action(self.news_folder)
+            self.assertIn("folder", self.entity.objectIds())
 
     # action “trash” in folder_contents
     def test_trash_can_delete_empty_news_folder(self):
-        api.content.delete(self.news)
-        request = TestRequest()
-        alsoProvides(request, IImioNewsCoreLayer)
-        view = getMultiAdapter((self.entity, request), name="fc-delete")
-        view.action(self.news_folder)
-        self.assertNotIn("folder", self.entity.objectIds())
+        with mock_odwb():
+            api.content.delete(self.news)
+            request = TestRequest()
+            alsoProvides(request, IImioNewsCoreLayer)
+            view = getMultiAdapter((self.entity, request), name="fc-delete")
+            view.action(self.news_folder)
+            self.assertNotIn("folder", self.entity.objectIds())
