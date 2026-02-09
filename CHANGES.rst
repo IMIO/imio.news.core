@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.19 (unreleased)
+1.2.19 (2026-02-09)
 -------------------
 
 - WEB-4366 : Enhance @search caching endpoint.
