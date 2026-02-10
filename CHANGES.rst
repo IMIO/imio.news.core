@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.20 (unreleased)
+1.2.20 (2026-02-10)
 -------------------
 
 - WEB-4366 : Fix : Ensure we've got UID in good format
