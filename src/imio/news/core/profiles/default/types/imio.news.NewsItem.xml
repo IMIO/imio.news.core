@@ -29,8 +29,9 @@
 
   <!-- Enabled behaviors -->
   <property name="behaviors" purge="false">
-    <element value="plone.excludefromnavigation"/>
-    <element value="plone.basic"/>
+    <element value="imio.smartweb.ia.titles"/>
+    <element value="collective.autopublishing.behavior.IAutoPublishing"/>
+    <element value="plone.excludefromnavigation"/>    
     <element value="plone.locking" />
     <element value="plone.leadimage"/>
     <element value="plone.imagecropping"/>
