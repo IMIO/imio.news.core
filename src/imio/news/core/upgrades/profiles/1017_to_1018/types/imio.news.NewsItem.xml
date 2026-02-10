@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<object xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    name="imio.news.NewsItem"
+    meta_type="Dexterity FTI"
+    i18n:domain="imio.smartweb">
+
+  <property name="behaviors" purge="true">
+    <element value="imio.smartweb.ia.titles"/>
+    <element value="collective.autopublishing.behavior.IAutoPublishing"/>
+    <element value="plone.excludefromnavigation"/>
+    <element value="plone.locking" />
+    <element value="plone.leadimage"/>
+    <element value="plone.imagecropping"/>
+    <element value="plone.constraintypes" />
+    <element value="plone.publication" />
+    <element value="plone.richtext"/>
+    <element value="plone.versioning"/>
+    <element value="imio.smartweb.topics"/>
+    <element value="imio.smartweb.iam"/>
+    <element value="plone.categorization"/>
+    <element value="solr.fields" />
+  </property>
+
+</object>

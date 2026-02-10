@@ -81,7 +81,15 @@
       directory="profiles/1015_to_1016"
       description="Update permission imio.news.core.BringNewsIntoPersonnalNewsFolder"
       provides="Products.GenericSetup.interfaces.EXTENSION"
-      />      
+      />
+  
+  <genericsetup:registerProfile
+      name="upgrade_1016_to_1017"
+      title="Upgrade core from 1016 to 1017"
+      directory="profiles/1016_to_1017"
+      description="Use imio.smartweb.ia.titles instead of IBasic for imio.news.NewsItem"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
 
   <genericsetup:upgradeStep
       title="Refresh faceted"
@@ -266,5 +274,14 @@
         />
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      source="1016"
+      destination="1017"
+      profile="imio.news.core:default">
+    <genericsetup:upgradeDepends
+        title="Use imio.smartweb.ia.titles instead of IBasic for imio.news.NewsItem"
+        import_profile="imio.news.core.upgrades:upgrade_1016_to_1017"
+        />
+  </genericsetup:upgradeSteps>
 
 </configure>
