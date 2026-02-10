@@ -5,7 +5,8 @@ Changelog
 1.2.20 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4366 : Fix : Ensure we've got UID in good format
+  [boulch]
 
 
 1.2.19 (2026-02-09)
