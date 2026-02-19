@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.21 (unreleased)
+1.2.21 (2026-02-19)
 -------------------
 
 - WEB-4366 : Add entity_uid in request to return good entity data 
