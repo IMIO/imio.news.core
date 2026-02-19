@@ -5,7 +5,9 @@ Changelog
 1.2.21 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4366 : Add entity_uid in request to return good entity data 
+  when we get data from cache with missing/removed selected_news_folders 
+  [boulch]
 
 
 1.2.20 (2026-02-10)
