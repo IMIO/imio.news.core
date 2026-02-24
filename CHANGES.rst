@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.22 (unreleased)
+1.2.22 (2026-02-24)
 -------------------
 
 - UNDO RAM caching to @search endpoint - too many side effects
