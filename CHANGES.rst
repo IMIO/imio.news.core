@@ -5,7 +5,8 @@ Changelog
 1.2.22 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- UNDO RAM caching to @search endpoint - too many side effects
+  [boulch]
 
 
 1.2.21 (2026-02-19)

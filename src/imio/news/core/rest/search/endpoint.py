@@ -3,20 +3,19 @@ from imio.news.core.utils import ENDPOINT_CACHE_KEY
 from imio.smartweb.common.utils import get_parent_providing
 from imio.smartweb.common.utils import is_log_active
 from plone import api
-from plone.memoize import ram
+
+# from plone.memoize import ram
 from plone.restapi.services.search.get import SearchGet as BaseSearchGet
 from plone.uuid.interfaces import IUUID
 from zope.annotation.interfaces import IAnnotations
 from zope.component.hooks import getSite
 
 import logging
-import time
+
+# import time
 
 logger = logging.getLogger("imio.news.core")
 logger.setLevel(logging.INFO)
-
-# def is_log_active():
-#     return True
 
 
 def _first(value):
@@ -57,22 +56,25 @@ def _cachekey(method, self):
 
 class SearchGet(BaseSearchGet):
 
-    @ram.cache(_cachekey)
-    def _cached_reply(self):
-        # Ce code n’est exécuté QUE sur cache MISS
-        self.request.response.setHeader("X-RAM-Cache", "MISS")
-        self.request.response.setHeader(
-            "X-RAM-Cache-Computed-At", str(int(time.time()))
-        )
-        if is_log_active():
-            logger.info("RAMCACHE MISS key=%r", _cachekey(None, self))
-        return super(SearchGet, self).reply()
+    # BAD CACHE
+    # @ram.cache(_cachekey)
+    # def _cached_reply(self):
+    #     # Ce code n’est exécuté QUE sur cache MISS
+    #     self.request.response.setHeader("X-RAM-Cache", "MISS")
+    #     self.request.response.setHeader(
+    #         "X-RAM-Cache-Computed-At", str(int(time.time()))
+    #     )
+    #     if is_log_active():
+    #         logger.info("RAMCACHE MISS key=%r", _cachekey(None, self))
+    #     return super(SearchGet, self).reply()
 
     def reply(self):
         # Si c'est un HIT, _cached_reply() ne s'exécute pas -> pas de header
-        result = self._cached_reply()
-        if not self.request.response.getHeader("X-RAM-Cache"):
-            self.request.response.setHeader("X-RAM-Cache", "HIT")
-            if is_log_active():
-                logger.info("RAMCACHE HIT")
-        return result
+        # result = self._cached_reply()
+        # if not self.request.response.getHeader("X-RAM-Cache"):
+        #     self.request.response.setHeader("X-RAM-Cache", "HIT")
+        #     if is_log_active():
+        #         logger.info("RAMCACHE HIT")
+        # return result
+
+        return super(SearchGet, self).reply()

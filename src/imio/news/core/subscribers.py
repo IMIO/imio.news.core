@@ -72,13 +72,13 @@ def added_news_folder(obj, event):
     reload_faceted_config(entity, request)
     modified(obj, Attributes(IRelationList, "populating_newsfolders"))
     # @search endpoint invaldation
-    invalidate_endpoint_search_cache(obj)
+    # invalidate_endpoint_search_cache(obj)
 
 
 def modified_newsfolder(obj, event):
     mark_current_newsfolder_in_news_from_other_newsfolder(obj, event)
     # @search endpoint invaldation
-    invalidate_endpoint_search_cache(obj)
+    # invalidate_endpoint_search_cache(obj)
 
 
 def removed_newsfolder(obj, event):
@@ -98,14 +98,14 @@ def removed_newsfolder(obj, event):
     entity = get_entity_for_obj(obj)
     reload_faceted_config(entity, request)
     # @search endpoint invaldation
-    invalidate_endpoint_search_cache(obj)
+    # invalidate_endpoint_search_cache(obj)
 
 
 def added_news_item(obj, event):
     container_newsfolder = get_news_folder_for_news_item(obj)
     set_uid_of_referrer_newsfolders(obj, container_newsfolder)
     # @search endpoint invaldation
-    invalidate_endpoint_search_cache(obj)
+    # invalidate_endpoint_search_cache(obj)
 
 
 def modified_news_item(obj, event):
@@ -125,7 +125,7 @@ def modified_news_item(obj, event):
         endpoint.reply()
 
     # @search endpoint invaldation
-    invalidate_endpoint_search_cache(obj)
+    # invalidate_endpoint_search_cache(obj)
 
 
 def moved_news_item(obj, event):
