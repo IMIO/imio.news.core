@@ -1,21 +1,23 @@
-from imio.news.core.contents import IEntity
 from imio.news.core.utils import ENDPOINT_CACHE_KEY
-from imio.smartweb.common.utils import get_parent_providing
 from imio.smartweb.common.utils import is_log_active
-from plone import api
-
-# from plone.memoize import ram
+from plone.memoize import ram
+from plone.restapi.search.handler import SearchHandler
+from plone.restapi.search.utils import unflatten_dotted_dict
 from plone.restapi.services.search.get import SearchGet as BaseSearchGet
-from plone.uuid.interfaces import IUUID
 from zope.annotation.interfaces import IAnnotations
 from zope.component.hooks import getSite
 
 import logging
-
-# import time
+import time
 
 logger = logging.getLogger("imio.news.core")
 logger.setLevel(logging.INFO)
+
+
+def _norm(v):
+    if isinstance(v, (list, tuple)):
+        return tuple(v)
+    return v
 
 
 def _first(value):
@@ -24,57 +26,114 @@ def _first(value):
     return value
 
 
-def _cachekey(method, self):
-    req = self.request
-    lang = req.get("LANGUAGE", "")
-    IGNORED = {"cache_key", "_", "authenticator"}
-    items = tuple(sorted((k, v) for k, v in req.form.items() if k not in IGNORED))
-    site = getSite()
-    uid = (
-        _first(req.form.get("entity_uid"))
-        or _first(req.form.get("UID"))
-        or _first(req.form.get("selected_news_folders"))
+def _items_from_req(req, ignored=frozenset({"cache_key", "_", "authenticator"})):
+    items = tuple(
+        sorted((k, _norm(v)) for k, v in req.form.items() if k not in ignored)
     )
-    if not uid:
-        # global cache
-        return (site.getId(), "__global__", lang, items)
-    obj = api.content.get(UID=uid)
-    if not obj:
-        return (site.getId(), "__global__", lang, items)
-    entity = get_parent_providing(obj, IEntity)
-    if not entity:
-        return (site.getId(), "__global__", lang, items)
-    entity_uid = IUUID(entity, None)
+    return items
+
+
+def _query_from_req(req, pop_keys=()):
+    # IMPORTANT: copy() => keep req.form intact for cache
+    query = req.form.copy()
+    for k in pop_keys:
+        query.pop(k, None)
+    st = query.get("SearchableText")
+    # if isinstance(st, str) and st and not st.endswith("*"):
+    #     query["SearchableText"] = f"{st}*"
+    # copilot suggestion :
+    prefix_param = query.pop("prefix_search", None)
+    enable_prefix = True
+    if isinstance(prefix_param, str):
+        lowered = prefix_param.strip().lower()
+        if lowered in {"0", "false", "no"}:
+            enable_prefix = False
+    st = query.get("SearchableText")
+    if enable_prefix and isinstance(st, str) and st and not st.endswith("*"):
+        query["SearchableText"] = f"{st}*"
+    return unflatten_dotted_dict(query)
+
+
+def _cachekey_by_entity_uid(method, self, entity_uid_key):
+    req = self.request
+    lang = req.get("LANGUAGE", "") or req.cookies.get("I18N_LANGUAGE", "")
+    site = getSite()
+    type_key = self.__class__.__name__
+    entity_uid = _first(req.form.get(entity_uid_key))
+    items = _items_from_req(req)
+
+    if not entity_uid:
+        return (site.getId(), type_key, "__no_entity__", items, lang)
+    # entity = api.content.get(UID=entity_uid)
+    # if entity is None:
+    #     return (site.getId(), type_key, "__no_entity__", items, lang)
+    # store each annotation on site instead of storing it on the entity (avoid extra hit)
     ann = IAnnotations(site)
-    ann_full_key = f"{ENDPOINT_CACHE_KEY}{entity_uid}"
-    gen = ann.get(ann_full_key, 0)
-    if is_log_active():
-        logger.info(f"ENTITY TITLE ========================> {entity.title}")
-        logger.info(f"ANNOTATION CACHE KEY ========================> {ann_full_key}")
-    return (site.getId(), entity_uid, gen, items, lang)
+    gen = ann.get(f"{ENDPOINT_CACHE_KEY}{entity_uid}", 0)
+    return (site.getId(), type_key, entity_uid, gen, items, lang)
+
+
+def _cachekey_entity(method, self):
+    return _cachekey_by_entity_uid(method, self, "UID")
+
+
+def _cachekey_newsfolder_for_entity(method, self):
+    return _cachekey_by_entity_uid(method, self, "entity_uid")
+
+
+def _cachekey_newsitems(method, self):
+    return _cachekey_by_entity_uid(method, self, "entity_uid")
 
 
 class SearchGet(BaseSearchGet):
+    # These params should not go to catalog
+    POP_FROM_QUERY = ("entity_uid", "u", "batch_size")
 
-    # BAD CACHE
-    # @ram.cache(_cachekey)
-    # def _cached_reply(self):
-    #     # Ce code n’est exécuté QUE sur cache MISS
-    #     self.request.response.setHeader("X-RAM-Cache", "MISS")
-    #     self.request.response.setHeader(
-    #         "X-RAM-Cache-Computed-At", str(int(time.time()))
-    #     )
-    #     if is_log_active():
-    #         logger.info("RAMCACHE MISS key=%r", _cachekey(None, self))
-    #     return super(SearchGet, self).reply()
+    def _search(self):
+        query = _query_from_req(self.request, pop_keys=self.POP_FROM_QUERY)
+        return SearchHandler(self.context, self.request).search(query)
 
     def reply(self):
-        # Si c'est un HIT, _cached_reply() ne s'exécute pas -> pas de header
-        # result = self._cached_reply()
-        # if not self.request.response.getHeader("X-RAM-Cache"):
-        #     self.request.response.setHeader("X-RAM-Cache", "HIT")
-        #     if is_log_active():
-        #         logger.info("RAMCACHE HIT")
-        # return result
+        # same as BaseSearchGet but filtered
+        return self._search()
 
-        return super(SearchGet, self).reply()
+
+class CachedSearchMixin:
+    CACHEKEY = None  # function
+    REQUIRED_PARAM = None  # "UID" or "entity_uid"
+
+    @ram.cache(lambda method, self: self.CACHEKEY(method, self))
+    def _cached_reply(self):
+        self.request.response.setHeader("X-RAM-Cache", "MISS")
+        self.request.response.setHeader(
+            "X-RAM-Cache-Computed-At", str(int(time.time()))
+        )
+        if is_log_active():
+            logger.info("RAMCACHE MISS key=%r", self.CACHEKEY(None, self))
+        return self._search()
+
+    def reply(self):
+        if self.REQUIRED_PARAM and _first(self.request.form.get(self.REQUIRED_PARAM)):
+            result = self._cached_reply()
+            if not self.request.response.getHeader("X-RAM-Cache"):
+                self.request.response.setHeader("X-RAM-Cache", "HIT")
+                if is_log_active():
+                    logger.info("RAMCACHE HIT")
+            return result
+        return self._search()
+
+
+class SearchEntity(CachedSearchMixin, SearchGet):
+    CACHEKEY = staticmethod(_cachekey_entity)
+    REQUIRED_PARAM = "UID"
+
+
+class SearchNewsFolderForEntity(CachedSearchMixin, SearchGet):
+    CACHEKEY = staticmethod(_cachekey_newsfolder_for_entity)
+    REQUIRED_PARAM = "entity_uid"
+    # POP_FROM_QUERY = ("entity_uid",)  # inherit
+
+
+class SearchNewsItems(CachedSearchMixin, SearchGet):
+    CACHEKEY = staticmethod(_cachekey_newsitems)
+    REQUIRED_PARAM = "entity_uid"
