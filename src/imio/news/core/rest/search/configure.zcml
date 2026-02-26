@@ -16,6 +16,36 @@
     layer="imio.news.core.interfaces.IImioNewsCoreLayer"
     />
 
+  <plone:service
+    name="@search_entity"
+    method="GET"
+    accept="application/json"
+    for="zope.interface.Interface"
+    factory=".endpoint.SearchEntity"
+    permission="zope2.View"
+    layer="imio.news.core.interfaces.IImioNewsCoreLayer"
+    />
+
+  <plone:service
+    name="@search_newsfolder_for_entity"
+    method="GET"
+    accept="application/json"
+    for="zope.interface.Interface"
+    factory=".endpoint.SearchNewsFolderForEntity"
+    permission="zope2.View"
+    layer="imio.news.core.interfaces.IImioNewsCoreLayer"
+    />
+
+  <plone:service
+    name="@search_newsitems"
+    method="GET"
+    accept="application/json"
+    for="zope.interface.Interface"
+    factory=".endpoint.SearchNewsItems"
+    permission="zope2.View"
+    layer="imio.news.core.interfaces.IImioNewsCoreLayer"
+    />
+
   <cache:ruleset
     for=".endpoint.SearchGet"
     ruleset="imio.news.core.rest"

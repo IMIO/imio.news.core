@@ -5,7 +5,9 @@ Changelog
 1.2.23 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4366 : Refactor @search caching endpoint to use entity_uid instead of newsfolder_uid 
+  to avoid some side effects and cache misses when news folders are added/removed/changed for an entity
+  [boulch]
 
 
 1.2.22 (2026-02-24)
