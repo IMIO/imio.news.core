@@ -5,6 +5,9 @@ Changelog
 1.2.23 (unreleased)
 -------------------
 
+- OIA-109 : IPA : Add ia "CategorizeContent" and titles proposal generation features on imio.events.Event
+  [boulch]
+
 - WEB-4366 : Refactor @search caching endpoint to use entity_uid instead of newsfolder_uid 
   to avoid some side effects and cache misses when news folders are added/removed/changed for an entity
   [boulch]
