@@ -20,6 +20,14 @@
       </value>
   </record>
 
+  <record name="imio.news.core.search_cache_enabled">
+    <field type="plone.registry.field.Bool">
+      <title>Enable RAM cache on @search endpoints</title>
+      <default>True</default>
+    </field>
+    <value>True</value>
+  </record>
+
   <record name="imio.news.core.odwb_entites-des-actualites-en-wallonie_pushkey">
     <field type="plone.registry.field.TextLine">
       <title>ODWB : Entit&#233;s des actualit&#233;s en Wallonie - pushkey</title>

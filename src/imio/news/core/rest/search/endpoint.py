@@ -1,5 +1,6 @@
 from imio.news.core.utils import ENDPOINT_CACHE_KEY
 from imio.smartweb.common.utils import is_log_active
+from plone import api
 from plone.memoize import ram
 from plone.restapi.search.handler import SearchHandler
 from plone.restapi.search.utils import unflatten_dotted_dict
@@ -39,9 +40,6 @@ def _query_from_req(req, pop_keys=()):
     for k in pop_keys:
         query.pop(k, None)
     st = query.get("SearchableText")
-    # if isinstance(st, str) and st and not st.endswith("*"):
-    #     query["SearchableText"] = f"{st}*"
-    # copilot suggestion :
     prefix_param = query.pop("prefix_search", None)
     enable_prefix = True
     if isinstance(prefix_param, str):
@@ -113,6 +111,10 @@ class CachedSearchMixin:
         return self._search()
 
     def reply(self):
+        if not api.portal.get_registry_record(
+            "imio.news.core.search_cache_enabled", default=True
+        ):
+            return self._search()
         if self.REQUIRED_PARAM and _first(self.request.form.get(self.REQUIRED_PARAM)):
             result = self._cached_reply()
             if not self.request.response.getHeader("X-RAM-Cache"):
