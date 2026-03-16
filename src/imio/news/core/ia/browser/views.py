@@ -1,8 +1,4 @@
-from collective.taxonomy.interfaces import ITaxonomy
 from imio.smartweb.common.ia.browser.views import BaseProcessCategorizeContentView
-from imio.news.core.contents import INewsItem
-from zope.component import getSiteManager
-
 
 import json
 
