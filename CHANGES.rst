@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.23 (unreleased)
+1.2.23 (2026-03-16)
 -------------------
 
 - OIA-109 : IPA : Add ia "CategorizeContent" and titles proposal generation features on imio.events.Event
