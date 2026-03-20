@@ -2,10 +2,36 @@ Changelog
 =========
 
 
-1.2.21 (unreleased)
+1.2.24 (unreleased)
 -------------------
 
 - Nothing changed yet.
+
+
+1.2.23 (2026-03-16)
+-------------------
+
+- OIA-109 : IPA : Add ia "CategorizeContent" and titles proposal generation features on imio.events.Event
+  [boulch]
+
+- WEB-4366 : Refactor @search caching endpoint to use entity_uid instead of newsfolder_uid 
+  to avoid some side effects and cache misses when news folders are added/removed/changed for an entity
+  [boulch]
+
+
+1.2.22 (2026-02-24)
+-------------------
+
+- UNDO RAM caching to @search endpoint - too many side effects
+  [boulch]
+
+
+1.2.21 (2026-02-19)
+-------------------
+
+- WEB-4366 : Add entity_uid in request to return good entity data 
+  when we get data from cache with missing/removed selected_news_folders 
+  [boulch]
 
 
 1.2.20 (2026-02-10)

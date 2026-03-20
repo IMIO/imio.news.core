@@ -135,6 +135,7 @@ def moved_news_item(obj, event):
     if type(event) is ObjectRemovedEvent:
         # We don't have anything to do if news item is being removed
         return
+    invalidate_endpoint_search_cache(obj)
     container_newsfolder = get_news_folder_for_news_item(obj)
     set_uid_of_referrer_newsfolders(obj, container_newsfolder)
     if event.oldParent is not None and get_state(obj) == "published":
@@ -144,6 +145,7 @@ def moved_news_item(obj, event):
 
 
 def removed_news_item(obj, event):
+    invalidate_endpoint_search_cache(obj)
     request = getRequest()
     endpoint = OdwbEndpointGet(obj, request)
     endpoint.remove()
@@ -152,6 +154,8 @@ def removed_news_item(obj, event):
 def published_news_item_transition(obj, event):
     if not IAfterTransitionEvent.providedBy(event):
         return
+
+    invalidate_endpoint_search_cache(obj)
     if event.new_state.id == "published":
         request = getRequest()
         endpoint = OdwbEndpointGet(obj, request)
@@ -219,11 +223,11 @@ def set_uid_of_referrer_newsfolders(obj, container_newsfolder):
 
 
 def invalidate_endpoint_search_cache(obj):
-    site = api.portal.get()
-    ann = IAnnotations(site)
     entity = get_parent_providing(obj, IEntity)
     # if we're curently removing an entity
     # there is no more this entity here
     if entity:
+        site = api.portal.get()
+        ann = IAnnotations(site)
         ann_full_key = f"{ENDPOINT_CACHE_KEY}{entity.UID()}"
         ann[ann_full_key] = int(ann.get(ann_full_key, 0)) + 1

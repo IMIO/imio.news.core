@@ -11,5 +11,4 @@ class IACategorizeEditForm(BaseIACategorizeEditForm):
     def update(self):
         return super(IACategorizeEditForm, self).update()
 
-
 PageEditView = layout.wrap_form(IACategorizeEditForm)
