@@ -9,7 +9,7 @@ class IACategorizeEditForm(BaseIACategorizeEditForm):
     """Vue edit custom, avec bouton 'Catégoriser' injecté en haut de 'categorization'."""
 
     def update(self):
-        super(IACategorizeEditForm, self).update()
+        return super(IACategorizeEditForm, self).update()
 
 
 PageEditView = layout.wrap_form(IACategorizeEditForm)

@@ -12,15 +12,22 @@
       permission="cmf.ModifyPortalContent"
       />
 
+  <browser:page
+      for="imio.news.core.contents.INewsItem"
+      name="edit"
+      class=".categorization_button_edit.IACategorizeEditForm"
+      permission="cmf.ModifyPortalContent"
+      layer="imio.news.core.interfaces.IImioNewsCoreLayer"
+      />
+
   <adapter
       for="Products.CMFCore.interfaces.IFolderish
            imio.smartweb.common.interfaces.IImioSmartwebCommonLayer
            plone.dexterity.interfaces.IDexterityFTI"
       provides="zope.publisher.interfaces.browser.IBrowserPage"
       factory=".categorization_button_add.IACategorizeAddView"
-      name="imio.news.INewsItem"
+      name="imio.news.NewsItem"
       />
-      <!--imio.smartweb.common.ia.browser-->
 
   <class class=".categorization_button_add.IACategorizeAddView">
       <require
