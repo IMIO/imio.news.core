@@ -84,7 +84,11 @@ class News:
         self.id = context.id
         self.title = context.title
         self.description = context.description
-        self.image = f"{context.absolute_url()}/@@images/image/preview"
+        self.image = (
+            f"{context.absolute_url()}/@@images/image/preview"
+            if context.image
+            else None
+        )
         self.category = context.category
         self.topics = context.topics
         self.text = context.text.raw if context.text else None

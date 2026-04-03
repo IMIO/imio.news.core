@@ -5,7 +5,8 @@ Changelog
 1.2.25 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4406 : Fix missing lead images in ODWB (preview.html)
+  [boulch]
 
 
 1.2.24 (2026-03-20)

@@ -24,6 +24,7 @@ from zope.lifecycleevent.interfaces import IAttributes
 
 import logging
 import time
+import transaction
 
 logger = logging.getLogger("imio.news.core")
 logger.setLevel(logging.INFO)
@@ -120,9 +121,7 @@ def modified_news_item(obj, event):
                 obj, "image", ["portrait_affiche", "paysage_affiche", "carre_affiche"]
             )
     if get_state(obj) == "published":
-        request = getRequest()
-        endpoint = OdwbEndpointGet(obj, request)
-        endpoint.reply()
+        transaction.get().addAfterCommitHook(send_to_odwb, kws={"obj": obj})
 
     # @search endpoint invaldation
     invalidate_endpoint_search_cache(obj)
@@ -139,16 +138,12 @@ def moved_news_item(obj, event):
     container_newsfolder = get_news_folder_for_news_item(obj)
     set_uid_of_referrer_newsfolders(obj, container_newsfolder)
     if event.oldParent is not None and get_state(obj) == "published":
-        request = getRequest()
-        endpoint = OdwbEndpointGet(obj, request)
-        endpoint.reply()
+        transaction.get().addAfterCommitHook(send_to_odwb, kws={"obj": obj})
 
 
 def removed_news_item(obj, event):
     invalidate_endpoint_search_cache(obj)
-    request = getRequest()
-    endpoint = OdwbEndpointGet(obj, request)
-    endpoint.remove()
+    transaction.get().addAfterCommitHook(send_remove_to_odwb, kws={"obj": obj})
 
 
 def published_news_item_transition(obj, event):
@@ -157,13 +152,9 @@ def published_news_item_transition(obj, event):
 
     invalidate_endpoint_search_cache(obj)
     if event.new_state.id == "published":
-        request = getRequest()
-        endpoint = OdwbEndpointGet(obj, request)
-        endpoint.reply()
+        transaction.get().addAfterCommitHook(send_to_odwb, kws={"obj": obj})
     if event.new_state.id == "private" and event.old_state.id != event.new_state.id:
-        request = getRequest()
-        endpoint = OdwbEndpointGet(obj, request)
-        endpoint.remove()
+        transaction.get().addAfterCommitHook(send_remove_to_odwb, kws={"obj": obj})
 
 
 def mark_current_newsfolder_in_news_from_other_newsfolder(obj, event):
@@ -231,3 +222,15 @@ def invalidate_endpoint_search_cache(obj):
         ann = IAnnotations(site)
         ann_full_key = f"{ENDPOINT_CACHE_KEY}{entity.UID()}"
         ann[ann_full_key] = int(ann.get(ann_full_key, 0)) + 1
+
+
+def send_to_odwb(trans, obj=None):
+    request = getRequest()
+    endpoint = OdwbEndpointGet(obj, request)
+    endpoint.reply()
+
+
+def send_remove_to_odwb(trans, obj=None):
+    request = getRequest()
+    endpoint = OdwbEndpointGet(obj, request)
+    endpoint.remove()
