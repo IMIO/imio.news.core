@@ -386,7 +386,15 @@ class TestNewsItem(unittest.TestCase):
         )
         api.content.transition(newsitem, "publish")
         with mock_odwb() as mock_reply:
-            modified(newsitem, Attributes(IBasic, "IBasic.title"))
+            hooks = []
+            with mock.patch("imio.news.core.subscribers.transaction") as mock_txn:
+                mock_txn.get.return_value.addAfterCommitHook.side_effect = (
+                    lambda fn, kws=None: hooks.append((fn, kws or {}))
+                )
+                modified(newsitem, Attributes(IBasic, "IBasic.title"))
+            # Fire registered hooks as if transaction committed successfully
+            for fn, kws in hooks:
+                fn(True, **kws)
             # Assert we call odwb reply if newsitem is published and modified
             mock_reply.assert_called()
             self.assertEqual(mock_reply.return_value, '{"ok": true}')

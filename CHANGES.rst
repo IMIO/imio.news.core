@@ -5,7 +5,8 @@ Changelog
 1.2.25 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- WEB-4406: Attempt to fix missing lead images in ODWB preview (preview.html is an unwanted entry, hard to reproduce in staging)
+  [boulch]
 
 
 1.2.24 (2026-03-20)
