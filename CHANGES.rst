@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.25 (unreleased)
+1.2.25 (2026-04-13)
 -------------------
 
 - WEB-4406: Attempt to fix missing lead images in ODWB preview (preview.html is an unwanted entry, hard to reproduce in staging)
