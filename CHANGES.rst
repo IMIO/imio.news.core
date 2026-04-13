@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.26 (unreleased)
+1.2.26 (2026-04-13)
 -------------------
 
 - Fix image URL for ODWB using DOMAINS env variable and add upgrade step to resend all published news to ODWB
