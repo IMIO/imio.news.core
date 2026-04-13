@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from imio.news.core.subscribers import send_to_odwb
 from imio.news.core.utils import reload_faceted_config
 from imio.smartweb.common.upgrades import upgrades
 from plone import api
@@ -104,3 +105,8 @@ def reindex_newsfolders_and_folders(context):
     brains = api.content.find(portal_type=["imio.news.NewsFolder", "imio.news.Folder"])
     for brain in brains:
         brain.getObject().reindexObject()
+
+
+def resend_all_news_to_odwb(context):
+    site = api.portal.get()
+    send_to_odwb(True, obj=site)

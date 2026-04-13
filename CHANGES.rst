@@ -5,7 +5,8 @@ Changelog
 1.2.26 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix image URL for ODWB using DOMAINS env variable and add upgrade step to resend all published news to ODWB
+  [boulch]
 
 
 1.2.25 (2026-04-13)

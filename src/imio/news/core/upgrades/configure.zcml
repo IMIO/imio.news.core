@@ -296,9 +296,19 @@
       source="1017"
       destination="1018"
       profile="imio.news.core:default">
-    <genericsetup:upgradeDepends 
+    <genericsetup:upgradeDepends
         title="Use imio.smartweb.ia.titles instead of IBasic for imio.news.NewsItem"
         import_profile="imio.news.core.upgrades:upgrade_1017_to_1018"
+        />
+  </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="1018"
+      destination="1019"
+      profile="imio.news.core:default">
+    <genericsetup:upgradeStep
+        title="Resend all published news to ODWB"
+        handler=".upgrades.resend_all_news_to_odwb"
         />
   </genericsetup:upgradeSteps>
 

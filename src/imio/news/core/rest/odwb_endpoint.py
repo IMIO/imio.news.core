@@ -16,6 +16,7 @@ from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 
 import json
 import logging
+import os
 
 logger = logging.getLogger("imio.news.core")
 
@@ -84,11 +85,37 @@ class News:
         self.id = context.id
         self.title = context.title
         self.description = context.description
-        self.image = (
-            f"{context.absolute_url()}/@@images/image/preview"
-            if context.image
-            else None
-        )
+        if context.image is not None:
+            portal = api.portal.get()
+            # context.absolute_url() depends on the current request URL, which may be an
+            # internal IP when running upgrade steps directly (bypassing the reverse proxy).
+            # ODWB is an external service and cannot reach internal addresses, so we use the
+            # DOMAINS environment variable (already set in the deployment config) to build a
+            # publicly accessible URL. Falls back to portal.absolute_url() when DOMAINS is not
+            # set (e.g. in production where requests always go through the reverse proxy).
+            domain = os.environ.get("DOMAINS", "")
+            public_url = f"https://{domain}" if domain else portal.absolute_url()
+            public_url = public_url.rstrip("/")
+            context_subpath = "/".join(
+                context.getPhysicalPath()[len(portal.getPhysicalPath()) :]
+            )
+            content_type = getattr(context.image, "contentType", "")
+            scale = "" if content_type == "image/svg+xml" else "/preview"
+            self.image = f"{public_url}/{context_subpath}/@@images/image{scale}"
+            logger.info(
+                "ODWB image for %s: type=%s, contentType=%s, size=%s, url=%s",
+                context.absolute_url(),
+                type(context.image).__name__,
+                content_type,
+                getattr(context.image, "size", "?"),
+                self.image,
+            )
+        else:
+            self.image = None
+            logger.info(
+                "ODWB image for %s: no lead image (context.image is None)",
+                context.absolute_url(),
+            )
         self.category = context.category
         self.topics = context.topics
         self.text = context.text.raw if context.text else None
