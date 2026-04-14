@@ -8,12 +8,14 @@ from imio.news.core.contents import INewsItem
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import get_entity_for_obj
 from imio.smartweb.common.rest.odwb import OdwbBaseEndpointGet
+from imio.smartweb.common.utils import is_log_active
 from imio.smartweb.common.utils import (
     activate_sending_data_to_odwb_for_staging as odwb_staging,
 )
 from plone import api
 from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 
+import itertools
 import json
 import logging
 import os
@@ -30,23 +32,29 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
         )
         pushkey = f"imio.news.core.odwb_{imio_service}_pushkey"
         super(OdwbEndpointGet, self).__init__(context, request, imio_service, pushkey)
+        self.__datas_count__ = 0
 
     def reply(self):
         if not super(OdwbEndpointGet, self).available():
             return
         url = f"{self.odwb_api_push_url}/{self.odwb_imio_service}/temps_reel/push/?pushkey={self.odwb_pushkey}"
-        self.__datas__ = self.get_news()
-        batched_lst = [
-            self.__datas__[i : i + 1000] for i in range(0, len(self.__datas__), 1000)
-        ]
-        for elem in batched_lst:
-            payload = json.dumps(elem)
+        if is_log_active():
+            logger.info(f"ODWB push url: {url}")
+        self.__datas_count__ = 0
+        responses = []
+        for batch in itertools.batched(self.get_news(), 500):
+            self.__datas_count__ += len(batch)
+            payload = json.dumps(list(batch))
             response_text = self.odwb_query(url, payload)
-            # logger.info(response_text)
-        return response_text
+            responses.append(response_text)
+            if is_log_active():
+                logger.info(response_text)
+        if not responses:
+            return None
+        unique = set(responses)
+        return responses[-1] if len(unique) == 1 else responses
 
     def get_news(self):
-        lst_news = []
         if IPloneSiteRoot.providedBy(self.context) or INewsFolder.providedBy(
             self.context
         ):
@@ -58,12 +66,18 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
                     if self.context.UID() not in brain.selected_news_folders:
                         continue
                 news_obj = brain.getObject()
-                news = News(news_obj)
-                lst_news.append(json.loads(news.to_json()))
+                yield json.loads(News(news_obj).to_json())
+        elif IEntity.providedBy(self.context):
+            brains = api.content.find(
+                object_provides=INewsItem.__identifier__,
+                review_state="published",
+                path={"query": "/".join(self.context.getPhysicalPath()), "depth": -1},
+            )
+            for brain in brains:
+                news_obj = brain.getObject()
+                yield json.loads(News(news_obj).to_json())
         elif INewsItem.providedBy(self.context):
-            news = News(self.context)
-            lst_news.append(json.loads(news.to_json()))
-        return lst_news
+            yield json.loads(News(self.context).to_json())
 
     def remove(self):
         if not super(OdwbEndpointGet, self).available():
@@ -73,10 +87,10 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
             news = News(self.context)
             lst_news.append(json.loads(news.to_json()))
         url = f"{self.odwb_api_push_url}/{self.odwb_imio_service}/temps_reel/delete/?pushkey={self.odwb_pushkey}"
+        if is_log_active():
+            logger.info(f"ODWB delete url: {url}")
         payload = json.dumps(lst_news)
-        response_text = self.odwb_query(url, payload)
-        # logger.info(response_text)
-        return response_text
+        return self.odwb_query(url, payload)
 
 
 class News:
@@ -197,6 +211,7 @@ class OdwbEntitiesEndpointGet(OdwbBaseEndpointGet):
             lst_entities.append(entity)
         self.__datas__ = lst_entities
         url = f"{self.odwb_api_push_url}/{self.odwb_imio_service}/temps_reel/push/?pushkey={self.odwb_pushkey}"
+        if is_log_active():
+            logger.info(f"ODWB push url: {url}")
         payload = json.dumps(lst_entities)
-        response_text = self.odwb_query(url, payload)
-        return response_text
+        return self.odwb_query(url, payload)

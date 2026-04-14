@@ -68,8 +68,15 @@ class RestFunctionalTest(unittest.TestCase):
         response = endpoint.reply()
         self.assertEqual(response, "ODWB : Unexpected error occurred")
 
-    @patch("requests.post")
-    def test_get_news_to_send_to_odwb(self, m):
+    @patch(
+        "imio.smartweb.common.rest.odwb.api.portal.get_registry_record",
+        return_value="KAMOULOX_KEY",
+    )
+    @patch("imio.smartweb.common.rest.odwb.requests.post")
+    def test_get_news_to_send_to_odwb(self, m_post, m_reg):
+        fake_response = MagicMock()
+        fake_response.text = "KAMOULOX"
+        m_post.return_value = fake_response
         event = api.content.create(
             container=self.news_folder,
             type="imio.news.NewsItem",
@@ -101,28 +108,29 @@ class RestFunctionalTest(unittest.TestCase):
         api.content.transition(event, "publish")
         endpoint = OdwbEndpointGet(self.portal, self.request)
         endpoint.reply()
-        # 1 (published) event is returned on self.portal
-        self.assertEqual(len(endpoint.__datas__), 1)
+        # 1 (published) news is returned on self.portal
+        self.assertEqual(endpoint.__datas_count__, 1)
+        m_post.assert_called()
+        called_url = m_post.call_args.args[0]
+        self.assertIn("https://www.odwb.be/api/push/1.0", called_url)
 
         api.content.transition(event2, "publish")
         endpoint = OdwbEndpointGet(self.portal, self.request)
         endpoint.reply()
         # 2 (published) news are returned on self.portal
-        self.assertEqual(len(endpoint.__datas__), 2)
-
-        for data in endpoint.__datas__:
-            if data.get("geolocation", None) is not None:
-                self.assertEqual(data.get("geolocation"), {"lat": 4.5, "lon": 45})
-            if data.get("latitude", None) is not None:
-                self.assertEqual(data.get("latitude"), 4.5)
-            if data.get("longitude", None) is not None:
-                self.assertEqual(data.get("longitude"), 45)
+        self.assertEqual(endpoint.__datas_count__, 2)
 
         # test endpoint on news_folder
         endpoint = OdwbEndpointGet(self.news_folder, self.request)
         endpoint.reply()
-        # 1 (published) event is returned on self.news_folder
-        self.assertEqual(len(endpoint.__datas__), 1)
+        # 1 (published) news is returned on self.news_folder
+        self.assertEqual(endpoint.__datas_count__, 1)
+
+        # test endpoint on entity
+        endpoint = OdwbEndpointGet(self.entity, self.request)
+        endpoint.reply()
+        # 1 (published) news is returned on self.entity
+        self.assertEqual(endpoint.__datas_count__, 1)
 
     @patch("requests.post")
     def test_get_entities_to_send_to_odwb(self, m):

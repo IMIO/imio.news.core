@@ -5,7 +5,8 @@ Changelog
 1.2.27 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Refactor ODWB endpoint to use generator-based batching and add Entity context support
+  [boulch]
 
 
 1.2.26 (2026-04-13)
