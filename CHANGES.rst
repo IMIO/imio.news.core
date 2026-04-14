@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.27 (unreleased)
+1.2.27 (2026-04-14)
 -------------------
 
 - Refactor ODWB endpoint to use generator-based batching and add Entity context support
