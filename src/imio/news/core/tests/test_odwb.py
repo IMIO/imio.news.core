@@ -269,6 +269,29 @@ class RestFunctionalTest(unittest.TestCase):
         news = News(news_item)
         self.assertIsNone(news.image)
 
+    def test_log_odwb_response_accepts_status_ok(self):
+        """ODWB returns {"status": "ok"}, not {"ok": true} — both must log at INFO."""
+        news_item = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            id="newsitem",
+            title="NewsItem",
+        )
+        api.content.transition(news_item, "publish")
+        with mock_odwb(ok_response='{"status": "ok"}'):
+            with self.assertLogs("imio.news.core", level="INFO") as cm:
+                endpoint = OdwbEndpointGet(news_item, self.request)
+                endpoint.reply()
+            # Must not log a WARNING — only INFO
+            warnings = [
+                line for line in cm.output if "WARNING" in line and "ODWB push" in line
+            ]
+            self.assertEqual(warnings, [])
+            infos = [
+                line for line in cm.output if "INFO" in line and "sent/updated" in line
+            ]
+            self.assertTrue(infos)
+
     def test_news_encoder_serializes_datetime_fields(self):
         news_item = api.content.create(
             container=self.news_folder,
