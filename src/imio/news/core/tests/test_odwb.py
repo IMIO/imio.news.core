@@ -182,6 +182,41 @@ class RestFunctionalTest(unittest.TestCase):
             self.assertEqual(len(payload), 1)
             self.assertEqual(payload[0]["title"], "NewsItem")
 
+    def test_remove_from_news_folder_context(self):
+        news_item = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            id="newsitem",
+            title="NewsItem",
+        )
+        api.content.transition(news_item, "publish")
+        with mock_odwb() as m:
+            endpoint = OdwbEndpointGet(self.news_folder, self.request)
+            endpoint.remove()
+            m.assert_called_once()
+            payload = json.loads(m.call_args.args[1])
+            self.assertEqual(len(payload), 1)
+
+    def test_remove_from_entity_context(self):
+        news_item = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            id="newsitem",
+            title="NewsItem",
+        )
+        api.content.transition(news_item, "publish")
+        with mock_odwb() as m:
+            endpoint = OdwbEndpointGet(self.entity, self.request)
+            endpoint.remove()
+            m.assert_called_once()
+            payload = json.loads(m.call_args.args[1])
+            self.assertEqual(len(payload), 1)
+
+    def test_remove_returns_none_when_no_news(self):
+        with mock_odwb():
+            endpoint = OdwbEndpointGet(self.portal, self.request)
+            self.assertIsNone(endpoint.remove())
+
     def test_news_image_url_with_domains_env(self):
         news_item = api.content.create(
             container=self.news_folder,

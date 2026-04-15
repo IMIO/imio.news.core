@@ -5,7 +5,8 @@ Changelog
 1.2.28 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Refactor ODWB remove() method to reuse get_news() — supports all contexts like reply()
+  [boulch]
 
 
 1.2.27 (2026-04-14)

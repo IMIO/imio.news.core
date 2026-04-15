@@ -23,6 +23,13 @@ import os
 logger = logging.getLogger("imio.news.core")
 
 
+def _batched(iterable, n):
+    """Backport of itertools.batched (Python 3.12+) for older runtimes."""
+    it = iter(iterable)
+    while batch := list(itertools.islice(it, n)):
+        yield batch
+
+
 class OdwbEndpointGet(OdwbBaseEndpointGet):
     def __init__(self, context, request):
         imio_service = (
@@ -42,7 +49,7 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
             logger.info(f"ODWB push url: {url}")
         self.__datas_count__ = 0
         responses = []
-        for batch in itertools.batched(self.get_news(), 500):
+        for batch in _batched(self.get_news(), 500):
             self.__datas_count__ += len(batch)
             payload = json.dumps(list(batch))
             response_text = self.odwb_query(url, payload)
@@ -82,15 +89,20 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
     def remove(self):
         if not super(OdwbEndpointGet, self).available():
             return
-        lst_news = []
-        if INewsItem.providedBy(self.context):
-            news = News(self.context)
-            lst_news.append(json.loads(news.to_json()))
         url = f"{self.odwb_api_push_url}/{self.odwb_imio_service}/temps_reel/delete/?pushkey={self.odwb_pushkey}"
         if is_log_active():
             logger.info(f"ODWB delete url: {url}")
-        payload = json.dumps(lst_news)
-        return self.odwb_query(url, payload)
+        responses = []
+        for batch in _batched(self.get_news(), 500):
+            payload = json.dumps(list(batch))
+            response_text = self.odwb_query(url, payload)
+            responses.append(response_text)
+            if is_log_active():
+                logger.info(response_text)
+        if not responses:
+            return None
+        unique = set(responses)
+        return responses[-1] if len(unique) == 1 else responses
 
 
 class News:
@@ -181,6 +193,11 @@ class NewsEncoder(json.JSONEncoder):
             return attr.isoformat()
         else:
             return super().default(attr)
+
+
+class OdwbEndpointDelete(OdwbEndpointGet):
+    def reply(self):
+        return self.remove()
 
 
 class OdwbEntitiesEndpointGet(OdwbBaseEndpointGet):
