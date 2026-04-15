@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.28 (unreleased)
+1.2.28 (2026-04-15)
 -------------------
 
 - Refactor ODWB remove() method to reuse get_news() — supports all contexts like reply()
