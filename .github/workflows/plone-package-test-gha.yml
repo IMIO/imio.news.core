@@ -38,7 +38,7 @@ jobs:
         PYTHON_VERSION: ${{ matrix.python-version }}
 
   coverage:
-    uses: IMIO/gha-workflows/.github/workflows/package-test-coverage.yml@main
+    uses: IMIO/gha-workflows/.github/workflows/package-test-coverage.yml@v1
     with:
       upload_to_coveralls: true
       runner_label: gha-runners-smartweb
