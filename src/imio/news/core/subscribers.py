@@ -111,15 +111,21 @@ def added_news_item(obj, event):
 
 def modified_news_item(obj, event):
     set_default_news_folder_uid(obj)
+    if hasattr(event, "descriptions") and event.descriptions:
+        # Accept both the qualified name ("ILeadImageBehavior.image") and the bare
+        # field name ("image") because REST-API patches and some import tools may
+        # only record the unqualified name in the IAttributes description.
+        _image_attrs = {"ILeadImageBehavior.image", "image"}
+        for d in event.descriptions:
+            if IAttributes.providedBy(d) and not _image_attrs.isdisjoint(d.attributes):
+                # we need to remove cropping information of previous image
+                remove_cropping(
+                    obj,
+                    "image",
+                    ["portrait_affiche", "paysage_affiche", "carre_affiche"],
+                )
+                break
 
-    if not hasattr(event, "descriptions") or not event.descriptions:
-        return
-    for d in event.descriptions:
-        if IAttributes.providedBy(d) and "ILeadImageBehavior.image" in d.attributes:
-            # we need to remove cropping information of previous image
-            remove_cropping(
-                obj, "image", ["portrait_affiche", "paysage_affiche", "carre_affiche"]
-            )
     if get_state(obj) == "published":
         transaction.get().addAfterCommitHook(send_to_odwb, kws={"obj": obj})
 
@@ -226,11 +232,27 @@ def invalidate_endpoint_search_cache(obj):
 
 def send_to_odwb(trans, obj=None):
     request = getRequest()
+    if not hasattr(request, "environ"):
+        # After-commit hooks can fire in degraded contexts (upgrade steps,
+        # batch imports) where the global request is a bare RequestContainer
+        # instead of a proper HTTPRequest.  Trying to use it leads to
+        # AttributeError: 'RequestContainer' has no attribute 'virtual_url_path'.
+        logger.warning(
+            "send_to_odwb: no valid HTTP request available, skipping ODWB push for %s",
+            getattr(obj, "absolute_url", lambda: repr(obj))(),
+        )
+        return
     endpoint = OdwbEndpointGet(obj, request)
     endpoint.reply()
 
 
 def send_remove_to_odwb(trans, obj=None):
     request = getRequest()
+    if not hasattr(request, "environ"):
+        logger.warning(
+            "send_remove_to_odwb: no valid HTTP request available, skipping ODWB remove for %s",
+            getattr(obj, "absolute_url", lambda: repr(obj))(),
+        )
+        return
     endpoint = OdwbEndpointGet(obj, request)
     endpoint.remove()
