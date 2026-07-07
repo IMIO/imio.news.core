@@ -11,7 +11,6 @@ from zope.interface import noLongerProvides
 
 import os
 
-
 ENDPOINT_CACHE_KEY = "imio.news.search_cache_generation"
 
 

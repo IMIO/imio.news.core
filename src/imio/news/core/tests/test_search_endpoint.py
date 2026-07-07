@@ -6,6 +6,7 @@ The commit refactors the cache key strategy to use entity_uid directly
 cached endpoint classes: SearchEntity, SearchNewsFolderForEntity,
 SearchNewsItems.
 """
+
 from imio.news.core.rest.search.endpoint import _first
 from imio.news.core.rest.search.endpoint import _items_from_req
 from imio.news.core.rest.search.endpoint import _norm
@@ -31,7 +32,6 @@ from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import modified
 
 import unittest
-
 
 # ---------------------------------------------------------------------------
 # Pure unit tests – no Plone machinery required

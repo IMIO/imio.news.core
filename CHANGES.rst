@@ -5,7 +5,8 @@ Changelog
 1.2.29 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Migrate dev environment to Plone 6.1.5 & buildout 5
+  [remdub]
 
 
 1.2.28 (2026-04-15)
@@ -46,7 +47,7 @@ Changelog
 1.2.23 (2026-03-16)
 -------------------
 
-- WEB-4366 : Refactor @search caching endpoint to use entity_uid instead of newsfolder_uid 
+- WEB-4366 : Refactor @search caching endpoint to use entity_uid instead of newsfolder_uid
   to avoid some side effects and cache misses when news folders are added/removed/changed for an entity
   [boulch]
 
@@ -61,8 +62,8 @@ Changelog
 1.2.21 (2026-02-19)
 -------------------
 
-- WEB-4366 : Add entity_uid in request to return good entity data 
-  when we get data from cache with missing/removed selected_news_folders 
+- WEB-4366 : Add entity_uid in request to return good entity data
+  when we get data from cache with missing/removed selected_news_folders
   [boulch]
 
 
