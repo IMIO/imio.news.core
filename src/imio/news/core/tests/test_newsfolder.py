@@ -2,13 +2,17 @@
 
 from eea.facetednavigation.subtypes.interfaces import IFacetedNavigable
 from imio.news.core.contents.newsfolder.content import INewsFolder  # NOQA E501
+from imio.news.core.testing import IMIO_NEWS_CORE_FUNCTIONAL_TESTING
 from imio.news.core.testing import IMIO_NEWS_CORE_INTEGRATION_TESTING  # noqa
 from imio.news.core.tests.utils import mock_odwb
 from plone import api
 from plone.api.exc import InvalidParameterError
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_PASSWORD
 from plone.dexterity.interfaces import IDexterityFTI
+from plone.testing.zope import Browser
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
 from zope.component import createObject
@@ -18,7 +22,51 @@ from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import modified
 
+import transaction
 import unittest
+
+
+class TestNewsFolderAddForm(unittest.TestCase):
+    layer = IMIO_NEWS_CORE_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        self.entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            id="entity",
+            title="Entity",
+        )
+        self.other_folder = api.content.create(
+            container=self.entity,
+            type="imio.news.NewsFolder",
+            id="other-folder",
+            title="Other folder",
+        )
+        other_owner = api.user.create(
+            username="other_owner",
+            email="other-owner@example.org",
+        )
+        self.other_folder.changeOwnership(other_owner)
+        self.other_folder.setCreators(("other_owner",))
+        self.other_folder.manage_delLocalRoles([TEST_USER_ID])
+        self.entity.manage_setLocalRoles(TEST_USER_ID, ["Contributor"])
+        setRoles(self.portal, TEST_USER_ID, ["Member"])
+        transaction.commit()
+
+        self.browser = Browser(self.layer["app"])
+        self.browser.handleErrors = False
+        self.browser.addHeader(
+            "Authorization",
+            "Basic %s:%s" % (TEST_USER_NAME, TEST_USER_PASSWORD),
+        )
+
+    def test_local_contributor_can_add_on_published_entity(self):
+        self.browser.open(self.entity.absolute_url() + "/++add++imio.news.NewsFolder")
+        self.browser.getControl(label="Title").value = "Local news folder"
+        self.browser.getControl(name="form.buttons.save").click()
+        self.assertIn("local-news-folder", self.entity.objectIds())
 
 
 class TestNewsFolder(unittest.TestCase):

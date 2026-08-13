@@ -40,14 +40,21 @@ def get_news_folders_uids_for_faceted(obj):
 
 
 def reload_faceted_config(obj, request):
-    faceted_config_path = "{}/faceted/config/news.xml".format(os.path.dirname(__file__))
-    configure_faceted(obj, faceted_config_path)
-    news_folders_uids = "\n".join(get_news_folders_uids_for_faceted(obj))
-    request.form = {
-        "cid": "newsfolders",
-        "faceted.newsfolders.default": news_folders_uids,
-    }
-    handler = getMultiAdapter((obj, request), name="faceted_update_criterion")
-    handler.edit(**request.form)
-    if IHidePloneLeftColumn.providedBy(obj):
-        noLongerProvides(obj, IHidePloneLeftColumn)
+    # Faceted configuration is maintained by event subscribers and requires
+    # permissions (notably access to @@faceted_subtyper) that content creators
+    # should not need.  Keep this technical operation independent from the
+    # permissions of the user who triggered the event.
+    with api.env.adopt_roles(["Manager"]):
+        faceted_config_path = "{}/faceted/config/news.xml".format(
+            os.path.dirname(__file__)
+        )
+        configure_faceted(obj, faceted_config_path)
+        news_folders_uids = "\n".join(get_news_folders_uids_for_faceted(obj))
+        request.form = {
+            "cid": "newsfolders",
+            "faceted.newsfolders.default": news_folders_uids,
+        }
+        handler = getMultiAdapter((obj, request), name="faceted_update_criterion")
+        handler.edit(**request.form)
+        if IHidePloneLeftColumn.providedBy(obj):
+            noLongerProvides(obj, IHidePloneLeftColumn)

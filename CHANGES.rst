@@ -7,6 +7,10 @@ Changelog
 
 - Migrate dev environment to Plone 6.1.5 & buildout 5
   [remdub]
+- WEB-4467: Run the faceted navigation configuration with temporary Manager privileges,
+  allowing local Contributors to add NewsFolders without granting Editor or
+  Reviewer permissions on the Entity workflow.
+  [boulch]
 
 
 1.2.28 (2026-04-15)
