@@ -68,6 +68,23 @@ class TestNewsFolderAddForm(unittest.TestCase):
         self.browser.getControl(name="form.buttons.save").click()
         self.assertIn("local-news-folder", self.entity.objectIds())
 
+    def test_owner_sees_delete_action_only_on_own_news_folder(self):
+        self.browser.open(self.entity.absolute_url() + "/++add++imio.news.NewsFolder")
+        self.browser.getControl(label="Title").value = "Owned folder"
+        self.browser.getControl(name="form.buttons.save").click()
+        owned_folder = self.entity["owned-folder"]
+        self.browser.open(owned_folder.absolute_url())
+        self.assertIn(
+            owned_folder.absolute_url() + "/delete_confirmation",
+            self.browser.contents,
+        )
+
+        self.browser.open(self.other_folder.absolute_url())
+        self.assertNotIn(
+            self.other_folder.absolute_url() + "/delete_confirmation",
+            self.browser.contents,
+        )
+
 
 class TestNewsFolder(unittest.TestCase):
     layer = IMIO_NEWS_CORE_INTEGRATION_TESTING
