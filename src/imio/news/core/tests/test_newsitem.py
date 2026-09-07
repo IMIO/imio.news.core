@@ -18,9 +18,16 @@ from plone.app.imagecropping import PAI_STORAGE_KEY
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.textfield.value import RichTextValue
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_PASSWORD
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
+from plone.testing.zope import Browser
+from unittest.mock import MagicMock
+from unittest.mock import patch
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
 from zope.annotation.interfaces import IAnnotations
@@ -35,8 +42,55 @@ from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import modified
 from zope.schema.interfaces import IVocabularyFactory
 
+import json
 import mock
+import transaction
 import unittest
+
+
+# Only the remote directory is mocked: the vocabulary, the widget, the
+# converter and the form are exercised for real.
+REQUESTS_GET = "imio.smartweb.common.utils.requests.get"
+
+LINKED_ENTITY_UID = "11111111111111111111111111111111"
+OTHER_ENTITY_UID = "22222222222222222222222222222222"
+CONTACT_UID = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+FOREIGN_CONTACT_UID = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+
+DIRECTORY_CONTACTS = [
+    {
+        "UID": CONTACT_UID,
+        "breadcrumb": "Amay » Bibliothèque",
+        "entity": LINKED_ENTITY_UID,
+    },
+    {
+        "UID": FOREIGN_CONTACT_UID,
+        "breadcrumb": "Ans » Piscine",
+        "entity": OTHER_ENTITY_UID,
+    },
+]
+
+
+def fake_directory_search(url, headers=None, timeout=None):
+    """Answer a directory ``@search`` the way the real one does.
+
+    Filters on the ``UID`` and ``selected_entities`` criteria the vocabulary
+    builds, so a contact outside the Entity's linked directory entities is not
+    found -- which is what makes it invalid for the field.
+    """
+    query = parse_qs(urlparse(url).query)
+    uids = query.get("UID")
+    entities = query.get("selected_entities")
+    items = [
+        contact
+        for contact in DIRECTORY_CONTACTS
+        if (uids is None or contact["UID"] in uids)
+        and (entities is None or contact["entity"] in entities)
+    ]
+    response = MagicMock()
+    response.status_code = 200
+    response.text = json.dumps({"items": items, "items_total": len(items)})
+    return response
 
 
 class TestNewsItem(unittest.TestCase):
@@ -432,9 +486,87 @@ class TestNewsItem(unittest.TestCase):
         self.assertNotIn("plone.eventcontact", fti.behaviors)
 
 
+class TestNewsItemLinkedContact(unittest.TestCase):
+    """``directory_linked_contact`` is a single-valued Choice on an ajax select
+    widget: without the shared converter its value can never be saved."""
+
+    layer = IMIO_NEWS_CORE_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.app = self.layer["app"]
+        self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        self.entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            id="entity",
+            title="Entity",
+        )
+        self.entity.directory_linked_entities = [LINKED_ENTITY_UID]
+        self.news_folder = api.content.create(
+            container=self.entity,
+            type="imio.news.NewsFolder",
+            id="newsfolder",
+            title="News folder",
+        )
+        self.news = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            id="news",
+            title="News",
+        )
+        transaction.commit()
+
+    def save_edit_form(self, uid):
+        """Pick ``uid`` as main contact on the edit form and save it."""
+        browser = Browser(self.app)
+        browser.addHeader(
+            "Authorization", "Basic {}:{}".format(TEST_USER_NAME, TEST_USER_PASSWORD)
+        )
+        with patch(REQUESTS_GET, side_effect=fake_directory_search):
+            browser.open("{}/edit".format(self.news.absolute_url()))
+            browser.getControl(name="form.widgets.directory_linked_contact").value = uid
+            browser.getControl(name="form.buttons.save").click()
+        return browser
+
+    def test_a_selected_contact_can_be_saved(self):
+        browser = self.save_edit_form(CONTACT_UID)
+        self.assertNotIn("Constraint not satisfied", browser.contents)
+        self.assertEqual(self.news.directory_linked_contact, CONTACT_UID)
+
+    def test_a_contact_outside_the_linked_entities_is_refused(self):
+        # The scoping to the Entity's directory_linked_entities must survive:
+        # the converter hands unknown tokens over to the field validator.
+        browser = self.save_edit_form(FOREIGN_CONTACT_UID)
+        self.assertIn("Constraint not satisfied", browser.contents)
+        self.assertIsNone(self.news.directory_linked_contact)
+
+    def test_no_contact_is_stored_as_missing_value(self):
+        browser = self.save_edit_form("")
+        self.assertNotIn("Constraint not satisfied", browser.contents)
+        self.assertIsNone(self.news.directory_linked_contact)
+
+    def test_contact_fields_are_editable_by_hand(self):
+        # The autofill is a convenience: an editor must still be able to type
+        # the three fields without picking any directory contact.
+        browser = Browser(self.app)
+        browser.addHeader(
+            "Authorization", "Basic {}:{}".format(TEST_USER_NAME, TEST_USER_PASSWORD)
+        )
+        with patch(REQUESTS_GET, side_effect=fake_directory_search):
+            browser.open("{}/edit".format(self.news.absolute_url()))
+            browser.getControl(name="form.widgets.contact_name").value = "Bibliothèque"
+            browser.getControl(name="form.widgets.contact_email").value = "a@b.be"
+            browser.getControl(name="form.widgets.contact_phone").value = "080012345"
+            browser.getControl(name="form.buttons.save").click()
+        self.assertEqual(self.news.contact_name, "Bibliothèque")
+        self.assertEqual(self.news.contact_email, "a@b.be")
+        self.assertEqual(self.news.contact_phone, "080012345")
+
+
 # <audit>
 #   <file>test_newsitem.py</file>
-#   <requirements_applied>Task 6 step 1; fix round 1: test_event_url_is_not_pulled_in now asserts on the FTI's registered behaviors instead of INewsItem.names(), so it actually fails if plone.eventcontact is ever added to the profile</requirements_applied>
-#   <deviations>None</deviations>
+#   <requirements_applied>Task 6 step 1; fix round 1: test_event_url_is_not_pulled_in now asserts on the FTI's registered behaviors instead of INewsItem.names(), so it actually fails if plone.eventcontact is ever added to the profile. Task 8 step 1: added TestNewsItemLinkedContact, the functional end-to-end test (real vocabulary/widget/converter/form, only imio.smartweb.common.utils.requests.get mocked) proving the shared ajax-select converter fixes the "Constraint not satisfied" bug from imio.events.core commit 1e061f8, and that the Entity's directory_linked_entities scoping still rejects out-of-scope contacts.</requirements_applied>
+#   <deviations>None: test code taken verbatim from the task-8 brief.</deviations>
 #   <questions>None</questions>
 # </audit>
