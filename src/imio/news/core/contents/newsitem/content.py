@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from imio.smartweb.common.adapters import BaseCroppingProvider
+from imio.smartweb.common.widgets.select import TranslatedAjaxSelectWidget
 from imio.smartweb.locales import SmartwebMessageFactory as _
 from plone.app.content.namechooser import NormalizingNameChooser
 from plone.app.textfield import RichText
@@ -144,6 +145,36 @@ class INewsItem(ITranslations):
             "Important! These categories allow you to use criteria that are specific to your organization"
         ),
         source="imio.news.vocabulary.NewsLocalCategories",
+        required=False,
+    )
+
+    directives.widget(
+        "directory_linked_contact",
+        TranslatedAjaxSelectWidget,
+        vocabulary="imio.smartweb.vocabulary.RemoteDirectoryContact",
+        pattern_options={"minimumInputLength": 0},
+    )
+    directory_linked_contact = schema.Choice(
+        title=_("Main contact"),
+        description=_(
+            "You can retrieve information from a contact record that already exists in your directory"
+        ),
+        source="imio.smartweb.vocabulary.RemoteDirectoryContact",
+        required=False,
+    )
+
+    contact_name = schema.TextLine(
+        title=_("Contact name"),
+        required=False,
+    )
+
+    contact_email = schema.TextLine(
+        title=_("Contact e-mail"),
+        required=False,
+    )
+
+    contact_phone = schema.TextLine(
+        title=_("Contact phone"),
         required=False,
     )
 

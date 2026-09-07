@@ -398,3 +398,41 @@ class TestNewsItem(unittest.TestCase):
             # Assert we call odwb reply if newsitem is published and modified
             mock_reply.assert_called()
             self.assertEqual(mock_reply.return_value, '{"ok": true}')
+
+    def test_contact_fields_are_on_the_schema(self):
+        for name in (
+            "directory_linked_contact",
+            "contact_name",
+            "contact_email",
+            "contact_phone",
+        ):
+            self.assertIn(name, INewsItem.names())
+
+    def test_contact_fields_are_optional(self):
+        for name in (
+            "directory_linked_contact",
+            "contact_name",
+            "contact_email",
+            "contact_phone",
+        ):
+            self.assertFalse(INewsItem[name].required)
+
+    def test_the_linked_contact_uses_the_shared_vocabulary(self):
+        self.assertEqual(
+            INewsItem["directory_linked_contact"].vocabularyName,
+            "imio.smartweb.vocabulary.RemoteDirectoryContact",
+        )
+
+    def test_event_url_is_not_pulled_in(self):
+        # plone.eventcontact is deliberately NOT enabled: it would drag
+        # event_url along, which is meaningless on a news item and redundant
+        # with the existing site_url.
+        self.assertNotIn("event_url", INewsItem.names())
+
+
+# <audit>
+#   <file>test_newsitem.py</file>
+#   <requirements_applied>Task 6 step 1</requirements_applied>
+#   <deviations>None</deviations>
+#   <questions>None</questions>
+# </audit>
