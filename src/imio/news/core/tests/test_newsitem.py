@@ -424,15 +424,17 @@ class TestNewsItem(unittest.TestCase):
         )
 
     def test_event_url_is_not_pulled_in(self):
-        # plone.eventcontact is deliberately NOT enabled: it would drag
-        # event_url along, which is meaningless on a news item and redundant
-        # with the existing site_url.
-        self.assertNotIn("event_url", INewsItem.names())
+        # plone.eventcontact is deliberately NOT enabled on this type: it would
+        # drag event_url along, which is meaningless on a news item and
+        # redundant with the existing site_url. Behaviors live on the FTI, not
+        # in INewsItem.names(), so that is what has to be asserted.
+        fti = getUtility(IDexterityFTI, name="imio.news.NewsItem")
+        self.assertNotIn("plone.eventcontact", fti.behaviors)
 
 
 # <audit>
 #   <file>test_newsitem.py</file>
-#   <requirements_applied>Task 6 step 1</requirements_applied>
+#   <requirements_applied>Task 6 step 1; fix round 1: test_event_url_is_not_pulled_in now asserts on the FTI's registered behaviors instead of INewsItem.names(), so it actually fails if plone.eventcontact is ever added to the profile</requirements_applied>
 #   <deviations>None</deviations>
 #   <questions>None</questions>
 # </audit>
