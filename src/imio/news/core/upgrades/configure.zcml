@@ -107,6 +107,14 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <genericsetup:registerProfile
+      name="upgrade_1020_to_1021"
+      title="Upgrade core from 1020 to 1021"
+      directory="profiles/1020_to_1021"
+      description="Directory linked contact on news items: catalog metadata and edit bundle"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <genericsetup:upgradeStep
       title="Refresh faceted"
       description="Refresh faceted configurations on all entities / news folders"
@@ -327,6 +335,20 @@
     <genericsetup:upgradeDepends
         title="Allow owners to delete their own content from the object menu"
         import_profile="imio.news.core.upgrades:upgrade_1019_to_1020"
+        />
+  </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="1020"
+      destination="1021"
+      profile="imio.news.core:default">
+    <genericsetup:upgradeDepends
+        title="Add contact catalog metadata and the edit bundle"
+        import_profile="imio.news.core.upgrades:upgrade_1020_to_1021"
+        />
+    <genericsetup:upgradeStep
+        title="Reindex news items for the contact metadata"
+        handler=".upgrades.add_contact_metadata"
         />
   </genericsetup:upgradeSteps>
 

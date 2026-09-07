@@ -62,5 +62,9 @@
   <column value="local_category_nl"/>
   <column value="local_category_de"/>
   <column value="local_category_en"/>
+  <column value="contact_name"/>
+  <column value="contact_email"/>
+  <column value="contact_phone"/>
+  <column value="directory_linked_contact"/>
 
 </object>

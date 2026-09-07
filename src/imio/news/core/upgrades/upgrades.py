@@ -110,3 +110,15 @@ def reindex_newsfolders_and_folders(context):
 def resend_all_news_to_odwb(context):
     site = api.portal.get()
     send_to_odwb(True, obj=site)
+
+
+def add_contact_metadata(context):
+    """Populate the freshly declared contact metadata columns.
+
+    Declaring a <column> only creates it: existing objects keep an empty value
+    until they are reindexed.
+    """
+    brains = api.content.find(portal_type="imio.news.NewsItem")
+    for brain in brains:
+        brain.getObject().reindexObject()
+    logger.info("Reindexed {} news items for contact metadata".format(len(brains)))
