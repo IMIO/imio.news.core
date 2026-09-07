@@ -16,6 +16,13 @@ Changelog
   Reviewer permissions on the Entity workflow.
   [boulch]
 
+- WEBBDC-2790 : Add a main contact picked from the remote directory on a NewsItem,
+  with autofill of the contact and address fields from the directory entry, reusing
+  the vocabulary, converter, proxy views and autofill script now shared in
+  ``imio.smartweb.common``. Bumps the ``imio.news.core:default`` profile from
+  1020 to 1021 -- run the upgrade step, otherwise the autofill silently stops working.
+  [boulch]
+
 
 1.2.28 (2026-04-15)
 -------------------

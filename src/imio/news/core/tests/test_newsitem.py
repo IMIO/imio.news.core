@@ -47,7 +47,6 @@ import mock
 import transaction
 import unittest
 
-
 # Only the remote directory is mocked: the vocabulary, the widget, the
 # converter and the form are exercised for real.
 REQUESTS_GET = "imio.smartweb.common.utils.requests.get"
