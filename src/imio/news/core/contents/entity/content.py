@@ -5,6 +5,7 @@ from imio.smartweb.locales import SmartwebMessageFactory as _
 from collective.z3cform.datagridfield.datagridfield import DataGridFieldFactory
 from collective.z3cform.datagridfield.row import DictRow
 from plone import schema
+from plone.app.z3cform.widget import AjaxSelectWidget
 from plone.app.z3cform.widget import SelectFieldWidget
 from plone.autoform import directives
 from plone.dexterity.content import Container
@@ -72,6 +73,23 @@ class IEntity(model.Schema):
         ),
         required=False,
         default=False,
+    )
+
+    directives.widget(
+        "directory_linked_entities",
+        AjaxSelectWidget,
+        vocabulary="imio.smartweb.vocabulary.RemoteDirectoryEntities",
+        pattern_options={"multiple": True},
+    )
+    directory_linked_entities = schema.List(
+        title=_("Directory entities"),
+        description=_(
+            "Select entity/ies from which you want to link contacts on your news."
+        ),
+        value_type=schema.Choice(
+            source="imio.smartweb.vocabulary.RemoteDirectoryEntities"
+        ),
+        required=False,
     )
 
 

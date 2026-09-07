@@ -100,3 +100,25 @@ class TestEntity(unittest.TestCase):
                 type=t,
                 title="My {}".format(t),
             )
+
+    def test_directory_linked_entities_is_stored(self):
+        entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            id="entity-directory",
+            title="Entity",
+        )
+        entity.directory_linked_entities = ["11111111111111111111111111111111"]
+        self.assertEqual(
+            entity.directory_linked_entities,
+            ["11111111111111111111111111111111"],
+        )
+        self.assertIn("directory_linked_entities", IEntity.names())
+
+
+# <audit>
+#   <file>test_entity.py</file>
+#   <requirements_applied>Task 5 step 1</requirements_applied>
+#   <deviations>None</deviations>
+#   <questions>None</questions>
+# </audit>
