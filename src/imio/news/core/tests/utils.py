@@ -15,7 +15,7 @@ def make_named_image(filename="plone.png"):
 @contextmanager
 def mock_odwb(ok_response='{"ok": true}'):
     with patch(
-        "imio.smartweb.common.rest.odwb.OdwbBaseEndpointGet.odwb_query",
-        return_value=ok_response,
+        "imio.smartweb.common.rest.odwb.OdwbBaseEndpointGet.odwb_post",
+        return_value={"status_code": 200, "response": ok_response},
     ) as mocked:
         yield mocked

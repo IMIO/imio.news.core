@@ -8,26 +8,17 @@ from imio.news.core.contents import INewsItem
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import get_entity_for_obj
 from imio.smartweb.common.rest.odwb import OdwbBaseEndpointGet
-from imio.smartweb.common.utils import is_log_active
 from imio.smartweb.common.utils import (
     activate_sending_data_to_odwb_for_staging as odwb_staging,
 )
 from plone import api
 from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 
-import itertools
 import json
 import logging
 import os
 
 logger = logging.getLogger("imio.news.core")
-
-
-def _batched(iterable, n):
-    """Backport of itertools.batched (Python 3.12+) for older runtimes."""
-    it = iter(iterable)
-    while batch := list(itertools.islice(it, n)):
-        yield batch
 
 
 class OdwbEndpointGet(OdwbBaseEndpointGet):
@@ -39,69 +30,11 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
         )
         pushkey = f"imio.news.core.odwb_{imio_service}_pushkey"
         super(OdwbEndpointGet, self).__init__(context, request, imio_service, pushkey)
-        self.__datas_count__ = 0
-
-    def _log_odwb_response(self, action, count, response_text):
-        """Log the ODWB response at INFO (success) or WARNING (error).
-
-        action  : "push" or "delete"
-        count   : number of items in the batch
-        """
-        verb = "sent/updated" if action == "push" else "deleted"
-        try:
-            data = json.loads(response_text)
-            success = data.get("ok") or data.get("status") == "ok"
-            if success:
-                logger.info(
-                    "ODWB %s: %d news item(s) %s — ODWB response: %s",
-                    action,
-                    count,
-                    verb,
-                    response_text,
-                )
-            else:
-                logger.warning(
-                    "ODWB %s: %d news item(s) — ODWB returned an error: %s",
-                    action,
-                    count,
-                    response_text,
-                )
-        except (json.JSONDecodeError, AttributeError):
-            # odwb_query returns a plain error string on network/HTTP exceptions
-            logger.warning(
-                "ODWB %s: %d news item(s) — unexpected response: %s",
-                action,
-                count,
-                response_text,
-            )
 
     def reply(self):
         if not super(OdwbEndpointGet, self).available():
-            logger.info(
-                "ODWB push skipped (not available) for %s",
-                self.context.absolute_url(),
-            )
             return
-        url = f"{self.odwb_api_push_url}/{self.odwb_imio_service}/temps_reel/push/?pushkey={self.odwb_pushkey}"
-        if is_log_active():
-            logger.info(f"ODWB push url: {url}")
-        self.__datas_count__ = 0
-        responses = []
-        for batch in _batched(self.get_news(), 500):
-            self.__datas_count__ += len(batch)
-            payload = json.dumps(list(batch))
-            response_text = self.odwb_query(url, payload)
-            self._log_odwb_response("push", len(batch), response_text)
-            responses.append(response_text)
-        logger.info(
-            "ODWB push complete: %d news item(s) sent from %s",
-            self.__datas_count__,
-            self.context.absolute_url(),
-        )
-        if not responses:
-            return None
-        unique = set(responses)
-        return responses[-1] if len(unique) == 1 else responses
+        return self.odwb_send(self.get_news(), batch_size=500)
 
     def get_news(self):
         if IPloneSiteRoot.providedBy(self.context) or INewsFolder.providedBy(
@@ -130,31 +63,8 @@ class OdwbEndpointGet(OdwbBaseEndpointGet):
 
     def remove(self):
         if not super(OdwbEndpointGet, self).available():
-            logger.info(
-                "ODWB delete skipped (not available) for %s",
-                self.context.absolute_url(),
-            )
             return
-        url = f"{self.odwb_api_push_url}/{self.odwb_imio_service}/temps_reel/delete/?pushkey={self.odwb_pushkey}"
-        if is_log_active():
-            logger.info(f"ODWB delete url: {url}")
-        deleted_count = 0
-        responses = []
-        for batch in _batched(self.get_news(), 500):
-            deleted_count += len(batch)
-            payload = json.dumps(list(batch))
-            response_text = self.odwb_query(url, payload)
-            self._log_odwb_response("delete", len(batch), response_text)
-            responses.append(response_text)
-        logger.info(
-            "ODWB delete complete: %d news item(s) sent to ODWB delete endpoint from %s",
-            deleted_count,
-            self.context.absolute_url(),
-        )
-        if not responses:
-            return None
-        unique = set(responses)
-        return responses[-1] if len(unique) == 1 else responses
+        return self.odwb_send(self.get_news(), action="delete", batch_size=500)
 
 
 class News:
@@ -279,8 +189,4 @@ class OdwbEntitiesEndpointGet(OdwbBaseEndpointGet):
             entity["entity_title"] = brain.Title
             lst_entities.append(entity)
         self.__datas__ = lst_entities
-        url = f"{self.odwb_api_push_url}/{self.odwb_imio_service}/temps_reel/push/?pushkey={self.odwb_pushkey}"
-        if is_log_active():
-            logger.info(f"ODWB push url: {url}")
-        payload = json.dumps(lst_entities)
-        return self.odwb_query(url, payload)
+        return self.odwb_send(lst_entities)

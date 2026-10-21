@@ -54,23 +54,23 @@ class RestFunctionalTest(unittest.TestCase):
             "ODWB : Connection error occurred"
         )
         endpoint = OdwbEndpointGet(event, mock_request)
-        response = endpoint.reply()
+        response = endpoint.reply()["batches"][0]["response"]
         self.assertEqual(response, "ODWB : Connection error occurred")
         mock_post.side_effect = requests.exceptions.Timeout("ODWB : Request timed out")
         endpoint = OdwbEndpointGet(event, mock_request)
-        response = endpoint.reply()
+        response = endpoint.reply()["batches"][0]["response"]
         self.assertEqual(response, "ODWB : Request timed out")
 
         mock_post.side_effect = requests.exceptions.HTTPError(
             "ODWB : HTTP error occurred"
         )
         endpoint = OdwbEndpointGet(event, mock_request)
-        response = endpoint.reply()
+        response = endpoint.reply()["batches"][0]["response"]
         self.assertEqual(response, "ODWB : HTTP error occurred")
 
         mock_post.side_effect = Exception("ODWB : Unexpected error occurred")
         endpoint = OdwbEndpointGet(event, mock_request)
-        response = endpoint.reply()
+        response = endpoint.reply()["batches"][0]["response"]
         self.assertEqual(response, "ODWB : Unexpected error occurred")
 
     @patch(
@@ -112,30 +112,30 @@ class RestFunctionalTest(unittest.TestCase):
 
         api.content.transition(event, "publish")
         endpoint = OdwbEndpointGet(self.portal, self.request)
-        endpoint.reply()
+        summary = endpoint.reply()
         # 1 (published) news is returned on self.portal
-        self.assertEqual(endpoint.__datas_count__, 1)
+        self.assertEqual(summary["total"], 1)
         m_post.assert_called()
         called_url = m_post.call_args.args[0]
         self.assertIn("https://www.odwb.be/api/push/1.0", called_url)
 
         api.content.transition(event2, "publish")
         endpoint = OdwbEndpointGet(self.portal, self.request)
-        endpoint.reply()
+        summary = endpoint.reply()
         # 2 (published) news are returned on self.portal
-        self.assertEqual(endpoint.__datas_count__, 2)
+        self.assertEqual(summary["total"], 2)
 
         # test endpoint on news_folder
         endpoint = OdwbEndpointGet(self.news_folder, self.request)
-        endpoint.reply()
+        summary = endpoint.reply()
         # 1 (published) news is returned on self.news_folder
-        self.assertEqual(endpoint.__datas_count__, 1)
+        self.assertEqual(summary["total"], 1)
 
         # test endpoint on entity
         endpoint = OdwbEndpointGet(self.entity, self.request)
-        endpoint.reply()
+        summary = endpoint.reply()
         # 1 (published) news is returned on self.entity
-        self.assertEqual(endpoint.__datas_count__, 1)
+        self.assertEqual(summary["total"], 1)
 
     @patch(
         "imio.smartweb.common.rest.odwb.api.portal.get_registry_record",
@@ -154,14 +154,44 @@ class RestFunctionalTest(unittest.TestCase):
         )
         api.content.transition(news_item, "publish")
         endpoint = OdwbEndpointGet(news_item, self.request)
-        endpoint.reply()
-        self.assertEqual(endpoint.__datas_count__, 1)
+        summary = endpoint.reply()
+        self.assertEqual(summary["total"], 1)
 
-    def test_reply_returns_none_when_no_published_news(self):
-        with mock_odwb():
+    def test_reply_returns_empty_summary_when_no_published_news(self):
+        with mock_odwb() as m:
             endpoint = OdwbEndpointGet(self.portal, self.request)
-            result = endpoint.reply()
-            self.assertIsNone(result)
+            self.assertEqual(
+                endpoint.reply(),
+                {
+                    "service": "actualites-en-wallonie",
+                    "total": 0,
+                    "sent": 0,
+                    "batches": [],
+                },
+            )
+            m.assert_not_called()
+
+    def test_reply_returns_sending_summary(self):
+        news_item = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            id="newsitem",
+            title="NewsItem",
+        )
+        api.content.transition(news_item, "publish")
+        with mock_odwb(ok_response='{"status": "ok"}'):
+            endpoint = OdwbEndpointGet(self.news_folder, self.request)
+            self.assertEqual(
+                endpoint.reply(),
+                {
+                    "service": "actualites-en-wallonie",
+                    "total": 1,
+                    "sent": 1,
+                    "batches": [
+                        {"size": 1, "status_code": 200, "response": '{"status": "ok"}'}
+                    ],
+                },
+            )
 
     def test_remove_news_item(self):
         news_item = api.content.create(
@@ -173,7 +203,7 @@ class RestFunctionalTest(unittest.TestCase):
         api.content.transition(news_item, "publish")
         with mock_odwb() as m:
             endpoint = OdwbEndpointGet(news_item, self.request)
-            endpoint.remove()
+            self.assertEqual(endpoint.remove()["sent"], 1)
             m.assert_called_once()
             called_url = m.call_args.args[0]
             self.assertIn("delete", called_url)
@@ -212,10 +242,11 @@ class RestFunctionalTest(unittest.TestCase):
             payload = json.loads(m.call_args.args[1])
             self.assertEqual(len(payload), 1)
 
-    def test_remove_returns_none_when_no_news(self):
-        with mock_odwb():
+    def test_remove_returns_empty_summary_when_no_news(self):
+        with mock_odwb() as m:
             endpoint = OdwbEndpointGet(self.portal, self.request)
-            self.assertIsNone(endpoint.remove())
+            self.assertEqual(endpoint.remove()["total"], 0)
+            m.assert_not_called()
 
     def test_news_image_url_with_domains_env(self):
         news_item = api.content.create(
@@ -269,29 +300,6 @@ class RestFunctionalTest(unittest.TestCase):
         news = News(news_item)
         self.assertIsNone(news.image)
 
-    def test_log_odwb_response_accepts_status_ok(self):
-        """ODWB returns {"status": "ok"}, not {"ok": true} — both must log at INFO."""
-        news_item = api.content.create(
-            container=self.news_folder,
-            type="imio.news.NewsItem",
-            id="newsitem",
-            title="NewsItem",
-        )
-        api.content.transition(news_item, "publish")
-        with mock_odwb(ok_response='{"status": "ok"}'):
-            with self.assertLogs("imio.news.core", level="INFO") as cm:
-                endpoint = OdwbEndpointGet(news_item, self.request)
-                endpoint.reply()
-            # Must not log a WARNING — only INFO
-            warnings = [
-                line for line in cm.output if "WARNING" in line and "ODWB push" in line
-            ]
-            self.assertEqual(warnings, [])
-            infos = [
-                line for line in cm.output if "INFO" in line and "sent/updated" in line
-            ]
-            self.assertTrue(infos)
-
     def test_news_encoder_serializes_datetime_fields(self):
         news_item = api.content.create(
             container=self.news_folder,
@@ -316,9 +324,11 @@ class RestFunctionalTest(unittest.TestCase):
         # OdwbEntitiesEndpointGet.test_in_staging_or_local = True
         with mock_odwb():
             endpoint = OdwbEntitiesEndpointGet(self.portal, self.request)
-            endpoint.reply()
+            summary = endpoint.reply()
             # 2 entities are returned on self.portal (entities are automaticly published)
             self.assertEqual(len(endpoint.__datas__), 2)
+            self.assertEqual(summary["service"], "entites-des-actualites-en-wallonie")
+            self.assertEqual(summary["sent"], 2)
 
             api.content.transition(self.entity, "reject")
             endpoint = OdwbEntitiesEndpointGet(self.portal, self.request)

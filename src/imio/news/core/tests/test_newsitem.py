@@ -397,4 +397,3 @@ class TestNewsItem(unittest.TestCase):
                 fn(True, **kws)
             # Assert we call odwb reply if newsitem is published and modified
             mock_reply.assert_called()
-            self.assertEqual(mock_reply.return_value, '{"ok": true}')

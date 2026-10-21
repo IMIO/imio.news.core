@@ -5,6 +5,13 @@ Changelog
 1.2.29 (unreleased)
 -------------------
 
+- ODWB : ``@odwb``, ``@odwb_entities`` and the ODWB delete now use ``odwb_send``
+  from imio.smartweb.common. They return a sending summary (service, total, sent,
+  and per batch size / ODWB status code / response) instead of the ODWB response text.
+  Add README_odwb.rst (ODWB configuration).
+  Requires imio.smartweb.common with ``odwb_send``.
+  [boulch]
+
 - Migrate dev environment to Plone 6.1.5 & buildout 5
   [remdub]
 - WEB-4467 : Update the delete action permission check to allow owners to delete their own
