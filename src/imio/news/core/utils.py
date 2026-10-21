@@ -12,6 +12,7 @@ from zope.interface import noLongerProvides
 import os
 
 ENDPOINT_CACHE_KEY = "imio.news.search_cache_generation"
+ENDPOINT_MODIFIED_KEY = "imio.news.search_last_modified"
 
 
 def get_entity_for_obj(obj):

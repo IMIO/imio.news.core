@@ -5,6 +5,17 @@ Changelog
 1.2.29 (unreleased)
 -------------------
 
+- Search endpoints (``@search``, ``@search_entity``, ``@search_newsfolder_for_entity``,
+  ``@search_newsitems``) : the ``Last-Modified`` header and the ETag now use the time of
+  the last change in the news of the entity (``entity_uid`` or ``UID`` parameter).
+  Before, they used the modification date of the site. Varnish then always got a 304
+  and kept the old results. When the entity is not known, no 304 is sent.
+  [boulch]
+
+- Search endpoints : a change on a news item now also clears the cache of the entities
+  whose news folders show this news item (``populating_newsfolders``), also after a move.
+  [boulch]
+
 - Migrate dev environment to Plone 6.1.5 & buildout 5
   [remdub]
 - WEB-4467 : Update the delete action permission check to allow owners to delete their own

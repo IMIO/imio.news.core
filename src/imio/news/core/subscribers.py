@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_base
 from imio.news.core.contents import IEntity
 from imio.news.core.rest.odwb_endpoint import OdwbEndpointGet
 from imio.news.core.utils import ENDPOINT_CACHE_KEY
+from imio.news.core.utils import ENDPOINT_MODIFIED_KEY
 from imio.news.core.utils import get_entity_for_obj
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import reload_faceted_config
@@ -10,6 +12,7 @@ from imio.smartweb.common.utils import is_log_active
 from imio.smartweb.common.utils import remove_cropping
 from plone import api
 from plone.api.content import get_state
+from plone.app.uuid.utils import uuidToObject
 from Products.DCWorkflow.interfaces import IAfterTransitionEvent
 from z3c.relationfield import RelationValue
 from z3c.relationfield.interfaces import IRelationList
@@ -140,9 +143,11 @@ def moved_news_item(obj, event):
     if type(event) is ObjectRemovedEvent:
         # We don't have anything to do if news item is being removed
         return
+    # before and after the move: old and new news folders that show the item
     invalidate_endpoint_search_cache(obj)
     container_newsfolder = get_news_folder_for_news_item(obj)
     set_uid_of_referrer_newsfolders(obj, container_newsfolder)
+    invalidate_endpoint_search_cache(obj)
     if event.oldParent is not None and get_state(obj) == "published":
         transaction.get().addAfterCommitHook(send_to_odwb, kws={"obj": obj})
 
@@ -220,14 +225,21 @@ def set_uid_of_referrer_newsfolders(obj, container_newsfolder):
 
 
 def invalidate_endpoint_search_cache(obj):
-    entity = get_parent_providing(obj, IEntity)
+    entities = [get_parent_providing(obj, IEntity)]
+    # a news item is also shown in the news folders (of other entities) that
+    # it populates
+    for uid in getattr(aq_base(obj), "selected_news_folders", None) or []:
+        news_folder = uuidToObject(uid, unrestricted=True)
+        if news_folder is not None:
+            entities.append(get_parent_providing(news_folder, IEntity))
     # if we're curently removing an entity
     # there is no more this entity here
-    if entity:
-        site = api.portal.get()
-        ann = IAnnotations(site)
-        ann_full_key = f"{ENDPOINT_CACHE_KEY}{entity.UID()}"
+    entity_uids = {entity.UID() for entity in entities if entity}
+    ann = IAnnotations(api.portal.get())
+    for entity_uid in entity_uids:
+        ann_full_key = f"{ENDPOINT_CACHE_KEY}{entity_uid}"
         ann[ann_full_key] = int(ann.get(ann_full_key, 0)) + 1
+        ann[f"{ENDPOINT_MODIFIED_KEY}{entity_uid}"] = time.time()
 
 
 def send_to_odwb(trans, obj=None):

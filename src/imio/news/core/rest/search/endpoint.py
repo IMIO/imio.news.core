@@ -1,12 +1,18 @@
+from datetime import datetime
+from datetime import timezone
 from imio.news.core.utils import ENDPOINT_CACHE_KEY
+from imio.news.core.utils import ENDPOINT_MODIFIED_KEY
 from imio.smartweb.common.utils import is_log_active
 from plone import api
 from plone.memoize import ram
 from plone.restapi.search.handler import SearchHandler
 from plone.restapi.search.utils import unflatten_dotted_dict
 from plone.restapi.services.search.get import SearchGet as BaseSearchGet
+from z3c.caching.interfaces import ILastModified
 from zope.annotation.interfaces import IAnnotations
+from zope.component import adapter
 from zope.component.hooks import getSite
+from zope.interface import implementer
 
 import logging
 import time
@@ -139,3 +145,27 @@ class SearchNewsFolderForEntity(CachedSearchMixin, SearchGet):
 class SearchNewsItems(CachedSearchMixin, SearchGet):
     CACHEKEY = staticmethod(_cachekey_newsitems)
     REQUIRED_PARAM = "entity_uid"
+
+
+@implementer(ILastModified)
+@adapter(SearchGet)
+class SearchLastModified:
+    """Last-Modified header and ETag of the search endpoints.
+
+    Without this adapter, they use the modification date of the site, which
+    never changes: Varnish revalidates the cached search results and always
+    gets a 304, so it keeps the old news.
+    """
+
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self):
+        param = getattr(self.context, "REQUIRED_PARAM", None)
+        entity_uid = param and _first(self.context.request.form.get(param))
+        ann = IAnnotations(getSite())
+        timestamp = entity_uid and ann.get(f"{ENDPOINT_MODIFIED_KEY}{entity_uid}")
+        if not timestamp:
+            # we do not know when the results changed: never send a 304
+            return datetime.now(timezone.utc)
+        return datetime.fromtimestamp(timestamp, timezone.utc)
