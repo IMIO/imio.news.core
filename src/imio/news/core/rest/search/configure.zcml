@@ -46,6 +46,8 @@
     layer="imio.news.core.interfaces.IImioNewsCoreLayer"
     />
 
+  <adapter factory=".endpoint.SearchLastModified" />
+
   <cache:ruleset
     for=".endpoint.SearchGet"
     ruleset="imio.news.core.rest"

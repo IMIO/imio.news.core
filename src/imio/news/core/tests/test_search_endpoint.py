@@ -7,6 +7,9 @@ cached endpoint classes: SearchEntity, SearchNewsFolderForEntity,
 SearchNewsItems.
 """
 
+from contextlib import contextmanager
+from datetime import datetime
+from datetime import timezone
 from imio.news.core.rest.search.endpoint import _first
 from imio.news.core.rest.search.endpoint import _items_from_req
 from imio.news.core.rest.search.endpoint import _norm
@@ -15,8 +18,10 @@ from imio.news.core.rest.search.endpoint import _cachekey_entity
 from imio.news.core.rest.search.endpoint import _cachekey_newsfolder_for_entity
 from imio.news.core.rest.search.endpoint import _cachekey_newsitems
 from imio.news.core.rest.search.endpoint import SearchEntity
+from imio.news.core.rest.search.endpoint import SearchGet
 from imio.news.core.rest.search.endpoint import SearchNewsFolderForEntity
 from imio.news.core.rest.search.endpoint import SearchNewsItems
+from imio.news.core.testing import IMIO_NEWS_CORE_FUNCTIONAL_TESTING
 from imio.news.core.testing import IMIO_NEWS_CORE_INTEGRATION_TESTING
 from imio.news.core.tests.utils import mock_odwb
 from imio.news.core.utils import ENDPOINT_CACHE_KEY
@@ -26,11 +31,18 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from unittest.mock import MagicMock
 from unittest.mock import patch
+from z3c.caching.interfaces import ILastModified
+from z3c.relationfield import RelationValue
+from z3c.relationfield.interfaces import IRelationList
 from zope.annotation.interfaces import IAnnotations
+from zope.component import getUtility
 from zope.component.hooks import setSite
+from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import modified
 
+import os
+import transaction
 import unittest
 
 # ---------------------------------------------------------------------------
@@ -425,6 +437,78 @@ class TestInvalidateEndpointSearchCache(unittest.TestCase):
             modified(news_item, Attributes(IBasic, "IBasic.title"))
         self.assertGreater(self._get_generation(), gen_before)
 
+    def test_newsitem_invalidates_entities_it_populates(self):
+        # A news item of another entity is shown in self.news_folder when its
+        # news folder populates self.news_folder: the cache of self.entity
+        # must be invalidated too.
+        other_entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            title="Other Entity",
+        )
+        other_news_folder = api.content.create(
+            container=other_entity,
+            type="imio.news.NewsFolder",
+            title="Other News Folder",
+        )
+        intids = getUtility(IIntIds)
+        self.news_folder.populating_newsfolders = [
+            RelationValue(intids.getId(other_news_folder))
+        ]
+        modified(self.news_folder, Attributes(IRelationList, "populating_newsfolders"))
+        gen_before = self._get_generation()
+        news_item = api.content.create(
+            container=other_news_folder,
+            type="imio.news.NewsItem",
+            title="News Item",
+        )
+        self.assertGreater(self._get_generation(), gen_before)
+
+        # the news item is private: no ODWB call to mock
+        gen_before = self._get_generation()
+        modified(news_item, Attributes(IBasic, "IBasic.title"))
+        self.assertGreater(self._get_generation(), gen_before)
+
+    def test_moving_newsitem_invalidates_old_and_new_entities(self):
+        # After the move, the news item is also shown in the news folders
+        # (of a third entity) populated by its new news folder.
+        news_item = api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="News Item",
+        )
+        new_entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            title="New Entity",
+        )
+        new_news_folder = api.content.create(
+            container=new_entity,
+            type="imio.news.NewsFolder",
+            title="New News Folder",
+        )
+        third_entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            title="Third Entity",
+        )
+        intids = getUtility(IIntIds)
+        api.content.create(
+            container=third_entity,
+            type="imio.news.NewsFolder",
+            title="Third News Folder",
+            populating_newsfolders=[RelationValue(intids.getId(new_news_folder))],
+        )
+        ann = IAnnotations(self.portal)
+        keys = [
+            f"{ENDPOINT_CACHE_KEY}{entity.UID()}"
+            for entity in (self.entity, new_entity, third_entity)
+        ]
+        gens_before = [ann.get(key, 0) for key in keys]
+        api.content.move(source=news_item, target=new_news_folder)
+        for key, gen_before in zip(keys, gens_before):
+            self.assertGreater(ann.get(key, 0), gen_before)
+
 
 class TestCachedEndpointRAMCache(unittest.TestCase):
     """Tests the MISS/HIT/MISS-after-invalidation cycle of the three cached
@@ -582,3 +666,123 @@ class TestCachedEndpointRAMCache(unittest.TestCase):
         )
         # Different params → different cache key → new MISS, not a HIT.
         self.assertEqual(resp.getHeader("X-RAM-Cache"), "MISS")
+
+
+class TestSearchLastModified(unittest.TestCase):
+    """The Last-Modified header and the ETag of the search endpoints come
+    from ILastModified.  They must change when the news of the entity change,
+    else Varnish revalidates its cached results with a 304 forever."""
+
+    layer = IMIO_NEWS_CORE_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        setSite(self.portal)
+        self.entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            title="Last Modified Test Entity",
+        )
+        self.news_folder = api.content.create(
+            container=self.entity,
+            type="imio.news.NewsFolder",
+            title="News Folder",
+        )
+
+    def _last_modified(self, cls, form):
+        svc = object.__new__(cls)
+        svc.context = self.portal
+        svc.request = MagicMock()
+        svc.request.form = form
+        return ILastModified(svc)()
+
+    def test_last_modified_changes_with_the_news_of_the_entity(self):
+        form = {"entity_uid": self.entity.UID()}
+        last_modified = self._last_modified(SearchNewsItems, form)
+        self.assertEqual(last_modified, self._last_modified(SearchNewsItems, form))
+        # the site modification date (old behaviour) is never used
+        self.assertNotEqual(last_modified, self.portal.modified().asdatetime())
+
+        before = datetime.now(timezone.utc).replace(microsecond=0)
+        api.content.create(
+            container=self.news_folder,
+            type="imio.news.NewsItem",
+            title="News Item",
+        )
+        new_last_modified = self._last_modified(SearchNewsItems, form)
+        self.assertGreater(new_last_modified, last_modified)
+        self.assertGreaterEqual(new_last_modified, before)
+        self.assertEqual(
+            new_last_modified,
+            self._last_modified(SearchEntity, {"UID": self.entity.UID()}),
+        )
+
+    def test_last_modified_is_now_when_unknown(self):
+        # without an entity, or for an entity that never changed, we cannot
+        # tell when the results changed: no 304 may be sent.
+        before = datetime.now(timezone.utc)
+        self.assertGreaterEqual(self._last_modified(SearchGet, {}), before)
+        self.assertGreaterEqual(self._last_modified(SearchNewsItems, {}), before)
+        self.assertGreaterEqual(
+            self._last_modified(SearchNewsItems, {"entity_uid": "unknown"}), before
+        )
+
+
+class TestBanSearchEndpoints(unittest.TestCase):
+    """After the commit of a change in the news, the search results are
+    removed from Varnish (BAN), so the clients get the new results at once."""
+
+    layer = IMIO_NEWS_CORE_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        self.entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            title="Ban Test Entity",
+        )
+        self.news_folder = api.content.create(
+            container=self.entity,
+            type="imio.news.NewsFolder",
+            title="News Folder",
+        )
+        transaction.commit()
+
+    @contextmanager
+    def mocked_ban(self):
+        with patch.dict(os.environ, {"CACHING_SERVERS": "varnish:6081"}), patch(
+            "imio.smartweb.common.caching.requests.request"
+        ) as mocked:
+            yield mocked
+
+    def add_two_news_items(self):
+        for title in ("News Item 1", "News Item 2"):
+            api.content.create(
+                container=self.news_folder,
+                type="imio.news.NewsItem",
+                title=title,
+            )
+
+    def test_ban_after_commit(self):
+        with self.mocked_ban() as ban:
+            self.add_two_news_items()
+            self.assertEqual(ban.call_args_list, [])
+            transaction.commit()
+        # one BAN per endpoint, even with many changes in the transaction
+        self.assertEqual(
+            [call.args[:2] for call in ban.call_args_list],
+            [
+                ("BAN", "http://varnish:6081/@search"),
+                ("BAN", "http://varnish:6081/@search_entity"),
+                ("BAN", "http://varnish:6081/@search_newsfolder_for_entity"),
+                ("BAN", "http://varnish:6081/@search_newsitems"),
+            ],
+        )
+
+    def test_no_ban_when_transaction_is_aborted(self):
+        with self.mocked_ban() as ban:
+            self.add_two_news_items()
+            transaction.abort()
+        self.assertEqual(ban.call_args_list, [])
