@@ -16,6 +16,14 @@ Changelog
   whose news folders show this news item (``populating_newsfolders``), also after a move.
   [boulch]
 
+- Search endpoints : after the commit of a change in the news, send a BAN of the search
+  endpoints to the Varnish servers (``CACHING_SERVERS``). The clients get the new results
+  at once, not after the end of the Varnish TTL. Send the BAN only one time for each
+  transaction, and not when the transaction fails.
+  Requires imio.smartweb.common >= 1.2.62 (``ban_physicalpath`` sends the BAN after the
+  commit).
+  [boulch]
+
 - Migrate dev environment to Plone 6.1.5 & buildout 5
   [remdub]
 - WEB-4467 : Update the delete action permission check to allow owners to delete their own

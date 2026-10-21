@@ -7,6 +7,7 @@ from imio.news.core.utils import ENDPOINT_MODIFIED_KEY
 from imio.news.core.utils import get_entity_for_obj
 from imio.news.core.utils import get_news_folder_for_news_item
 from imio.news.core.utils import reload_faceted_config
+from imio.smartweb.common.caching import ban_physicalpath
 from imio.smartweb.common.utils import get_parent_providing
 from imio.smartweb.common.utils import is_log_active
 from imio.smartweb.common.utils import remove_cropping
@@ -31,6 +32,13 @@ import transaction
 
 logger = logging.getLogger("imio.news.core")
 logger.setLevel(logging.INFO)
+
+SEARCH_ENDPOINTS = (
+    "@search",
+    "@search_entity",
+    "@search_newsfolder_for_entity",
+    "@search_newsitems",
+)
 
 
 def set_default_news_folder_uid(news_item):
@@ -235,11 +243,28 @@ def invalidate_endpoint_search_cache(obj):
     # if we're curently removing an entity
     # there is no more this entity here
     entity_uids = {entity.UID() for entity in entities if entity}
+    if not entity_uids:
+        return
     ann = IAnnotations(api.portal.get())
     for entity_uid in entity_uids:
         ann_full_key = f"{ENDPOINT_CACHE_KEY}{entity_uid}"
         ann[ann_full_key] = int(ann.get(ann_full_key, 0)) + 1
         ann[f"{ENDPOINT_MODIFIED_KEY}{entity_uid}"] = time.time()
+    ban_search_endpoints()
+
+
+def ban_search_endpoints():
+    """Remove the search results from Varnish (ban_physicalpath sends the BAN
+    after the commit), only one time for each transaction"""
+    txn = transaction.get()
+    try:
+        txn.data(ban_search_endpoints)
+        return
+    except KeyError:
+        txn.set_data(ban_search_endpoints, True)
+    portal_path = api.portal.get().getPhysicalPath()
+    for endpoint in SEARCH_ENDPOINTS:
+        ban_physicalpath(getRequest(), portal_path + (endpoint,))
 
 
 def send_to_odwb(trans, obj=None):

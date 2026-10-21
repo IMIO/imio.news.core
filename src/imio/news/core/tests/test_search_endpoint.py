@@ -7,6 +7,7 @@ cached endpoint classes: SearchEntity, SearchNewsFolderForEntity,
 SearchNewsItems.
 """
 
+from contextlib import contextmanager
 from datetime import datetime
 from datetime import timezone
 from imio.news.core.rest.search.endpoint import _first
@@ -20,6 +21,7 @@ from imio.news.core.rest.search.endpoint import SearchEntity
 from imio.news.core.rest.search.endpoint import SearchGet
 from imio.news.core.rest.search.endpoint import SearchNewsFolderForEntity
 from imio.news.core.rest.search.endpoint import SearchNewsItems
+from imio.news.core.testing import IMIO_NEWS_CORE_FUNCTIONAL_TESTING
 from imio.news.core.testing import IMIO_NEWS_CORE_INTEGRATION_TESTING
 from imio.news.core.tests.utils import mock_odwb
 from imio.news.core.utils import ENDPOINT_CACHE_KEY
@@ -39,6 +41,8 @@ from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import modified
 
+import os
+import transaction
 import unittest
 
 # ---------------------------------------------------------------------------
@@ -723,3 +727,62 @@ class TestSearchLastModified(unittest.TestCase):
         self.assertGreaterEqual(
             self._last_modified(SearchNewsItems, {"entity_uid": "unknown"}), before
         )
+
+
+class TestBanSearchEndpoints(unittest.TestCase):
+    """After the commit of a change in the news, the search results are
+    removed from Varnish (BAN), so the clients get the new results at once."""
+
+    layer = IMIO_NEWS_CORE_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        self.entity = api.content.create(
+            container=self.portal,
+            type="imio.news.Entity",
+            title="Ban Test Entity",
+        )
+        self.news_folder = api.content.create(
+            container=self.entity,
+            type="imio.news.NewsFolder",
+            title="News Folder",
+        )
+        transaction.commit()
+
+    @contextmanager
+    def mocked_ban(self):
+        with patch.dict(os.environ, {"CACHING_SERVERS": "varnish:6081"}), patch(
+            "imio.smartweb.common.caching.requests.request"
+        ) as mocked:
+            yield mocked
+
+    def add_two_news_items(self):
+        for title in ("News Item 1", "News Item 2"):
+            api.content.create(
+                container=self.news_folder,
+                type="imio.news.NewsItem",
+                title=title,
+            )
+
+    def test_ban_after_commit(self):
+        with self.mocked_ban() as ban:
+            self.add_two_news_items()
+            self.assertEqual(ban.call_args_list, [])
+            transaction.commit()
+        # one BAN per endpoint, even with many changes in the transaction
+        self.assertEqual(
+            [call.args[:2] for call in ban.call_args_list],
+            [
+                ("BAN", "http://varnish:6081/@search"),
+                ("BAN", "http://varnish:6081/@search_entity"),
+                ("BAN", "http://varnish:6081/@search_newsfolder_for_entity"),
+                ("BAN", "http://varnish:6081/@search_newsitems"),
+            ],
+        )
+
+    def test_no_ban_when_transaction_is_aborted(self):
+        with self.mocked_ban() as ban:
+            self.add_two_news_items()
+            transaction.abort()
+        self.assertEqual(ban.call_args_list, [])
