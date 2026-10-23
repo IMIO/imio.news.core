@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from imio.news.core.contents import IEntity
+from imio.news.core.eguichet import send_eguichet_notification
 from imio.news.core.rest.odwb_endpoint import OdwbEndpointGet
 from imio.news.core.utils import ENDPOINT_CACHE_KEY
 from imio.news.core.utils import ENDPOINT_MODIFIED_KEY
@@ -172,6 +173,10 @@ def published_news_item_transition(obj, event):
     invalidate_endpoint_search_cache(obj)
     if event.new_state.id == "published":
         transaction.get().addAfterCommitHook(send_to_odwb, kws={"obj": obj})
+        if event.old_state.id != "published":
+            # Notify only when the news item becomes published. Run after
+            # commit: the news item must exist when the user opens the link.
+            transaction.get().addAfterCommitHook(notify_eguichet, kws={"obj": obj})
     if event.new_state.id == "private" and event.old_state.id != event.new_state.id:
         transaction.get().addAfterCommitHook(send_remove_to_odwb, kws={"obj": obj})
 
@@ -281,6 +286,13 @@ def send_to_odwb(trans, obj=None):
         return
     endpoint = OdwbEndpointGet(obj, request)
     endpoint.reply()
+
+
+def notify_eguichet(trans, obj=None):
+    if not trans:
+        # transaction was aborted
+        return
+    send_eguichet_notification(obj)
 
 
 def send_remove_to_odwb(trans, obj=None):

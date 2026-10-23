@@ -5,9 +5,14 @@ Changelog
 1.2.29 (unreleased)
 -------------------
 
+- CITIBDC-602 : When a news item becomes published, create a ``notifications-depuis-sw`` card in
+  the e-guichet of the Smartweb site linked to its entity.
+  [boulch]
+
 - CITIBDC-602 : Add ``smartweb_site_url`` field on ``imio.news.Entity`` to store the
   URL of the Smartweb site that displays the entity's news.
   [boulch]
+
 - Search endpoints (``@search``, ``@search_entity``, ``@search_newsfolder_for_entity``,
   ``@search_newsitems``) : the ``Last-Modified`` header and the ETag now use the time of
   the last change in the news of the entity (``entity_uid`` or ``UID`` parameter).
