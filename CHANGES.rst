@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.29 (unreleased)
+1.2.29 (2026-10-27)
 -------------------
 
 - Search endpoints (``@search``, ``@search_entity``, ``@search_newsfolder_for_entity``,
