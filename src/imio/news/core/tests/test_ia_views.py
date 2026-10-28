@@ -165,3 +165,15 @@ class TestProcessCategorizeContentView(unittest.TestCase):
                 results = view._process_specific("text", {})
         self.assertNotIn("form-widgets-category", results)
         self.assertIn("form-widgets-local_category", results)
+
+    # --- registration (++add++imio.news.NewsItem posts to its container) ---
+
+    def test_view_registered_on_news_item_containers(self):
+        folder = api.content.create(
+            container=self.news_folder, type="imio.news.Folder", title="Folder"
+        )
+        for container in (self.news_folder, folder):
+            view = api.content.get_view(
+                "ProcessCategorizeContent", container, self.request
+            )
+            self.assertIsInstance(view, ProcessCategorizeContentView)

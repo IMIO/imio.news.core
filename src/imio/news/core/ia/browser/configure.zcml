@@ -12,6 +12,21 @@
       permission="cmf.ModifyPortalContent"
       />
 
+  <!-- NewsItem add form (++add++imio.news.NewsItem) posts to its container -->
+  <browser:page
+      name="ProcessCategorizeContent"
+      for="imio.news.core.contents.INewsFolder"
+      class=".views.ProcessCategorizeContentView"
+      permission="cmf.ModifyPortalContent"
+      />
+
+  <browser:page
+      name="ProcessCategorizeContent"
+      for="imio.news.core.contents.IFolder"
+      class=".views.ProcessCategorizeContentView"
+      permission="cmf.ModifyPortalContent"
+      />
+
   <browser:page
       for="imio.news.core.contents.INewsItem"
       name="edit"
